@@ -66,6 +66,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { vAutoAnimate } from '@formkit/auto-animate/vue'
+import { toast } from '@/components/ui/toast'
 import {
   FormControl,
   FormDescription,
@@ -87,10 +88,6 @@ const auth = ref<Auth>({
   password: ''
 })
 
-watch(() => auth, newValue => {
-  console.log(newValue)
-})
-
 const formSchema = toTypedSchema(z.object({
   email: z.string().email('E-mail invalide'),
   password: z.string().min(6, 'Mot de passe invalide'),
@@ -100,8 +97,11 @@ const { handleSubmit } = useForm({
   validationSchema: formSchema,
 })
 
-const onSubmit = handleSubmit((values) => {
-  console.log(values)
-  store.signIn(auth.value.email, auth.value.password)
+const onSubmit = handleSubmit( async (values) => {
+  await store.signIn(auth.value.email, auth.value.password)
+  toast({
+    title: 'Erreur lors de la connexion',
+    description: store.state.responseErrors
+  })
 })
 </script>
