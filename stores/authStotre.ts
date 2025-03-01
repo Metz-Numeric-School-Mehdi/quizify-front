@@ -10,7 +10,7 @@ export const authStore = defineStore(
     const state = ref<{
       user: User | null;
       token: string;
-      responseErrors: string | Record<string, string>[];
+      responseErrors: string;
       isAdmin: boolean;
       ready: boolean;
     }>({
@@ -73,9 +73,10 @@ export const authStore = defineStore(
 
       if (response && "user" in response && response && "token" in response) {
         setUser(response.user, response.token);
-        navigateTo("/admin");
+        navigateTo("/home");
         return true;
       } else {
+        console.log(response.errors);
         state.value.responseErrors = response.errors;
         return false;
       }
