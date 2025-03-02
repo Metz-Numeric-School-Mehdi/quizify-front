@@ -11,13 +11,13 @@ export const authStore = defineStore(
       user: User | null;
       token: string;
       responseErrors: string;
-      isAdmin: boolean;
+      isAuthenticated: boolean;
       ready: boolean;
     }>({
       user: null,
       token: "",
       responseErrors: "",
-      isAdmin: false,
+      isAuthenticated: false,
       ready: false,
     });
 
@@ -74,11 +74,10 @@ export const authStore = defineStore(
       if (response && "user" in response && response && "token" in response) {
         setUser(response.user, response.token);
         navigateTo("/home");
-        return true;
+        state.value.isAuthenticated = true;
       } else {
-        console.log(response.errors);
         state.value.responseErrors = response.errors;
-        return false;
+        state.value.isAuthenticated = false;
       }
     };
 
