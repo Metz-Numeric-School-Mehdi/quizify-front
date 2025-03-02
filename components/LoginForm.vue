@@ -97,11 +97,13 @@ const { handleSubmit } = useForm({
   validationSchema: formSchema,
 })
 
-const onSubmit = handleSubmit( async (values) => {
+const onSubmit = handleSubmit(async (values) => {
   await store.signIn(auth.value.email, auth.value.password)
-  toast({
-    title: 'Erreur lors de la connexion',
-    description: store.state.responseErrors
-  })
+  if (!store.state.isAuthenticated) {
+    toast({
+      title: 'Échec de la connexion',
+      description: store.state.responseErrors
+    })
+  }
 })
 </script>
