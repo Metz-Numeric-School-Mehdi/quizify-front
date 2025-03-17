@@ -5,16 +5,12 @@
         <SidebarGroupLabel>Application</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
-            <SidebarMenuItem v-for="item in items" :key="item.title">
+            <SidebarMenuItem v-for="(items, index) in sidebarItems" :key="index">
               <SidebarMenuButton asChild>
-                <ul>
-                  <li v-for="(items, index) in sidebarItems" :key="index" :to="items.path">
-                    <RouterLink>
-                      <Icon :name="items.icon" />
-                      {{ items.name }}
-                    </RouterLink>
-                  </li>
-                </ul>
+                <RouterLink :to="items.path">
+                  <Icon :name="items.icon" />
+                  {{ items.name }}
+                </RouterLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

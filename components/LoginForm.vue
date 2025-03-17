@@ -102,7 +102,8 @@ const onSubmit = handleSubmit(async (values) => {
   if (!store.state.isAuthenticated) {
     toast({
       title: 'Échec de la connexion',
-      description: store.state.responseErrors
+      description: store.state.responseErrors,
+      variant: 'destructive'
     })
   }
 })
