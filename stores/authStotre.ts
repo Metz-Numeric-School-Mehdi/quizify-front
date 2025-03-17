@@ -31,6 +31,7 @@ export const authStore = defineStore(
     const setUser = (user: User, token: string) => {
       if (localStorageIsAvailable()) {
         localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
       }
       state.value.user = user;
       state.value.token = token;

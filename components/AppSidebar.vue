@@ -2,7 +2,7 @@
   <Sidebar>
     <SidebarContent>
       <SidebarGroup>
-        <SidebarGroupLabel>Application</SidebarGroupLabel>
+        <SidebarGroupLabel>Quizify</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             <SidebarMenuItem v-for="(items, index) in sidebarItems" :key="index">
@@ -18,13 +18,12 @@
       </SidebarGroup>
     </SidebarContent>
     <SidebarFooter>
-      <NavUser :user="data.user" />
+      <NavUser />
     </SidebarFooter>
   </Sidebar>
 </template>
 
 <script setup lang="ts">
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-vue-next";
 import {
   Sidebar,
   SidebarContent,
