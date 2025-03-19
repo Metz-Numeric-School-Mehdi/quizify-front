@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import type SignIn from "~/types/auth/Auth";
+import type { SignUp } from "~/types/auth/Auth";
 import type User from "~/types/user/User";
 import { localStorageIsAvailable } from "~/utils/client";
 import fetchAPI from "~/utils/request/fetch";
@@ -13,12 +15,23 @@ export const authStore = defineStore(
       responseErrors: string;
       isAuthenticated: boolean;
       ready: boolean;
+      signInPayload: SignIn
+      signUpPayload: SignUp
     }>({
       user: null,
       token: "",
       responseErrors: "",
       isAuthenticated: false,
       ready: false,
+      signInPayload: {
+        email: "",
+        password: ""
+      },
+      signUpPayload: {
+        email: "",
+        password: "",
+        confirmPassword: ""
+      }
     });
 
     const getData = () => {
@@ -37,28 +50,28 @@ export const authStore = defineStore(
       state.value.token = token;
     };
 
-    // const signUp = async (userData: userStoreType) => {
-    //   const requestPayload = {
-    //     firstname: userData.firstname,
-    //     lastname: userData.lastname,
-    //     username: userData.username,
-    //     roles: [userData.roles],
-    //     email: userData.email,
-    //     password: userData.password,
-    //   };
-    //   const response = await fetchAPI<{ token: string; user: User }>({
-    //     method: "POST",
-    //     endpoint: "auth/signup",
-    //     params: requestPayload,
-    //     token: undefined,
-    //   });
+    const signUp = async (userData: SignUp) => {
+      const requestPayload = {
+        email: userData.email,
+        password: userData.password,
+        username: userData.username,
+      };
+      const response = await fetchAPI<{ token: string; user: User }>({
+        method: "POST",
+        endpoint: "auth/signup",
+        params: requestPayload,
+        token: undefined,
+      });
 
-    //   if (response && "user" in response && response && "token" in response) {
-    //     setUser(response.user, response.token);
-    //     navigateTo("/");
-    //   } else {
-    //   }
-    // };
+      if (response && "user" in response && response && "token" in response) {
+        setUser(response.user, response.token);
+        navigateTo("/home");
+        state.value.isAuthenticated = true;
+      } else {
+        state.value.responseErrors = response.errors;
+        state.value.isAuthenticated = false;
+      }
+    };
 
     const signIn = async (email: string, password: string) => {
       const requestPayload = {
@@ -101,7 +114,7 @@ export const authStore = defineStore(
     //   );
     // };
 
-    return { state, signIn, logOut, getData };
+    return { state, signUp, signIn, logOut, getData };
   },
   {
     persist: true,
