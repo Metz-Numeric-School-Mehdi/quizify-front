@@ -68,7 +68,7 @@ export const authStore = defineStore(
         navigateTo("/home");
         state.value.isAuthenticated = true;
       } else {
-        state.value.responseErrors = response.errors;
+        state.value.responseErrors = Object.values(response.errors).join(' ');
         state.value.isAuthenticated = false;
       }
     };

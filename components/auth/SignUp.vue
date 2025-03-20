@@ -17,6 +17,7 @@
               :type="items.type"
               required
               v-bind="componentField"
+              :autocomplete="items.type === 'password' ? 'new-password' : 'off'"
             />
           </FormControl>
           <FormMessage />
@@ -41,11 +42,22 @@ import { signUp } from "~/constants/Auth";
 const store = authStore();
 
 const formSchema = toTypedSchema(
-  z.object({
-    email: z.string().email("E-mail invalide"),
-    password: z.string().min(6, "Mot de passe invalide"),
-    username: z.string().min(3, "Nom d'utilisateur invalide"),
-  }),
+  z
+    .object({
+      email: z.string().email("E-mail invalide"),
+      password: z.string().min(6, "Mot de passe invalide"),
+      confirmPassword: z.string().min(6),
+      username: z.string().min(3, "Nom d'utilisateur invalide"),
+    })
+    .superRefine(({ confirmPassword, password }, ctx) => {
+      if (confirmPassword !== password) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Les mots de passe ne correspondent pas",
+          path: ["confirmPassword"],
+        });
+      }
+    }),
 );
 
 const { handleSubmit } = useForm({

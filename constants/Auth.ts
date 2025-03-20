@@ -16,7 +16,7 @@ export const signIn = [
 export const signUp = [
   {
     name: 'email',
-    type: 'text',
+    type: 'email',
     placeholder: 'votre@mail.com',
     label: 'Email',
     required: true
