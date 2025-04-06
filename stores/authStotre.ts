@@ -95,7 +95,7 @@ export const authStore = defineStore(
       }
     };
 
-    const logOut = async () => {
+    const signOut = async () => {
       const response = await fetchAPI<{ token: string; user: User }>({
         method: "GET",
         endpoint: "auth/signout",
@@ -103,6 +103,7 @@ export const authStore = defineStore(
       });
       localStorage.removeItem("token");
       state.value.token = "";
+      state.value.isAuthenticated = false;
       navigateTo("/");
     };
 
@@ -114,7 +115,7 @@ export const authStore = defineStore(
     //   );
     // };
 
-    return { state, signUp, signIn, logOut, getData };
+    return { state, signUp, signIn, signOut, getData };
   },
   {
     persist: true,
