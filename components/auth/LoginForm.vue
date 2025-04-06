@@ -32,6 +32,9 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  layout: "default",
+});
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SignIn from "./SignIn.vue";
