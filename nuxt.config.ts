@@ -4,10 +4,21 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     "@nuxtjs/tailwindcss",
+    '@nuxtjs/color-mode',
     "shadcn-nuxt",
     "@pinia/nuxt",
     "pinia-plugin-persistedstate",
   ],
+  colorMode: {
+      classSuffix: '',
+      preference: 'light',
+      fallback: 'light',
+  },
+  tailwindcss: {
+    config: {
+      darkMode: 'class'
+    },
+  },
   shadcn: {
     /**
      * Prefix for all the imported component
