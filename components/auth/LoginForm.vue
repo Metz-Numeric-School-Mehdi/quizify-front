@@ -1,4 +1,4 @@
-<template>
+q<template>
   <Tabs default-value="account" class="w-[400px]">
     <TabsList class="grid w-full grid-cols-2">
       <TabsTrigger value="account"> Se connecter </TabsTrigger>
