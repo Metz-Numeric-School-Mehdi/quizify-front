@@ -65,7 +65,7 @@ export const authStore = defineStore(
 
       if (response && "user" in response && response && "token" in response) {
         setUser(response.user, response.token);
-        navigateTo("/home");
+        navigateTo("/");
         state.value.isAuthenticated = true;
       } else {
         state.value.responseErrors = Object.values(response.errors).join(' ');
@@ -87,7 +87,7 @@ export const authStore = defineStore(
 
       if (response && "user" in response && response && "token" in response) {
         setUser(response.user, response.token);
-        navigateTo("/home");
+        navigateTo("/");
         state.value.isAuthenticated = true;
       } else {
         state.value.responseErrors = response.errors;
