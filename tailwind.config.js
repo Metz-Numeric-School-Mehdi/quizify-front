@@ -3,6 +3,31 @@ export default {
 	darkMode: ["class"],
 	content: [],
 	theme: {
+		fontWeight: {
+			normal: '400',
+			medium: '500',
+			semibold: '600',
+			bold: '700'
+		},
+		fontSize: {
+			title: '1.875rem', // 3xl
+			subtitle: '1.5rem', // 2xl
+			legend: '1.25rem', // xl
+			body: '1rem', // base
+			small: '0.875rem', // sm
+			xsmall: '0.75rem', // xs
+			'2xsmall': '0.625rem', // 2xs
+			'3xsmall': '0.5rem' // 3xs
+		},
+		borderRadius: {
+			full: '9999px',
+			'2xl': '1rem', // 16px
+			xl: '0.875rem', // 14px
+			lg: '0.75rem', // 12px
+			md: '0.5rem', // 8px
+			sm: '0.25rem', // 4px
+			xs: '0.125rem' // 2px
+		},
 		extend: {
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -10,6 +35,9 @@ export default {
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			colors: {
+				"primary-linear": 'hsl(var(--primary-linear))',
+				"secondary-linear": 'hsl(var(--secondary-linear))',
+				"text-color": 'hsl(var(--text-color))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				card: {
