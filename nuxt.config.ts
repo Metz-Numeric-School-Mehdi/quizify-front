@@ -4,19 +4,25 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     "@nuxtjs/tailwindcss",
-    '@nuxtjs/color-mode',
+    "@nuxtjs/color-mode",
     "shadcn-nuxt",
     "@pinia/nuxt",
     "pinia-plugin-persistedstate",
+    "@nuxt/fonts",
   ],
+  fonts: {
+    defaults: {
+      weights: ["400", "500", "600", "700"],
+    },
+  },
   colorMode: {
-      classSuffix: '',
-      preference: 'light',
-      fallback: 'light',
+    classSuffix: "",
+    preference: "light",
+    fallback: "light",
   },
   tailwindcss: {
     config: {
-      darkMode: 'class'
+      darkMode: "class",
     },
   },
   shadcn: {
@@ -29,5 +35,10 @@ export default defineNuxtConfig({
      * @default "./components/ui"
      */
     componentDir: "./components/ui",
+  },
+  runtimeConfig: {
+    public: {
+      apiBase: "http://localhost:8000/api",
+    },
   },
 });
