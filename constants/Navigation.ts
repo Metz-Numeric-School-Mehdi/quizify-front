@@ -1,22 +1,22 @@
 export const sidebarItems = [
   {
-    name: "Tableau de bord",
-    path: "/home",
+    name: "Accueil",
+    path: "/",
     icon: "LayoutDashboard",
   },
   {
-    name: "Notification",
-    path: "/#",
+    name: "Notifications",
+    path: "/notifications",
     icon: "Bell",
   },
   {
     name: "Réalisations",
-    path: "/#",
+    path: "/achievements",
     icon: "ChartColumn",
   },
   {
     name: "Historique",
-    path: "/#",
+    path: "/history",
     icon: "History",
   },
 ];
