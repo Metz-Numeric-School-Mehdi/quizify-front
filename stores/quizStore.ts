@@ -15,17 +15,17 @@ export const quizStore = defineStore(
       quiz: null,
     });
 
-    const setAllQuiz = async () => {
+    const getAllQuiz = async () => {
       state.value.ready = false;
 
       try {
-        const { data, error } = await useFetch<Quiz[]>("/quizzes", {
+        const { data, error } = await useFetch<{ data: Quiz[] }>("/quizzes", {
           baseURL: "http://localhost:8000/api",
           method: "GET",
         });
 
-        if (data.value) {
-          state.value.allQuiz = data.value;
+        if (data.value?.data) {
+          state.value.allQuiz = data.value.data;
           console.log(state.value.allQuiz);
         }
       } catch (error) {
@@ -36,10 +36,10 @@ export const quizStore = defineStore(
     };
 
     const fetch = () => {
-      Promise.all([setAllQuiz()]);
+      Promise.all([getAllQuiz()]);
     };
 
-    return { state, setAllQuiz, fetch};
+    return { state, getAllQuiz, fetch };
   },
   {
     persist: true,

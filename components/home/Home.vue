@@ -11,19 +11,15 @@
         <div class="p-4 flex flex-col gap-3">
           <h3 class="text-lg font-semibold text-gray-800 truncate">{{ quiz.title }}</h3>
           <p class="text-sm text-gray-600 mt-2 truncate">{{ quiz.description }}</p>
-          <Button>Commencer le quiz</Button>
+          <Button class="rounded-default">Commencer le quiz</Button>
         </div>
       </div>
-      <!-- <Info /> -->
     </main>
   </div>
-
 </template>
 
 <script lang="ts" setup>
 import { quizStore } from '~/stores/quizStore';
-import Searchbar from './Searchbar.vue';
-import Info from './Info.vue';
 
 const useQuiz = quizStore()
 
