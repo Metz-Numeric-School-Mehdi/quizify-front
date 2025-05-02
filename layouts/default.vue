@@ -14,7 +14,7 @@
       <ul class="flex flex-col gap-4">
         <li v-for="(link, index) in sidebarItems" :key="index">
           <NuxtLink :to="link.path" :class="[
-            'h-12 font-semibold px-5 text-body flex items-center duration-200 gap-4 rounded-xl',
+            'h-12 font-semibold px-5 text-body flex items-center duration-200 gap-4 rounded-default',
             $route.path === link.path
               ? 'bg-primary-linear bg-gradient-to-r from-primary-linear to-secondary-linear text-white'
               : 'text-text-color hover:text-primary-linear'
@@ -28,7 +28,7 @@
       <div class="mt-auto flex flex-col gap-6">
         <Support />
         <Button
-          class="relative overflow-hidden text-white flex items-center gap-4 px-6 py-2 rounded-xl bg-gradient-to-r from-primary-linear to-secondary-linear transition-colors duration-300 group">
+          class="relative overflow-hidden text-white flex items-center gap-4 px-6 py-2 bg-gradient-to-r from-primary-linear to-secondary-linear transition-colors duration-300 group">
           <span
             class="absolute inset-0 bg-gradient-to-r from-primary-linear via-[#7f5af0] to-secondary-linear bg-[length:200%] bg-left group-hover:bg-right transition-all duration-1000 ease-in-out z-0">
           </span>
