@@ -15,8 +15,8 @@ export const authStore = defineStore(
       responseErrors: string;
       isAuthenticated: boolean;
       ready: boolean;
-      signInPayload: SignIn
-      signUpPayload: SignUp
+      signInPayload: SignIn;
+      signUpPayload: SignUp;
     }>({
       user: null,
       token: "",
@@ -25,13 +25,13 @@ export const authStore = defineStore(
       ready: false,
       signInPayload: {
         email: "",
-        password: ""
+        password: "",
       },
       signUpPayload: {
         email: "",
         password: "",
-        confirmPassword: ""
-      }
+        confirmPassword: "",
+      },
     });
 
     const getData = () => {
@@ -68,7 +68,7 @@ export const authStore = defineStore(
         navigateTo("/");
         state.value.isAuthenticated = true;
       } else {
-        state.value.responseErrors = Object.values(response.errors).join(' ');
+        state.value.responseErrors = Object.values(response.errors).join(" ");
         state.value.isAuthenticated = false;
       }
     };
@@ -96,12 +96,16 @@ export const authStore = defineStore(
     };
 
     const signOut = async () => {
-      const response = await fetchAPI<{ token: string; user: User }>({
+      const { data } = await useFetch("/auth/signout", {
+        baseURL: "http://localhost:8000/api",
         method: "GET",
-        endpoint: "auth/signout",
-        token: state.value.token,
+        headers: {
+          Authorization: `Bearer ${state.value.token}`,
+          Accept: "application/json",
+        },
       });
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
       state.value.token = "";
       state.value.isAuthenticated = false;
       navigateTo("/");
