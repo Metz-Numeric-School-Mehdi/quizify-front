@@ -1,23 +1,22 @@
 <template>
-  <div class="relative rounded-default cursor-pointer overflow-hidden w-80 h-80 transform transition-transform group">
-    <div class="absolute inset-0 group-hover:scale-105 transition-transform duration-300">
-      <img class="w-full h-full opacity-70 group-hover:opacity-100 object-cover" src="@/assets/img/card_wallp.jpeg"
-        alt="Quiz Image" />
-    </div>
-    <div
-      class="absolute bottom-0 left-0 right-0 z-10 p-6 text-center bg-white bg-opacity-30 backdrop-blur-lg rounded-default m-4">
-      <h2 class="text-2xl font-bold text-white drop-shadow-lg">{{ quizTitle }}</h2>
-      <div
-        class="mt-4 inline-block bg-gradient-to-r from-pink-500 to-yellow-500 text-white py-1 px-3 rounded-default text-sm shadow-lg">
-        {{ quizTime }}
+  <div
+    class="relative rounded-xl cursor-pointer overflow-hidden w-full max-w-xs h-64 sm:h-72 mx-auto bg-white shadow-md border border-gray-100 group transition-all duration-200 hover:shadow-xl hover:scale-105">
+    <img class="w-full h-32 sm:h-36 object-cover" src="@/assets/img/card_wallp.jpeg" alt="Quiz Image" />
+    <div class="flex flex-col items-center justify-center px-4 py-4 h-32 sm:h-36">
+      <h2 class="text-lg sm:text-xl font-bold text-gray-800 mb-1 truncate w-full text-center">
+        {{ title }}
+      </h2>
+      <div class="text-xs sm:text-sm text-gray-500 mb-2 truncate w-full text-center">
+        {{ duration }} min
       </div>
+      <button
+        class="mt-2 px-4 py-2 bg-pink-500 text-white rounded-full font-semibold shadow transition hover:bg-pink-600">
+        Jouer
+      </button>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref } from "vue";
-
-const quizTitle = ref("Nom du Quiz");
-const quizTime = ref("15 min");
+<script setup lang="ts">
+const props = defineProps<{ title: string, duration: number }>()
 </script>

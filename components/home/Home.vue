@@ -1,26 +1,34 @@
 <template>
-  <div class="flex flex-col gap-4">
+  <div class="flex flex-col gap-4 relative">
+    <div class="absolute inset-0 -z-10 pointer-events-none">
+      <div class="absolute w-32 h-32 bg-pink-200 opacity-30 rounded-full top-10 left-10 animate-pulse"></div>
+      <div class="absolute w-24 h-24 bg-blue-200 opacity-20 rounded-full bottom-20 right-20 animate-ping"></div>
+      <div class="absolute w-16 h-16 bg-yellow-200 opacity-20 rounded-full top-1/2 left-1/2 animate-bounce"></div>
+      <div class="absolute w-20 h-20 bg-purple-200 opacity-10 rounded-full bottom-10 left-1/3 animate-spin-slow"></div>
+    </div>
+    <div class="flex justify-end mb-4 z-10">
+      <button @click="useQuiz.state.openModal = true"
+        class="flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 text-white font-bold rounded-full shadow-lg hover:scale-105 hover:shadow-2xl transition-all duration-300 animate-bounce-slow text-base sm:text-lg">
+        <span class="text-xl sm:text-2xl">➕</span>
+        <span class="hidden sm:inline">Créer un quiz</span>
+        <span class="inline sm:hidden">Créer</span>
+      </button>
+    </div>
+    <CreateQuizModal @close="useQuiz.state.openModal = false" />
     <div v-if="!useQuiz.state.ready && !useQuiz.state.allQuiz" class="w-full h-screen flex justify-center items-center">
       <p class="text-center text-2xl">Loading...</p>
     </div>
-    <main v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6 bg-white rounded-xl shadow-xl">
-      <div v-for="quiz in useQuiz.state.allQuiz" :key="quiz.id"
-        class="bg-white shadow-xl rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
-        <img :src="quiz.thumbnail || 'https://via.placeholder.com/300'" alt="Quiz Image"
-          class="w-full h-40 object-cover" />
-        <div class="p-4 flex flex-col gap-3">
-          <h3 class="text-lg font-semibold text-gray-800 truncate">{{ quiz.title }}</h3>
-          <p class="text-sm text-gray-600 mt-2 truncate">{{ quiz.description }}</p>
-          <QuizModal :quiz="quiz"/>
-        </div>
-      </div>
+    <main v-else
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 p-2 sm:p-6 bg-white/80 rounded-xl shadow-xl">
+      <QuizCard v-for="quiz in useQuiz.state.allQuiz" :key="quiz.id" :title="quiz.title" :duration="quiz.duration" />
     </main>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { quizStore } from '~/stores/quizStore';
-import QuizModal from '../QuizModal.vue';
+import QuizCard from '../QuizCard.vue';
+import CreateQuizModal from '../modals/quiz/CreateQuizModal.vue';
 
 const useQuiz = quizStore()
 
