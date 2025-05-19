@@ -14,7 +14,9 @@
       'md:translate-x-0 md:static md:flex'
     ]">
       <div class="flex flex-col items-center mb-6 z-10">
-        <img src="../assets/img/mascotte_quiz.png" alt="Mascotte Quiz"
+        <img
+          src="https://img.freepik.com/vecteurs-premium/logo-quiz-symboles-bulle-discours-concept-spectacle-questionnaire-chante-bouton-quiz-concours-questions-icone-neon-illustration-vectorielle-stock_100456-3471.jpg"
+          alt="Mascotte Quiz"
           class="w-16 h-16 sm:w-20 sm:h-20 rounded-full shadow-lg border-4 border-white mb-2 animate-float-slow transition-all duration-300" />
         <span class="font-bold text-lg text-purple-700 drop-shadow text-center">Quizify</span>
       </div>
