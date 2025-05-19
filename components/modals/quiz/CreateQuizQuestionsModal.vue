@@ -1,5 +1,5 @@
 <template>
-    <div v-if="currentStep === 3" class="px-2">
+    <div v-if="currentStep === 3" class="px-2 h-10">
         <div class="mb-4 flex flex-col gap-6">
             <div v-for="(question, qIdx) in useQuiz.state.createQuizForm.questions" :key="qIdx"
                 class="border border-pink-200 rounded-lg p-4 bg-pink-50 relative">
@@ -15,13 +15,16 @@
                 </div>
                 <div class="mb-2">
                     <label class="block font-semibold mb-1">Type</label>
-                    <select v-model="question.question_type_id" required
-                        class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400">
-                        <option disabled value="">Sélectionner</option>
-                        <option v-for="type in questionTypes" :key="type.id" :value="type.id">
-                            {{ type.name }}
-                        </option>
-                    </select>
+                    <Select v-model="question.question_type_id">
+                        <SelectTrigger class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400">
+                            <span>{{ questionTypes.find(t => t.id === Number(question.question_type_id))?.name || 'Sélectionner' }}</span>
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem v-for="type in questionTypes" :key="type.id" :value="type.id">
+                                {{ type.name }}
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
                 <div>
                     <label class="block font-semibold mb-1">Réponses</label>
@@ -57,6 +60,7 @@
 </template>
 
 <script lang="ts" setup>
+import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
 
 const props = defineProps<{ currentStep: number }>()
 
