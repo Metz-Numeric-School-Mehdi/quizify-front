@@ -9,6 +9,7 @@ export type SignUp = {
   email: string;
   password: string;
   confirmPassword: string;
+  photo: glocalThis.File | null;
 };
 
 export default SignIn;

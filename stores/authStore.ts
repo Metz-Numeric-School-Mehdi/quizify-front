@@ -31,6 +31,7 @@ export const authStore = defineStore(
         email: "",
         password: "",
         confirmPassword: "",
+        photo: "",
       },
     });
 
@@ -51,25 +52,25 @@ export const authStore = defineStore(
     };
 
     const signUp = async (userData: SignUp) => {
-      const requestPayload = {
-        email: userData.email,
-        password: userData.password,
-        username: userData.username,
-      };
-      const response = await fetchAPI<{ token: string; user: User }>({
-        method: "POST",
-        endpoint: "auth/signup",
-        params: requestPayload,
-        token: undefined,
-      });
+      const formData = new FormData();
+      formData.append("email", userData.email);
+      formData.append("password", userData.password);
+      formData.append("username", userData.username);
+      formData.append("photo", userData.photo ? userData.photo : "");
 
-      if (response && "user" in response && response && "token" in response) {
-        setUser(response.user, response.token);
+      const { data } = await useFetch<{ user: User; token: string }>(
+        "/auth/signup",
+        {
+          baseURL: "http://localhost:8000/api",
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (data.value && data.value.user && data.value.token) {
+        setUser(data.value.user, data.value.token);
         navigateTo("/");
         state.value.isAuthenticated = true;
-      } else {
-        state.value.responseErrors = Object.values(response.errors).join(" ");
-        state.value.isAuthenticated = false;
       }
     };
 
