@@ -5,8 +5,8 @@
 
 @layer base {
   :root {
-    --primary-linear: 330 100% 53%;
-    --secondary-linear: 356 91% 56%;
+    --primary-linear: 316 100% 53.3%;
+    --secondary-linear: 347 92% 51%;
     --text-color: 220 5% 47%;
 
     --background: 0 3.1% 98.4%;
@@ -18,7 +18,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 20 14.3% 4.1%;
 
-    --primary: 24.6 95% 53.1%;
+    --primary: 330 81% 60%;
     --primary-foreground: 60 9.1% 97.8%;
 
     --secondary: 60 4.8% 95.9%;
