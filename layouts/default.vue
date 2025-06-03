@@ -94,11 +94,12 @@ import Support from "~/components/sidebar/Support.vue";
 import Searchbar from "~/components/home/Searchbar.vue";
 import { sidebarItems } from "~/constants/Navigation";
 import { ref } from 'vue';
+import { useQuizStore } from '~/stores/quizStore'
 
 const sideIsCollapsible = ref(false);
 
 const useAuth = authStore();
-const useQuiz = quizStore();
+const useQuiz = useQuizStore()
 onMounted(() => {
   useQuiz.state.openModal = false
 })
