@@ -41,6 +41,7 @@ import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
 import { signIn } from "~/constants/Auth";
+import { authStore } from '~/stores/authStore'
 
 const store = authStore();
 
