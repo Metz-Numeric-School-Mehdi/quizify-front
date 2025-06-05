@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { authStore } from "./authStore";
-import type { Answer } from "~/types/answer/Answer";
+import type { Answer, CreateAnswer } from "~/types/answer/Answer";
 
 export const useAnswerStore = defineStore("answer", () => {
   const auth = authStore();
@@ -17,16 +17,15 @@ export const useAnswerStore = defineStore("answer", () => {
     loading: false,
   });
 
+  const useQuiz = useQuizStore();
+
   const getAll = async () => {
     state.value.loading = true;
     state.value.error = null;
-    const { data, error: err } = await useFetch<Answer[]>(
-      `/api/answers`,
-      {
-        baseURL: "http://localhost:8000",
-        method: "GET",
-      }
-    );
+    const { data, error: err } = await useFetch<Answer[]>(`/api/answers`, {
+      baseURL: "http://localhost:8000",
+      method: "GET",
+    });
     if (err.value) state.value.error = err.value.data?.message;
     else state.value.answers = data.value;
     state.value.loading = false;
@@ -47,54 +46,52 @@ export const useAnswerStore = defineStore("answer", () => {
     state.value.loading = false;
   };
 
-  const create = async (questionId: number, payload: any) => {
-    state.value.loading = true;
+  const create = async (payload: CreateAnswer) => {
     state.value.error = null;
-    const { data, error: err } = await useFetch(
-      `/api/questions/${questionId}/answers`,
-      {
-        baseURL: "http://localhost:8000",
-        method: "POST",
-        body: payload,
-        headers: { Authorization: `Bearer ${auth.state.token}` },
-      }
-    );
+    const { data, error: err } = await useFetch("/api/answers", {
+      baseURL: "http://localhost:8000",
+      method: "POST",
+      body: payload,
+      headers: { Authorization: `Bearer ${auth.state.token}` },
+    });
     if (err.value) state.value.error = err.value.data?.message;
-    state.value.loading = false;
+    if (useQuiz.state.quiz) {
+      useQuiz.getOne(useQuiz.state.quiz.id);
+    }
     return data.value;
   };
 
-  const update = async (questionId: number, id: number, payload: any) => {
+  const update = async (payload: CreateAnswer, id: number) => {
     state.value.loading = true;
     state.value.error = null;
-    const { data, error: err } = await useFetch(
-      `/api/questions/${questionId}/answers/${id}`,
-      {
-        baseURL: "http://localhost:8000",
-        method: "PUT",
-        body: payload,
-        headers: { Authorization: `Bearer ${auth.state.token}` },
-      }
-    );
+    const { data, error: err } = await useFetch(`/api/answers/${id}`, {
+      baseURL: "http://localhost:8000",
+      method: "PUT",
+      body: payload,
+      headers: { Authorization: `Bearer ${auth.state.token}` },
+    });
     if (err.value) state.value.error = err.value.data?.message;
-    state.value.loading = false;
+    if (useQuiz.state.quiz) {
+      useQuiz.getOne(useQuiz.state.quiz.id);
+    }
     return data.value;
   };
 
-  const remove = async (questionId: number, id: number) => {
+  const remove = async (id: number) => {
     state.value.loading = true;
     state.value.error = null;
-    const { error: err } = await useFetch(
-      `/api/questions/${questionId}/answers/${id}`,
-      {
-        baseURL: "http://localhost:8000",
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${auth.state.token}` },
-      }
-    );
-    if (err.value) state.value.error = err.value.data?.message;
+    const { data, error } = await useFetch(`/api/answers/${id}`, {
+      baseURL: "http://localhost:8000",
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${auth.state.token}` },
+    });
+    if (error.value) return false;
+    if (useQuiz.state.quiz) {
+      useQuiz.getOne(useQuiz.state.quiz.id);
+    }
     state.value.loading = false;
+    return true;
   };
 
-  return { state, getAll };
+  return { state, getAll, getOne, create, update, remove };
 });
