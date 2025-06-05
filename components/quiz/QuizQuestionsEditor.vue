@@ -36,6 +36,7 @@
 
 <script lang="ts" setup>
 import type { CreateQuestion } from '~/types/question/Question';
+import { toast } from '../ui/toast';
 
 const useQuestion = useQuestionStore()
 const useQuiz = useQuizStore()
@@ -61,18 +62,38 @@ const create = async () => {
 const update = async () => {
   if (useQuiz.state.quiz?.questions && useQuiz.state.quiz.questions.length > 0) {
     for (const question of useQuiz.state.quiz.questions) {
-      await useQuestion.update({
+      const update = await useQuestion.update({
         content: question.content,
         quiz_id: useQuiz.state.quiz.id,
         question_type_id: 3
       }, question.id)
+      if (update) {
+        toast({
+          description: 'Question mise à jour avec succès',
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          description: 'Erreur lors de la mise à jour de la question',
+        });
+      }
     }
   }
 }
 
 const remove = async (question: number) => {
   if (useQuiz.state.quiz?.questions && useQuiz.state.quiz.questions.length > 0) {
-    await useQuestion.remove(question)
+    const remove = await useQuestion.remove(question)
+    if (remove) {
+      toast({
+        description: 'Question supprimée avec succès',
+      });
+    } else {
+      toast({
+        description: 'Erreur lors de la suppression de la question',
+        variant: 'destructive',
+      });
+    }
   }
 }
 </script>
