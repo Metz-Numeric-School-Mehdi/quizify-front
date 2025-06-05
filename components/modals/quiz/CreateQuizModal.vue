@@ -14,7 +14,7 @@
             <SelectValue placeholder="Sélectionner un niveau" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem v-for="(val, index) in useQuiz.state.quizLevels" :key="index" :value="val.id">
+            <SelectItem v-for="(val, index) in useQuiz.state.levels" :key="index" :value="val.id">
               {{ val.name }}
             </SelectItem>
           </SelectContent>
@@ -24,7 +24,7 @@
             <SelectValue placeholder="Sélectionner une catégorie" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem v-for="(val, index) in useQuiz.state.quizCategories" :key="index" :value="val.id">
+            <SelectItem v-for="(val, index) in useQuiz.state.categories" :key="index" :value="val.id">
               {{ val.name }}
             </SelectItem>
           </SelectContent>
@@ -54,6 +54,7 @@
         <button type="submit"
           class="bg-pink-500 text-white font-bold py-2 rounded hover:bg-pink-600 transition">Créer</button>
       </form>
+      <EditQuizModal v-if="useQuiz.state.quiz" />
       <div v-if="error" class="text-red-500 text-center">{{ error }}</div>
     </div>
   </div>
@@ -69,16 +70,17 @@ import type { CreateQuizModal } from '~/types/quiz/CreateQuizModal'
 
 const useQuiz = useQuizStore()
 const error = ref<string | null>(null)
+
 const router = useRouter()
 
 const fetchLevels = () => {
-  if (useQuiz.state.quizLevels !== null) return
-  useQuiz.getQuizLevels()
+  if (useQuiz.state.levels !== null) return
+  useQuiz.getLevels()
 }
 
 const fetchCategories = () => {
-  if (useQuiz.state.quizCategories !== null) return
-  useQuiz.getQuizCategories()
+  if (useQuiz.state.categories !== null) return
+  useQuiz.getCategories()
 }
 
 const form = ref<CreateQuizModal>({
@@ -118,16 +120,17 @@ const resetForm = () => {
 const submit = async () => {
   error.value = null
   try {
-    const created = await useQuiz.create(form.value);
-    if (created) {
+    await useQuiz.create(form.value);
+
+    if (useQuiz.state.quiz) {
       closeModal()
       await useQuiz.getAll()
-
+      router.push(`/quiz/edit/${useQuiz.state.quiz.id}`)
     } else {
       error.value = 'Erreur lors de la création du quiz.'
     }
   } catch (e: any) {
-    error.value = (typeof e === 'object' && e && 'message' in e) ? (e as any).message : 'Erreur lors de la création du quiz.'
+    console.error('Error creating quiz:', e)
   }
 }
 </script>
