@@ -92,5 +92,14 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		function ({ addUtilities }) {
+			addUtilities({
+				'.px-home': {
+					padding: '0 5%',
+				}
+			})
+		}
+	]
 }
