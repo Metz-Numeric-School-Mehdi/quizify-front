@@ -12,6 +12,7 @@
 import { ref } from 'vue'
 import QuizInfoFields from './QuizInfoFields.vue'
 import { useQuizStore } from '~/stores/quizStore'
+import { toast } from '../ui/toast'
 const useQuiz = useQuizStore()
 
 const fieldsRef = ref<any>(null)
@@ -19,7 +20,17 @@ const fieldsRef = ref<any>(null)
 const update = async () => {
     if (useQuiz.state.quiz && fieldsRef.value) {
         Object.assign(useQuiz.state.quizForm, fieldsRef.value.formLocal)
-        await useQuiz.update(useQuiz.state.quiz.id, useQuiz.state.quizForm)
+        const updateInfo = await useQuiz.update(useQuiz.state.quiz.id, useQuiz.state.quizForm)
+        if (updateInfo) {
+            toast({
+                description: 'Informations du quiz mises à jour avec succès',
+            })
+        } else {
+            toast({
+                description: useQuiz.state.error,
+                variant: 'destructive',
+            })
+        }
     }
 }
 </script>
