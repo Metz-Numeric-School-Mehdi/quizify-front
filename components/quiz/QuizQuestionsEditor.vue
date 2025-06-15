@@ -2,7 +2,7 @@
   <template v-if="useQuiz.state.quiz?.questions && useQuiz.state.quiz.questions.length < 1">
     <div class="flex flex-col gap-4">
       <div class="flex flex-col gap-2">
-        <label class="font-semibold">Titre</label>
+        <label class="font-semibold">Titre de la question</label>
         <Input v-model="questionsForm.content" placeholder="Titre de la question" />
       </div>
     </div>
