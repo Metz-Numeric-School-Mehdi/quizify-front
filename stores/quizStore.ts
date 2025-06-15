@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { authStore } from "./authStore";
-import type { Quiz, QuizForm } from "~/types/quiz/Quiz";
+import type { ApiError } from "~/types/error/ApiError";
+import type { Category } from "~/types/quiz/Category";
 import type { CreateQuizModal } from "~/types/quiz/CreateQuizModal";
 import type { Level } from "~/types/quiz/Level";
-import type { Category } from "~/types/quiz/Category";
+import type { Quiz, QuizForm } from "~/types/quiz/Quiz";
+import { authStore } from "./authStore";
 
 export const useQuizStore = defineStore(
   "quiz",
@@ -16,9 +17,10 @@ export const useQuizStore = defineStore(
       levels: Level[] | null;
       categories: Category[] | null;
       quizForm: QuizForm;
-      error: string | null;
+      apiError: ApiError | null;
       loading: boolean;
       openModal: boolean;
+      openPlayModal: boolean;
       openEditModal: boolean;
       createQuizForm: {
         title: string;
@@ -48,9 +50,10 @@ export const useQuizStore = defineStore(
         is_public: "0",
         status: "published",
       },
-      error: null,
+      apiError: null,
       loading: false,
       openModal: false,
+      openPlayModal: false,
       openEditModal: false,
       createQuizForm: {
         title: "",
@@ -71,26 +74,47 @@ export const useQuizStore = defineStore(
 
     const getAll = async () => {
       state.value.loading = true;
-      state.value.error = null;
-      const { data, error: err } = await useFetch<Quiz[]>("/api/quizzes", {
-        baseURL: "http://localhost:8000",
-        method: "GET",
-      });
-      if (err.value) state.value.error = err.value.data?.message;
-      else if (data.value) state.value.quizzes = data.value;
-      state.value.loading = false;
+      state.value.apiError = null;
+      try {
+        const { data } = await useFetch<Quiz[]>("/api/quizzes", {
+          baseURL: "http://localhost:8000",
+          method: "GET",
+        });
+        state.value.quizzes = data.value;
+      } catch (e: any) {
+        state.value.apiError = e.response?.data as ApiError;
+      } finally {
+        state.value.loading = false;
+      }
+    };
+
+    const setQuizFormFromQuiz = () => {
+      if (state.value.quiz) {
+        state.value.quizForm = {
+          title: state.value.quiz.title || "",
+          description: state.value.quiz.description || "",
+          level_id: state.value.quiz.level_id || null,
+          category_id: state.value.quiz.category_id || null,
+          is_public: state.value.quiz.is_public ? "1" : "0",
+          status: state.value.quiz.status || "draft",
+        };
+      }
     };
 
     const getOne = async (id: number) => {
       state.value.loading = true;
-      state.value.error = null;
+      state.value.apiError = null;
       try {
         const response = await fetch(`http://localhost:8000/api/quizzes/${id}`);
-        if (!response.ok) throw new Error("Erreur serveur");
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw { response: { data: errorData } };
+        }
         const quiz = await response.json();
         state.value.quiz = quiz;
+        setQuizFormFromQuiz();
       } catch (e: any) {
-        state.value.error = e?.message || "An error occurred";
+        state.value.apiError = e.response?.data as ApiError;
         state.value.quiz = null;
       } finally {
         state.value.loading = false;
@@ -99,29 +123,37 @@ export const useQuizStore = defineStore(
 
     const getLevels = async () => {
       state.value.loading = true;
-      state.value.error = null;
-      const { data, error: err } = await useFetch<Level[]>("/api/quiz-levels", {
-        baseURL: "http://localhost:8000",
-        method: "GET",
-      });
-      if (err.value) state.value.error = err.value.data?.message;
-      else state.value.levels = data.value;
-      state.value.loading = false;
+      state.value.apiError = null;
+      try {
+        const { data } = await useFetch<Level[]>("/api/quiz-levels", {
+          baseURL: "http://localhost:8000",
+          method: "GET",
+        });
+        state.value.levels = data.value;
+      } catch (e: any) {
+        state.value.apiError = e.response?.data as ApiError;
+      } finally {
+        state.value.loading = false;
+      }
     };
 
     const getCategories = async () => {
       state.value.loading = true;
-      state.value.error = null;
-      const { data, error: err } = await useFetch<Category[]>(
-        "/api/categories",
-        {
-          baseURL: "http://localhost:8000",
-          method: "GET",
-        }
-      );
-      if (err.value) state.value.error = err.value.data?.message;
-      else state.value.categories = data.value;
-      state.value.loading = false;
+      state.value.apiError = null;
+      try {
+        const { data } = await useFetch<Category[]>(
+          "/api/categories",
+          {
+            baseURL: "http://localhost:8000",
+            method: "GET",
+          }
+        );
+        state.value.categories = data.value;
+      } catch (e: any) {
+        state.value.apiError = e.response?.data as ApiError;
+      } finally {
+        state.value.loading = false;
+      }
     };
 
     const create = async (payload: CreateQuizModal) => {
@@ -139,32 +171,45 @@ export const useQuizStore = defineStore(
         formData.append("thumbnail", payload.thumbnail);
       }
       state.value.loading = true;
-      state.value.error = null;
-      const { data, error: err } = await useFetch<Quiz>("/api/quizzes", {
-        baseURL: "http://localhost:8000",
-        method: "POST",
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${auth.state.token}`,
-        },
-      });
-      if (err.value) state.value.error = err.value.data?.message;
-      state.value.loading = false;
-      if (data.value?.id) await getOne(data.value.id);
+      state.value.apiError = null;
+      try {
+        const { data } = await useFetch<Quiz>("/api/quizzes", {
+          baseURL: "http://localhost:8000",
+          method: "POST",
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${auth.state.token}`,
+          },
+        });
+        if (data.value?.id) await getOne(data.value.id);
+      } catch (e: any) {
+        state.value.apiError = e.response?.data as ApiError;
+      } finally {
+        state.value.loading = false;
+      }
     };
 
     const update = async (id: number, payload: QuizForm) => {
-      const { data, error } = await useFetch(`/api/quizzes/${id}`, {
-        baseURL: "http://localhost:8000",
-        method: "PUT",
-        body: payload.is_public,
-        headers: { Authorization: `Bearer ${auth.state.token}` },
-      });
-      if (error.value) return false;
-
-      getOne(id);
-      return true;
+      state.value.apiError = null;
+      try {
+        const { data, error } = await useFetch(`/api/quizzes/${id}`, {
+          baseURL: "http://localhost:8000",
+          method: "PUT",
+          body: payload,
+          headers: { Authorization: `Bearer ${auth.state.token}` },
+        });
+        if (error.value) {
+          state.value.apiError = error.value.data as ApiError;
+          return false;
+        }
+        getOne(id);
+        return true;
+      } catch (e: any) {
+        state.value.apiError = e.response?.data as ApiError;
+        return false;
+      }
     };
+
 
     const resetQuizForm = () => {
       state.value.quizForm = {
@@ -179,28 +224,37 @@ export const useQuizStore = defineStore(
 
     const remove = async (id: number) => {
       state.value.loading = true;
-      state.value.error = null;
-      const { error: err } = await useFetch(`/api/quizzes/${id}`, {
-        baseURL: "http://localhost:8000",
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${auth.state.token}` },
-      });
-      if (err.value) state.value.error = err.value.data?.message;
-      state.value.loading = false;
+      state.value.apiError = null;
+      try {
+        await useFetch(`/api/quizzes/${id}`, {
+          baseURL: "http://localhost:8000",
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${auth.state.token}` },
+        });
+      } catch (e: any) {
+        state.value.apiError = e.response?.data as ApiError;
+      } finally {
+        state.value.loading = false;
+      }
     };
 
     const submit = async (id: number, responses: any) => {
       state.value.loading = true;
-      state.value.error = null;
-      const { data, error: err } = await useFetch(`/api/quizzes/${id}/submit`, {
-        baseURL: "http://localhost:8000",
-        method: "POST",
-        body: { responses },
-        headers: { Authorization: `Bearer ${auth.state.token}` },
-      });
-      if (err.value) state.value.error = err.value.data?.message;
-      state.value.loading = false;
-      return data.value;
+      state.value.apiError = null;
+      try {
+        const { data } = await useFetch(`/api/quizzes/${id}/submit`, {
+          baseURL: "http://localhost:8000",
+          method: "POST",
+          body: { responses },
+          headers: { Authorization: `Bearer ${auth.state.token}` },
+        });
+        return data.value;
+      } catch (e: any) {
+        state.value.apiError = e.response?.data as ApiError;
+        return null;
+      } finally {
+        state.value.loading = false;
+      }
     };
 
     return {
@@ -214,6 +268,7 @@ export const useQuizStore = defineStore(
       resetQuizForm,
       remove,
       submit,
+      setQuizFormFromQuiz,
     };
   },
   {
