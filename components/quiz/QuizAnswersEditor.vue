@@ -12,7 +12,10 @@
         :key="question.id"
       >
         <div class="flex items-center gap-2">
-          <Label> {{ question.content }} ?</Label>
+          <Label>
+            {{ question.content
+            }}<span v-if="question.content && !question.content.trim().endsWith('?')">?</span>
+          </Label>
           <Button
             class="bg-pink-100 text-pink-600 font-bold px-3 py-1 rounded-lg hover:bg-pink-200 transition text-sm shadow-sm"
             type="button"
