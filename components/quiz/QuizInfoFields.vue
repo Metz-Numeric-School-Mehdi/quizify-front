@@ -86,8 +86,8 @@ onMounted(() => {
     if (useQuiz.state.quizForm) {
         formLocal.title = useQuiz.state.quizForm.title || ''
         formLocal.description = useQuiz.state.quizForm.description || ''
-        formLocal.level_id = useQuiz.state.quizForm.level_id || 0
-        formLocal.category_id = useQuiz.state.quizForm.category_id || 0
+        formLocal.level_id = useQuiz.state.quiz?.level.id || 0
+        formLocal.category_id = useQuiz.state.quiz?.category.id || 0
         formLocal.is_public = useQuiz.state.quizForm.is_public || '0'
         formLocal.status = useQuiz.state.quizForm.status || 'draft'
     }
