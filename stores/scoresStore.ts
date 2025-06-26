@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { authStore } from "./authStore";
 import type { Score } from "~/types/score/Score";
+const config = useRuntimeConfig();
 
 export const useScoresStore = defineStore("scores", () => {
   const auth = authStore();
@@ -21,7 +22,7 @@ export const useScoresStore = defineStore("scores", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch<Score[]>("/api/scores", {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "GET",
     });
     if (err.value) state.value.error = err.value.data?.message;
@@ -33,7 +34,7 @@ export const useScoresStore = defineStore("scores", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch<Score>(`/api/scores/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "GET",
     });
     if (err.value) state.value.error = err.value.data?.message;
@@ -45,7 +46,7 @@ export const useScoresStore = defineStore("scores", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch("/api/scores", {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "POST",
       body: payload,
     });
@@ -58,7 +59,7 @@ export const useScoresStore = defineStore("scores", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch(`/api/scores/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "PUT",
       body: payload,
     });
@@ -71,7 +72,7 @@ export const useScoresStore = defineStore("scores", () => {
     state.value.loading = true;
     state.value.error = null;
     const { error: err } = await useFetch(`/api/scores/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "DELETE",
     });
     if (err.value) state.value.error = err.value.data?.message;

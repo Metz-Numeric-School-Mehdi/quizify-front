@@ -5,6 +5,7 @@ import type { SignUp } from "~/types/auth/Auth";
 import type User from "~/types/user/User";
 import { localStorageIsAvailable } from "~/utils/client";
 import fetchAPI from "~/utils/request/fetch";
+const config = useRuntimeConfig();
 
 export const authStore = defineStore("auth", () => {
   const state = ref<{
@@ -60,7 +61,7 @@ export const authStore = defineStore("auth", () => {
       const { data, error } = await useFetch<{ user: User; token: string }>(
         "/api/auth/signup",
         {
-          baseURL: "http://localhost:8000",
+          baseURL: config.public.apiBase,
           method: "POST",
           body: formData,
         }
@@ -108,7 +109,7 @@ export const authStore = defineStore("auth", () => {
 
   const signOut = async () => {
     const { data } = await useFetch("/auth/signout", {
-      baseURL: "http://localhost:8000/api",
+      baseURL: `${config.public.apiBase}/api`,
       method: "GET",
       headers: {
         Authorization: `Bearer ${state.value.token}`,

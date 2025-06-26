@@ -1,6 +1,7 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
 import type { QuestionResponse } from "~/types/questionResponse/QuestionResponse"
+const config = useRuntimeConfig();
 
 export const useQuestionResponseStore = defineStore("questionResponse", () => {
   const state = ref<{
@@ -19,7 +20,7 @@ export const useQuestionResponseStore = defineStore("questionResponse", () => {
     state.value.loading = true
     state.value.error = null
     const { data, error: err } = await useFetch<QuestionResponse[]>("/api/question-responses", {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "GET"
     })
     if (err.value) state.value.error = err.value.data?.message
@@ -31,7 +32,7 @@ export const useQuestionResponseStore = defineStore("questionResponse", () => {
     state.value.loading = true
     state.value.error = null
     const { data, error: err } = await useFetch<QuestionResponse>(`/api/question-responses/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "GET"
     })
     if (err.value) state.value.error = err.value.data?.message
@@ -43,7 +44,7 @@ export const useQuestionResponseStore = defineStore("questionResponse", () => {
     state.value.loading = true
     state.value.error = null
     const { data, error: err } = await useFetch("/api/question-responses", {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "POST",
       body: payload
     })
@@ -56,7 +57,7 @@ export const useQuestionResponseStore = defineStore("questionResponse", () => {
     state.value.loading = true
     state.value.error = null
     const { data, error: err } = await useFetch(`/api/question-responses/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "PUT",
       body: payload
     })
@@ -69,7 +70,7 @@ export const useQuestionResponseStore = defineStore("questionResponse", () => {
     state.value.loading = true
     state.value.error = null
     const { error: err } = await useFetch(`/api/question-responses/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "DELETE"
     })
     if (err.value) state.value.error = err.value.data?.message

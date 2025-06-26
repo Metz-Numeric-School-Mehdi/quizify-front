@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import type { Organization } from "~/types/organization/Organization";
+const config = useRuntimeConfig();
 
 export const useOrganizationsStore = defineStore("organizations", () => {
   const auth = authStore();
@@ -22,7 +23,7 @@ export const useOrganizationsStore = defineStore("organizations", () => {
     const { data, error: err } = await useFetch<Organization[]>(
       "/api/organizations",
       {
-        baseURL: "http://localhost:8000",
+        baseURL: config.public.apiBase,
         method: "GET",
       }
     );
@@ -37,7 +38,7 @@ export const useOrganizationsStore = defineStore("organizations", () => {
     const { data, error: err } = await useFetch<Organization>(
       `/api/organizations/${id}`,
       {
-        baseURL: "http://localhost:8000",
+        baseURL: config.public.apiBase,
         method: "GET",
       }
     );
@@ -50,7 +51,7 @@ export const useOrganizationsStore = defineStore("organizations", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch("/api/organizations", {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "POST",
       body: payload,
     });
@@ -63,7 +64,7 @@ export const useOrganizationsStore = defineStore("organizations", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch(`/api/organizations/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "PUT",
       body: payload,
     });
@@ -76,7 +77,7 @@ export const useOrganizationsStore = defineStore("organizations", () => {
     state.value.loading = true;
     state.value.error = null;
     const { error: err } = await useFetch(`/api/organizations/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "DELETE",
     });
     if (err.value) state.value.error = err.value.data?.message;

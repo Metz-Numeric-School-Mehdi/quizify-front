@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { authStore } from "./authStore";
 import type User from "~/types/user/User";
+const config = useRuntimeConfig();
 
 export const useUserStore = defineStore("user", () => {
   const auth = authStore();
@@ -21,7 +22,7 @@ export const useUserStore = defineStore("user", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch<User[]>("/api/users", {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "GET",
       headers: { Authorization: `Bearer ${auth.state.token}` },
     });
@@ -34,7 +35,7 @@ export const useUserStore = defineStore("user", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch<User>(`/api/users/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "GET",
       headers: { Authorization: `Bearer ${auth.state.token}` },
     });
@@ -47,7 +48,7 @@ export const useUserStore = defineStore("user", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch(`/api/users/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "PUT",
       body: payload,
       headers: { Authorization: `Bearer ${auth.state.token}` },
@@ -61,7 +62,7 @@ export const useUserStore = defineStore("user", () => {
     state.value.loading = true;
     state.value.error = null;
     const { error: err } = await useFetch(`/api/users/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "DELETE",
       headers: { Authorization: `Bearer ${auth.state.token}` },
     });

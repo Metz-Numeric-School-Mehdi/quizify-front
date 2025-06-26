@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { authStore } from "./authStore";
 import type { CreateQuestion, Question } from "~/types/question/Question";
+const config = useRuntimeConfig();
 
 export const useQuestionStore = defineStore("question", () => {
   const auth = authStore();
@@ -23,7 +24,7 @@ export const useQuestionStore = defineStore("question", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch<Question[]>(`/api/questions`, {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "GET",
     });
     if (err.value) state.value.error = err.value.data?.message;
@@ -37,7 +38,7 @@ export const useQuestionStore = defineStore("question", () => {
     const { data, error: err } = await useFetch<Question>(
       `/api/questions/${id}`,
       {
-        baseURL: "http://localhost:8000",
+        baseURL: config.public.apiBase,
         method: "GET",
       }
     );
@@ -50,7 +51,7 @@ export const useQuestionStore = defineStore("question", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch("/api/questions", {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "POST",
       body: payload,
       headers: { Authorization: `Bearer ${auth.state.token}` },
@@ -65,7 +66,7 @@ export const useQuestionStore = defineStore("question", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch(`/api/questions/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "PUT",
       body: payload,
       headers: { Authorization: `Bearer ${auth.state.token}` },
@@ -79,7 +80,7 @@ export const useQuestionStore = defineStore("question", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error } = await useFetch(`/api/questions/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: config.public.apiBase,
       method: "DELETE",
       headers: { Authorization: `Bearer ${auth.state.token}` },
     });

@@ -6,6 +6,7 @@ import type { CreateQuizModal } from "~/types/quiz/CreateQuizModal";
 import type { Level } from "~/types/quiz/Level";
 import type { Quiz, QuizForm } from "~/types/quiz/Quiz";
 import { authStore } from "./authStore";
+const config = useRuntimeConfig();
 
 export const useQuizStore = defineStore(
   "quiz",
@@ -77,7 +78,7 @@ export const useQuizStore = defineStore(
       state.value.apiError = null;
       try {
         const { data } = await useFetch<Quiz[]>("/api/quizzes", {
-          baseURL: "http://localhost:8000",
+          baseURL: config.public.apiBase,
           method: "GET",
         });
         state.value.quizzes = data.value;
@@ -105,7 +106,7 @@ export const useQuizStore = defineStore(
       state.value.loading = true;
       state.value.apiError = null;
       try {
-        const response = await fetch(`http://localhost:8000/api/quizzes/${id}`);
+        const response = await fetch(`${config.public.apiBase}/api/quizzes/${id}`);
         if (!response.ok) {
           const errorData = await response.json();
           throw { response: { data: errorData } };
@@ -126,7 +127,7 @@ export const useQuizStore = defineStore(
       state.value.apiError = null;
       try {
         const { data } = await useFetch<Level[]>("/api/quiz-levels", {
-          baseURL: "http://localhost:8000",
+          baseURL: config.public.apiBase,
           method: "GET",
         });
         state.value.levels = data.value;
@@ -144,7 +145,7 @@ export const useQuizStore = defineStore(
         const { data } = await useFetch<Category[]>(
           "/api/categories",
           {
-            baseURL: "http://localhost:8000",
+            baseURL: config.public.apiBase,
             method: "GET",
           }
         );
@@ -174,7 +175,7 @@ export const useQuizStore = defineStore(
       state.value.apiError = null;
       try {
         const { data } = await useFetch<Quiz>("/api/quizzes", {
-          baseURL: "http://localhost:8000",
+          baseURL: config.public.apiBase,
           method: "POST",
           body: formData,
           headers: {
@@ -193,7 +194,7 @@ export const useQuizStore = defineStore(
       state.value.apiError = null;
       try {
         const { data, error } = await useFetch(`/api/quizzes/${id}`, {
-          baseURL: "http://localhost:8000",
+          baseURL: config.public.apiBase,
           method: "PUT",
           body: payload,
           headers: { Authorization: `Bearer ${auth.state.token}` },
@@ -227,7 +228,7 @@ export const useQuizStore = defineStore(
       state.value.apiError = null;
       try {
         await useFetch(`/api/quizzes/${id}`, {
-          baseURL: "http://localhost:8000",
+          baseURL: config.public.apiBase,
           method: "DELETE",
           headers: { Authorization: `Bearer ${auth.state.token}` },
         });
@@ -243,7 +244,7 @@ export const useQuizStore = defineStore(
       state.value.apiError = null;
       try {
         const { data } = await useFetch(`/api/quizzes/${id}/submit`, {
-          baseURL: "http://localhost:8000",
+          baseURL: config.public.apiBase,
           method: "POST",
           body: { responses },
           headers: { Authorization: `Bearer ${auth.state.token}` },
