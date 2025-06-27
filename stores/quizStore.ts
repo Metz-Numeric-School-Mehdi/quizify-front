@@ -6,11 +6,10 @@ import type { CreateQuizModal } from "~/types/quiz/CreateQuizModal";
 import type { Level } from "~/types/quiz/Level";
 import type { Quiz, QuizForm } from "~/types/quiz/Quiz";
 import { authStore } from "./authStore";
-const config = useRuntimeConfig();
-
 export const useQuizStore = defineStore(
   "quiz",
   () => {
+    const config = useRuntimeConfig();
     const auth = authStore();
     const state = ref<{
       quizzes: Quiz[] | null;
@@ -78,7 +77,7 @@ export const useQuizStore = defineStore(
       state.value.apiError = null;
       try {
         const { data } = await useFetch<Quiz[]>("/api/quizzes", {
-          baseURL: config.public.apiBase,
+          baseURL: useRuntimeConfig().public.apiBase,
           method: "GET",
         });
         state.value.quizzes = data.value;
@@ -106,7 +105,7 @@ export const useQuizStore = defineStore(
       state.value.loading = true;
       state.value.apiError = null;
       try {
-        const response = await fetch(`${config.public.apiBase}/api/quizzes/${id}`);
+        const response = await fetch(`${useRuntimeConfig().public.apiBase}/api/quizzes/${id}`);
         if (!response.ok) {
           const errorData = await response.json();
           throw { response: { data: errorData } };
@@ -127,7 +126,7 @@ export const useQuizStore = defineStore(
       state.value.apiError = null;
       try {
         const { data } = await useFetch<Level[]>("/api/quiz-levels", {
-          baseURL: config.public.apiBase,
+          baseURL: useRuntimeConfig().public.apiBase,
           method: "GET",
         });
         state.value.levels = data.value;
@@ -145,7 +144,7 @@ export const useQuizStore = defineStore(
         const { data } = await useFetch<Category[]>(
           "/api/categories",
           {
-            baseURL: config.public.apiBase,
+            baseURL: useRuntimeConfig().public.apiBase,
             method: "GET",
           }
         );
@@ -175,7 +174,7 @@ export const useQuizStore = defineStore(
       state.value.apiError = null;
       try {
         const { data } = await useFetch<Quiz>("/api/quizzes", {
-          baseURL: config.public.apiBase,
+          baseURL: useRuntimeConfig().public.apiBase,
           method: "POST",
           body: formData,
           headers: {
@@ -194,7 +193,7 @@ export const useQuizStore = defineStore(
       state.value.apiError = null;
       try {
         const { data, error } = await useFetch(`/api/quizzes/${id}`, {
-          baseURL: config.public.apiBase,
+          baseURL: useRuntimeConfig().public.apiBase,
           method: "PUT",
           body: payload,
           headers: { Authorization: `Bearer ${auth.state.token}` },
@@ -228,7 +227,7 @@ export const useQuizStore = defineStore(
       state.value.apiError = null;
       try {
         await useFetch(`/api/quizzes/${id}`, {
-          baseURL: config.public.apiBase,
+          baseURL: useRuntimeConfig().public.apiBase,
           method: "DELETE",
           headers: { Authorization: `Bearer ${auth.state.token}` },
         });
@@ -244,7 +243,7 @@ export const useQuizStore = defineStore(
       state.value.apiError = null;
       try {
         const { data } = await useFetch(`/api/quizzes/${id}/submit`, {
-          baseURL: config.public.apiBase,
+          baseURL: useRuntimeConfig().public.apiBase,
           method: "POST",
           body: { responses },
           headers: { Authorization: `Bearer ${auth.state.token}` },

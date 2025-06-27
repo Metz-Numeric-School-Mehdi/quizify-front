@@ -5,9 +5,9 @@ import type { SignUp } from "~/types/auth/Auth";
 import type User from "~/types/user/User";
 import { localStorageIsAvailable } from "~/utils/client";
 import fetchAPI from "~/utils/request/fetch";
-const config = useRuntimeConfig();
 
 export const authStore = defineStore("auth", () => {
+  const config = useRuntimeConfig();
   const state = ref<{
     user: User | null;
     token: string;
@@ -61,29 +61,29 @@ export const authStore = defineStore("auth", () => {
       const { data, error } = await useFetch<{ user: User; token: string }>(
         "/api/auth/signup",
         {
-          baseURL: config.public.apiBase,
+          baseURL: useRuntimeConfig().public.apiBase,
           method: "POST",
           body: formData,
         }
-      );
-      if (error.value) {
-        state.value.responseErrors = error.value.data?.errors || "Erreur lors de l'inscription";
-        state.value.isAuthenticated = false;
-        return;
-      }
-      if (data.value && data.value.user && data.value.token) {
-        setUser(data.value.user, data.value.token);
-        state.value.isAuthenticated = true;
-        navigateTo("/");
-      } else {
+        );
+        if (error.value) {
+          state.value.responseErrors = error.value.data?.errors || "Erreur lors de l'inscription";
+          state.value.isAuthenticated = false;
+          return;
+        }
+        if (data.value && data.value.user && data.value.token) {
+          setUser(data.value.user, data.value.token);
+          state.value.isAuthenticated = true;
+          navigateTo("/");
+        } else {
+          state.value.responseErrors = "Erreur lors de l'inscription";
+          state.value.isAuthenticated = false;
+        }
+      } catch (e) {
         state.value.responseErrors = "Erreur lors de l'inscription";
         state.value.isAuthenticated = false;
       }
-    } catch (e) {
-      state.value.responseErrors = "Erreur lors de l'inscription";
-      state.value.isAuthenticated = false;
-    }
-  };
+    };
 
   const signIn = async (email: string, password: string) => {
     const requestPayload = {
@@ -109,7 +109,7 @@ export const authStore = defineStore("auth", () => {
 
   const signOut = async () => {
     const { data } = await useFetch("/auth/signout", {
-      baseURL: `${config.public.apiBase}/api`,
+      baseURL: `${useRuntimeConfig().public.apiBase}/api`,
       method: "GET",
       headers: {
         Authorization: `Bearer ${state.value.token}`,

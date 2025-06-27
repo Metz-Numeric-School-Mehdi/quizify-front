@@ -1,8 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import type { Organization } from "~/types/organization/Organization";
-const config = useRuntimeConfig();
-
 export const useOrganizationsStore = defineStore("organizations", () => {
   const auth = authStore();
   const state = ref<{
@@ -23,7 +21,7 @@ export const useOrganizationsStore = defineStore("organizations", () => {
     const { data, error: err } = await useFetch<Organization[]>(
       "/api/organizations",
       {
-        baseURL: config.public.apiBase,
+        baseURL: useRuntimeConfig().public.apiBase,
         method: "GET",
       }
     );
@@ -38,7 +36,7 @@ export const useOrganizationsStore = defineStore("organizations", () => {
     const { data, error: err } = await useFetch<Organization>(
       `/api/organizations/${id}`,
       {
-        baseURL: config.public.apiBase,
+        baseURL: useRuntimeConfig().public.apiBase,
         method: "GET",
       }
     );
@@ -51,7 +49,7 @@ export const useOrganizationsStore = defineStore("organizations", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch("/api/organizations", {
-      baseURL: config.public.apiBase,
+      baseURL: useRuntimeConfig().public.apiBase,
       method: "POST",
       body: payload,
     });
@@ -64,7 +62,7 @@ export const useOrganizationsStore = defineStore("organizations", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch(`/api/organizations/${id}`, {
-      baseURL: config.public.apiBase,
+      baseURL: useRuntimeConfig().public.apiBase,
       method: "PUT",
       body: payload,
     });
@@ -77,7 +75,7 @@ export const useOrganizationsStore = defineStore("organizations", () => {
     state.value.loading = true;
     state.value.error = null;
     const { error: err } = await useFetch(`/api/organizations/${id}`, {
-      baseURL: config.public.apiBase,
+      baseURL: useRuntimeConfig().public.apiBase,
       method: "DELETE",
     });
     if (err.value) state.value.error = err.value.data?.message;
