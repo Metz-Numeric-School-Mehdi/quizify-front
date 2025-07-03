@@ -49,6 +49,7 @@
                     :quizId="quiz.id"
                     :title="quiz.title"
                     :duration="quiz.duration"
+                    :description="quiz.description"
                     class="min-w-[260px] max-w-xs flex-shrink-0 bg-card text-card-foreground rounded-xl"
                   />
                 </div>
