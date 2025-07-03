@@ -32,25 +32,32 @@
     </div>
     <main v-else class="flex-1 flex flex-col gap-10 p-2 sm:p-6">
       <template v-for="(quizzes, category) in quizzesByCategory" :key="category">
-        <div>
-          <h2 class="text-lg sm:text-xl font-bold text-pink-600 mb-2 ml-2">{{ category }}</h2>
-          <div class="relative">
-            <div class="flex gap-4 sm:gap-6 overflow-x-auto pb-4 hide-scrollbar pr-8 justify-start">
-              <QuizCard
+        <section class="mb-12">
+          <h2 class="text-3xl sm:text-[1.7rem] font-bold text-pink-600 mb-4 ml-2 tracking-wide">
+            {{ category }}
+          </h2>
+          <Carousel class="relative w-full" :opts="{ align: 'start' }">
+            <CarouselContent class="-ml-1 flex gap-1">
+              <CarouselItem
                 v-for="quiz in quizzes"
                 :key="quiz.id"
-                :img="quiz.thumbnail_url || ''"
-                :quizId="quiz.id"
-                :title="quiz.title"
-                :duration="quiz.duration"
-                class="min-w-[260px] max-w-xs flex-shrink-0"
-              />
-            </div>
-            <div
-              class="pointer-events-none absolute top-0 right-0 h-full w-16 bg-gradient-to-l from-white/90 to-transparent"
-            />
-          </div>
-        </div>
+                class="pl-1 md:basis-1/2 lg:basis-1/3"
+              >
+                <div class="p-5">
+                  <QuizCard
+                    :img="quiz.thumbnail_url || ''"
+                    :quizId="quiz.id"
+                    :title="quiz.title"
+                    :duration="quiz.duration"
+                    class="min-w-[260px] max-w-xs flex-shrink-0 bg-card text-card-foreground rounded-xl"
+                  />
+                </div>
+              </CarouselItem>
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        </section>
       </template>
     </main>
   </div>
@@ -62,6 +69,13 @@ import { useQuizStore } from "~/stores/quizStore";
 import QuizCard from "../QuizCard.vue";
 import CreateQuizModal from "../modals/quiz/CreateQuizModal.vue";
 import DefaultButton from "../interaction/buttons/DefaultButton.vue";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const useQuiz = useQuizStore();
 
