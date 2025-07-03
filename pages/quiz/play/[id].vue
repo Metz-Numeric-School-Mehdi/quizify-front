@@ -33,20 +33,20 @@
             </li>
           </ul>
           <div class="flex justify-between mt-6">
-            <button
+            <DefaultButton
               v-if="activeQuestion > 1"
-              class="bg-gray-200 px-4 py-2 rounded"
+              :ctaButton="false"
               @click="previousQuestion()"
             >
               Précédent
-            </button>
-            <button
+            </DefaultButton>
+            <DefaultButton
               v-if="activeQuestion < useQuiz.state.quiz.questions?.length"
-              class="bg-pink-500 text-white px-4 py-2 rounded"
+              :ctaButton="true"
               @click="nextQuestion()"
             >
               Suivant
-            </button>
+            </DefaultButton>
           </div>
         </div>
       </div>
@@ -56,6 +56,8 @@
 </template>
 
 <script setup lang="ts">
+import DefaultButton from '~/components/interaction/buttons/DefaultButton.vue';
+
 const useQuiz = useQuizStore();
 const useQuestion = useQuestionStore();
 const useAnswer = useAnswerStore();

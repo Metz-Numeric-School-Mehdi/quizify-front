@@ -28,18 +28,16 @@
       </ul>
       <div class="hidden sm:flex ml-2 items-center gap-2">
         <template v-if="!useAuth.state.token">
-          <NuxtLink to="/login"
-            class="rounded-full px-4 py-2 bg-gradient-to-r from-primary-linear to-secondary-linear text-white font-semibold flex items-center gap-2">
+          <DefaultButton :ctaButton="true" @click="$router.push('/login')">
             <Icon name="LogIn" :stroke-width="2" />
             Se connecter
-          </NuxtLink>
+          </DefaultButton>
         </template>
         <template v-else>
-          <Button @click="useAuth.signOut()"
-            class="rounded-full px-4 py-2 bg-gradient-to-r from-pink-400 to-blue-400 text-white font-semibold flex items-center gap-2">
+          <DefaultButton :ctaButton="false" @click="useAuth.signOut()">
             <Icon name="LogOut" :stroke-width="2" />
             Se déconnecter
-          </Button>
+          </DefaultButton>
         </template>
       </div>
       <transition name="fade">
@@ -66,18 +64,16 @@
             </ul>
             <div class="flex flex-col gap-2 mt-6">
               <template v-if="!useAuth.state.token">
-                <NuxtLink to="/login"
-                  class="rounded-full px-4 py-2 bg-gradient-to-r from-primary-linear to-secondary-linear text-white font-semibold flex items-center gap-2">
+                <DefaultButton :ctaButton="true" @click="$router.push('/login')">
                   <Icon name="LogIn" :stroke-width="2" />
                   Se connecter
-                </NuxtLink>
+                </DefaultButton>
               </template>
               <template v-else>
-                <Button @click="useAuth.signOut()"
-                  class="rounded-full px-4 py-2 bg-gradient-to-r from-pink-400 to-blue-400 text-white font-semibold flex items-center gap-2">
+                <DefaultButton :ctaButton="true" @click="useAuth.signOut()">
                   <Icon name="LogOut" :stroke-width="2" />
                   Se déconnecter
-                </Button>
+                </DefaultButton>
               </template>
             </div>
           </div>
@@ -106,6 +102,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import DefaultButton from '~/components/interaction/buttons/DefaultButton.vue';
 import { sidebarItems } from "~/constants/Navigation";
 import { useQuizStore } from '~/stores/quizStore'
 

@@ -15,16 +15,13 @@
       ></div>
     </div>
     <div class="flex justify-end mb-4 z-10">
-      <button
-        @click="useQuiz.state.openModal = true"
-        class="flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 text-white font-bold rounded-full shadow-lg hover:scale-105 hover:shadow-2xl transition-all duration-300 animate-bounce-slow text-base sm:text-lg"
-      >
+      <DefaultButton :ctaButton="true" @click="useQuiz.state.openModal = true">
         <span class="text-xl sm:text-2xl">
           <Icon name="Plus" :stroke-width="2.5" :size="20" />
         </span>
         <span class="hidden sm:inline">Créer un quiz</span>
         <span class="inline sm:hidden">Créer</span>
-      </button>
+      </DefaultButton>
     </div>
     <CreateQuizModal @close="useQuiz.state.openModal = false" />
     <div
@@ -64,6 +61,7 @@ import { computed, onMounted, nextTick } from "vue";
 import { useQuizStore } from "~/stores/quizStore";
 import QuizCard from "../QuizCard.vue";
 import CreateQuizModal from "../modals/quiz/CreateQuizModal.vue";
+import DefaultButton from "../interaction/buttons/DefaultButton.vue";
 
 const useQuiz = useQuizStore();
 

@@ -21,9 +21,9 @@
           <FormMessage />
         </FormItem>
       </FormField>
-      <Button type="submit" class="w-full"> Se connecter </Button>
+      <DefaultButton :ctaButton="true" type="submit" class="w-full justify-center"> Se connecter </DefaultButton>
     </form>
-    <Button variant="outline" class="w-full">
+    <Button variant="outline" class="w-full rounded-full">
       Se connecter avec Google
       <Google />
     </Button>
@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { Button } from "@/components/ui/button";
+import DefaultButton from "@/components/interaction/buttons/DefaultButton.vue";
 import { Input } from "@/components/ui/input";
 import { vAutoAnimate } from "@formkit/auto-animate/vue";
 import { toast } from "@/components/ui/toast";
@@ -41,7 +41,7 @@ import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
 import { signIn } from "~/constants/Auth";
-import { authStore } from '~/stores/authStore'
+import { authStore } from "~/stores/authStore";
 
 const store = authStore();
 

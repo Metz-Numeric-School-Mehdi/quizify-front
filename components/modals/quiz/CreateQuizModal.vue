@@ -51,8 +51,9 @@
         <NumberFieldTimer label="Durée" v-model="form.duration" />
         <DragAndDropImage v-model="form.thumbnail" accept="image/*" :preview="true"
           label="Glissez-déposez une image ici ou cliquez pour sélectionner une miniature (optionnel)" />
-        <button type="submit"
-          class="bg-pink-500 text-white font-bold py-2 rounded hover:bg-pink-600 transition">Créer</button>
+        <DefaultButton :ctaButton="true" class="flex justify-center" type="submit">
+          Créer
+        </DefaultButton>
       </form>
       <EditQuizModal v-if="useQuiz.state.quiz" />
       <div v-if="error" class="text-red-500 text-center">{{ error }}</div>
@@ -133,6 +134,7 @@ const submit = async () => {
     console.error('Error creating quiz:', e)
   }
 }
+import DefaultButton from "@/components/interaction/buttons/DefaultButton.vue";
 </script>
 
 <style scoped>
