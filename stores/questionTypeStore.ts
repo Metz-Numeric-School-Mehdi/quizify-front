@@ -2,8 +2,8 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { authStore } from "./authStore";
 import type { QuestionType } from "~/types/questionType/QuestionType";
-
 export const useQuestionTypeStore = defineStore("questionType", () => {
+  const config = useRuntimeConfig();
   const auth = authStore();
   const state = ref<{
     questionTypes: QuestionType[] | null;
@@ -23,7 +23,7 @@ export const useQuestionTypeStore = defineStore("questionType", () => {
     const { data, error: err } = await useFetch<QuestionType[]>(
       "/api/question-types",
       {
-        baseURL: "http://localhost:8000",
+        baseURL: useRuntimeConfig().public.apiBase,
         method: "GET",
       }
     );
@@ -38,7 +38,7 @@ export const useQuestionTypeStore = defineStore("questionType", () => {
     const { data, error: err } = await useFetch<QuestionType>(
       `/api/question-types/${id}`,
       {
-        baseURL: "http://localhost:8000",
+        baseURL: useRuntimeConfig().public.apiBase,
         method: "GET",
       }
     );
@@ -51,7 +51,7 @@ export const useQuestionTypeStore = defineStore("questionType", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch("/api/question-types", {
-      baseURL: "http://localhost:8000",
+      baseURL: useRuntimeConfig().public.apiBase,
       method: "POST",
       body: payload,
     });
@@ -64,7 +64,7 @@ export const useQuestionTypeStore = defineStore("questionType", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch(`/api/question-types/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: useRuntimeConfig().public.apiBase,
       method: "PUT",
       body: payload,
     });
@@ -77,7 +77,7 @@ export const useQuestionTypeStore = defineStore("questionType", () => {
     state.value.loading = true;
     state.value.error = null;
     const { error: err } = await useFetch(`/api/question-types/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: useRuntimeConfig().public.apiBase,
       method: "DELETE",
     });
     if (err.value) state.value.error = err.value.data?.message;

@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { authStore } from "./authStore";
 import type { Team } from "~/types/team/Team";
-
 export const useTeamsStore = defineStore("teams", () => {
   const auth = authStore();
   const state = ref<{
@@ -21,7 +20,7 @@ export const useTeamsStore = defineStore("teams", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch<Team[]>("/api/teams", {
-      baseURL: "http://localhost:8000",
+      baseURL: useRuntimeConfig().public.apiBase,
       method: "GET",
     });
     if (err.value) state.value.error = err.value.data?.message;
@@ -33,7 +32,7 @@ export const useTeamsStore = defineStore("teams", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch<Team>(`/api/teams/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: useRuntimeConfig().public.apiBase,
       method: "GET",
     });
     if (err.value) state.value.error = err.value.data?.message;
@@ -45,7 +44,7 @@ export const useTeamsStore = defineStore("teams", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch("/api/teams", {
-      baseURL: "http://localhost:8000",
+      baseURL: useRuntimeConfig().public.apiBase,
       method: "POST",
       body: payload,
     });
@@ -58,7 +57,7 @@ export const useTeamsStore = defineStore("teams", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch(`/api/teams/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: useRuntimeConfig().public.apiBase,
       method: "PUT",
       body: payload,
     });
@@ -71,7 +70,7 @@ export const useTeamsStore = defineStore("teams", () => {
     state.value.loading = true;
     state.value.error = null;
     const { error: err } = await useFetch(`/api/teams/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: useRuntimeConfig().public.apiBase,
       method: "DELETE",
     });
     if (err.value) state.value.error = err.value.data?.message;

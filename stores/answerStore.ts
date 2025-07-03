@@ -23,7 +23,7 @@ export const useAnswerStore = defineStore("answer", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch<Answer[]>(`/api/answers`, {
-      baseURL: "http://localhost:8000",
+      baseURL: useRuntimeConfig().public.apiBase,
       method: "GET",
     });
     if (err.value) state.value.error = err.value.data?.message;
@@ -37,7 +37,7 @@ export const useAnswerStore = defineStore("answer", () => {
     const { data, error: err } = await useFetch<Answer>(
       `/api/questions/${questionId}/answers/${id}`,
       {
-        baseURL: "http://localhost:8000",
+        baseURL: useRuntimeConfig().public.apiBase,
         method: "GET",
       }
     );
@@ -49,7 +49,7 @@ export const useAnswerStore = defineStore("answer", () => {
   const create = async (payload: CreateAnswer) => {
     state.value.error = null;
     const { data, error: err } = await useFetch("/api/answers", {
-      baseURL: "http://localhost:8000",
+      baseURL: useRuntimeConfig().public.apiBase,
       method: "POST",
       body: payload,
       headers: { Authorization: `Bearer ${auth.state.token}` },
@@ -65,7 +65,7 @@ export const useAnswerStore = defineStore("answer", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch(`/api/answers/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: useRuntimeConfig().public.apiBase,
       method: "PUT",
       body: payload,
       headers: { Authorization: `Bearer ${auth.state.token}` },
@@ -81,7 +81,7 @@ export const useAnswerStore = defineStore("answer", () => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error } = await useFetch(`/api/answers/${id}`, {
-      baseURL: "http://localhost:8000",
+      baseURL: useRuntimeConfig().public.apiBase,
       method: "DELETE",
       headers: { Authorization: `Bearer ${auth.state.token}` },
     });
