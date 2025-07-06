@@ -1,6 +1,6 @@
 <template>
   <header
-    class="sticky top-0 z-30 w-full bg-gradient-to-r from-pink-300 via-purple-300 to-blue-300 shadow-2xl flex items-center px-4 py-2 gap-4"
+    class="sticky top-0 z-30 w-full bg-gradient-to-r from-pink-300 via-purple-300 to-blue-300 shadow-2lg flex items-center px-4 py-2 gap-4"
   >
     <img
       src="https://img.freepik.com/vecteurs-premium/logo-quiz-symboles-bulle-discours-concept-spectacle-questionnaire-chante-bouton-quiz-concours-questions-icone-neon-illustration-vectorielle-stock_100456-3471.jpg"
@@ -12,7 +12,7 @@
       <button
         type="button"
         @click="showMobileMenu = !showMobileMenu"
-        class="sm:hidden absolute right-0 p-2 rounded hover:bg-pink-200 focus:outline-none"
+        class="lg:hidden absolute right-0 p-2 rounded hover:bg-pink-200 focus:outline-none"
       >
         <svg
           class="w-7 h-7 text-purple-700"
@@ -30,13 +30,13 @@
             :to="link.path"
             :class="[
               'px-4 py-2 rounded font-semibold rounded-full flex items-center gap-2 transition',
-              $route.path === link.path
+              route.path === link.path
                 ? 'bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 text-white shadow scale-105'
                 : 'text-white hover:text-text-color hover:bg-purple-100 hover:scale-105 hover:shadow-md',
             ]"
           >
             <Icon
-              :class="[$route.path === link.path ? 'text-white' : 'text-primary-linear']"
+              :class="[route.path === link.path ? 'text-white' : 'text-primary-linear']"
               :stroke-width="2"
               :name="link.icon"
             />
@@ -44,9 +44,9 @@
           </NuxtLink>
         </li>
       </ul>
-      <div class="hidden sm:flex ml-2 items-center gap-2">
+      <div class="hidden lg:flex ml-2 items-center gap-2">
         <template v-if="!useAuth.state.token">
-          <DefaultButton :ctaButton="true" @click="$router.push('/login')">
+          <DefaultButton :ctaButton="true" @click="router.push('/login')">
             <Icon name="LogIn" :stroke-width="2" />
             Se connecter
           </DefaultButton>
@@ -59,8 +59,8 @@
         </template>
       </div>
       <transition name="fade">
-        <div v-if="showMobileMenu" class="fixed inset-0 z-40 bg-black/40 flex sm:hidden">
-          <div class="bg-white w-64 h-full shadow-xl p-6 flex flex-col gap-6 animate-slide-in-left">
+        <div v-if="showMobileMenu" class="fixed inset-0 z-40 bg-black/40 flex lg:hidden">
+          <div class="bg-white w-64 h-full shadow-lg p-6 flex flex-col gap-6 animate-slide-in-left">
             <button
               type="button"
               @click="showMobileMenu = false"
@@ -83,13 +83,13 @@
                   :to="link.path"
                   :class="[
                     'px-4 py-2 rounded font-semibold flex items-center gap-2 transition',
-                    $route.path === link.path
+                    route.path === link.path
                       ? 'bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 text-white shadow scale-105'
                       : 'text-text-color hover:bg-purple-100 hover:scale-105 hover:shadow-md',
                   ]"
                 >
                   <Icon
-                    :class="[$route.path === link.path ? 'text-white' : 'text-primary-linear']"
+                    :class="[route.path === link.path ? 'text-white' : 'text-primary-linear']"
                     :stroke-width="2"
                     :name="link.icon"
                   />
@@ -99,7 +99,7 @@
             </ul>
             <div class="flex flex-col gap-2 mt-6">
               <template v-if="!useAuth.state.token">
-                <DefaultButton :ctaButton="true" @click="$router.push('/login')">
+                <DefaultButton :ctaButton="true" @click="router.push('/login')">
                   <Icon name="LogIn" :stroke-width="2" />
                   Se connecter
                 </DefaultButton>
@@ -141,6 +141,9 @@ import { ref, onMounted } from "vue";
 import DefaultButton from "~/components/interaction/buttons/DefaultButton.vue";
 import { sidebarItems } from "~/constants/Navigation";
 import { useQuizStore } from "~/stores/quizStore";
+
+const route = useRoute();
+const router = useRouter();
 
 const useAuth = authStore();
 const useQuiz = useQuizStore();
