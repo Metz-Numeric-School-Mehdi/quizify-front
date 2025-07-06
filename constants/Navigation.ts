@@ -5,9 +5,9 @@ export const sidebarItems = [
     icon: "LayoutDashboard",
   },
   {
-    name: "Notifications",
-    path: "/notifications",
-    icon: "Bell",
+    name: "Mes quizs",
+    path: "/my-quizzes",
+    icon: "Layers",
   },
   {
     name: "Réalisations",
