@@ -1,9 +1,85 @@
 <template>
-  <div v-if="useQuiz.state.openModal"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-2 md:px-0" @click.self="closeModal">
-    <div
-      class="relative w-full max-w-lg max-h-[95vh] overflow-y-auto bg-white rounded-xl shadow-2xl p-6 flex flex-col gap-4">
-      <button class="absolute top-2 right-2 text-gray-400 hover:text-pink-500 text-2xl" @click="closeModal"
+  <div
+    v-if="useQuiz.state.openModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-2 md:px-0"
+    @click.self="closeModal"
+  >
+    <div class="p-8 bg-white max-w-[45rem] rounded-xl overflow-y-auto max-h-[900px]">
+      <h2 class="text-title font-[500]">{{ quizModalConfig.title }}</h2>
+      <p class="text-gray-500 mb-4">{{ quizModalConfig.description }}</p>
+      <form class="flex flex-wrap gap-4 pt-4 items-center" @submit="onSubmit">
+        <div
+          v-for="(field, index) in quizModalConfig.form"
+          :key="field.vModel"
+          class="space-y-1 w-full"
+          :class="{
+            'md:w-[calc(50%-0.5rem)]': quizModalConfig.form.length > 3 && index > 2,
+          }"
+        >
+          <FormField v-slot="{ componentField }" :name="field.vModel">
+            <FormItem v-auto-animate>
+              <FormLabel :for="field.vModel" v-if="field.type !== 'switch'">
+                {{ field.title }}
+              </FormLabel>
+              <FormControl>
+                <!-- Text input -->
+                <template v-if="field.type === 'text'">
+                  <Input
+                    v-bind="componentField"
+                    :type="field.type"
+                    :id="field.vModel"
+                    :placeholder="field.placeholder"
+                    :required="field.required"
+                    class="w-full"
+                  />
+                </template>
+                <template v-else-if="field.type === 'textarea'">
+                  <Textarea
+                    v-bind="componentField"
+                    :id="field.vModel"
+                    :placeholder="field.placeholder"
+                    :required="field.required"
+                    class="w-full resize-none h-[120px]"
+                  />
+                </template>
+                <!-- Number input -->
+                <template v-else-if="field.type === 'number'">
+                  <Input
+                    v-bind="componentField"
+                    type="number"
+                    :id="field.vModel"
+                    :placeholder="field.placeholder"
+                    :required="field.required"
+                    class="w-full"
+                    min="0"
+                    :max="field.vModel === 'pass_score' ? 100 : undefined"
+                  />
+                </template>
+                <!-- Select input -->
+                <template v-else-if="field.type === 'select'">
+                  <SelectComponent
+                    v-bind="componentField"
+                    :options="
+                      Array.isArray(field.options)
+                        ? field.options
+                        : (useQuiz.state as any)[field.options] || []
+                    "
+                    :placeholder="field.placeholder"
+                    @open="
+                      field.fetch ? fetchers[field.fetch] && fetchers[field.fetch]() : undefined
+                    "
+                  />
+                </template>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+        </div>
+        <DefaultButton :ctaButton="true" type="submit" class="w-full justify-center">
+          Créer
+        </DefaultButton>
+      </form>
+      <!-- <button class="absolute top-2 right-2 text-gray-400 hover:text-pink-500 text-2xl" @click="closeModal"
         aria-label="Fermer">×</button>
       <h2 class="text-xl font-bold mb-2 text-center">Créer un quiz</h2>
       <form @submit.prevent="submit" class="flex flex-col gap-4">
@@ -56,99 +132,101 @@
         </DefaultButton>
       </form>
       <EditQuizModal v-if="useQuiz.state.quiz" />
-      <div v-if="error" class="text-red-500 text-center">{{ error }}</div>
+      <div v-if="error" class="text-red-500 text-center">{{ error }}</div> -->
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import DragAndDropImage from '@/components/common/DragAndDropImage.vue'
-import { ref } from 'vue'
-import { useQuizStore } from '~/stores/quizStore'
-import { useRouter } from 'vue-router'
-import NumberFieldTimer from '~/components/common/NumberFieldTimer.vue'
-import type { CreateQuizModal } from '~/types/quiz/CreateQuizModal'
+import DragAndDropImage from "@/components/common/DragAndDropImage.vue";
+import type { CreateQuizModal } from "~/types/quiz/CreateQuizModal";
+import DefaultButton from "@/components/interaction/buttons/DefaultButton.vue";
+import { useQuizStore } from "~/stores/quizStore";
+import NumberFieldTimer from "~/components/common/NumberFieldTimer.vue";
+import { quizModalConfig } from "~/constants/quizConfig";
+import { vAutoAnimate } from "@formkit/auto-animate/vue";
+import SelectComponent from "~/components/common/interaction/SelectComponent.vue";
+import SwitchComponent from "~/components/common/interaction/SwitchComponent.vue";
+import { ref, watch, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import type { QuizCreatePayloadType } from "~/types/config/QuizConfigType";
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+import { quizFormSchema } from "~/validation/quizFormSchema";
 
-const useQuiz = useQuizStore()
-const error = ref<string | null>(null)
+const useQuiz = useQuizStore();
+const error = ref<string | null>(null);
 
-const router = useRouter()
+const router = useRouter();
+
+watch(
+  () => useQuiz.state.openModal,
+  (open) => {
+    if (open) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+  },
+);
+
+onUnmounted(() => {
+  document.body.classList.remove("overflow-hidden");
+});
 
 const fetchLevels = () => {
-  if (useQuiz.state.levels !== null) return
-  useQuiz.getLevels()
-}
+  if (useQuiz.state.levels !== null) return;
+  useQuiz.getLevels();
+};
 
 const fetchCategories = () => {
-  if (useQuiz.state.categories !== null) return
-  useQuiz.getCategories()
-}
+  if (useQuiz.state.categories !== null) return;
+  useQuiz.getCategories();
+};
 
-const form = ref<CreateQuizModal>({
-  title: '',
-  description: '',
-  level_id: '',
-  category_id: '',
-  is_public: 'true',
-  status: 'draft',
-  duration: 0,
-  max_attempts: 1,
-  pass_score: 0,
-  thumbnail: null,
-})
+const fetchers: Record<string, () => void> = {
+  fetchLevels,
+  fetchCategories,
+};
 
 const closeModal = () => {
-  useQuiz.state.openModal = false
-  resetForm()
-}
+  useQuiz.state.openModal = false;
+  useQuiz.resetPayload();
+};
 
-const resetForm = () => {
-  form.value = {
-    title: '',
-    description: '',
-    level_id: '',
-    category_id: '',
-    is_public: 'true',
-    status: 'draft',
+const formSchema = toTypedSchema(quizFormSchema);
+
+const { handleSubmit, values } = useForm({
+  validationSchema: formSchema,
+  initialValues: {
+    title: "",
+    description: "",
     duration: 0,
-    max_attempts: 1,
     pass_score: 0,
+    level_id: "",
+    category_id: "",
+    is_public: "true",
+    status: "draft",
+    max_attempts: 1,
     thumbnail: null,
-  }
-  error.value = null
-}
+  },
+});
 
-const submit = async () => {
-  error.value = null
+const onSubmit = handleSubmit(async (formValues: any) => {
+  console.log(formValues);
+  error.value = null;
   try {
-    await useQuiz.create(form.value);
+    const result = await useQuiz.create(formValues);
 
-    if (useQuiz.state.quiz) {
-      closeModal()
-      await useQuiz.getAll()
-      router.push(`/quiz/edit/${useQuiz.state.quiz.id}`)
+    if (result) {
+      closeModal();
+      await useQuiz.getAll();
+      router.push(`/quiz/edit/${useQuiz.state.quiz?.id}`);
     } else {
-      error.value = 'Erreur lors de la création du quiz.'
+      error.value = "Erreur lors de la création du quiz.";
     }
   } catch (e: any) {
-    console.error('Error creating quiz:', e)
+    console.error("Error creating quiz:", e);
   }
-}
-import DefaultButton from "@/components/interaction/buttons/DefaultButton.vue";
+});
 </script>
-
-<style scoped>
-.input {
-  border: 1px solid #e5e7eb;
-  border-radius: 0.375rem;
-  padding: 0.5rem 0.75rem;
-  width: 100%;
-  outline: none;
-  transition: box-shadow 0.2s;
-}
-
-.input:focus {
-  box-shadow: 0 0 0 2px #ec4899;
-  border-color: #ec4899;
-}
-</style>

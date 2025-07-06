@@ -6,7 +6,6 @@ export type CreateQuizModal = {
   is_public: string
   status: string
   duration: number
-  max_attempts: number
   pass_score: number
   thumbnail: File | null
 }

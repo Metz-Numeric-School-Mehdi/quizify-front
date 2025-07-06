@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import type { QuizCreatePayloadType } from "~/types/config/QuizConfigType";
 import type { ApiError } from "~/types/error/ApiError";
 import type { Category } from "~/types/quiz/Category";
-import type { CreateQuizModal } from "~/types/quiz/CreateQuizModal";
 import type { Level } from "~/types/quiz/Level";
 import type { Quiz, QuizForm } from "~/types/quiz/Quiz";
 import { authStore } from "./authStore";
@@ -12,6 +12,7 @@ export const useQuizStore = defineStore(
     const config = useRuntimeConfig();
     const auth = authStore();
     const state = ref<{
+       [key: string]: any
       quizzes: Quiz[] | null;
       quiz: Quiz | null;
       levels: Level[] | null;
@@ -22,19 +23,7 @@ export const useQuizStore = defineStore(
       openModal: boolean;
       openPlayModal: boolean;
       openEditModal: boolean;
-      createQuizForm: {
-        title: string;
-        description: string;
-        level_id: string | number;
-        category_id: string | number;
-        is_public: boolean;
-        status: string;
-        duration: number;
-        max_attempts: number;
-        pass_score: number;
-        thumbnail: File | null;
-        questions: any[];
-      };
+      quizCreatePayload: QuizCreatePayloadType
       ready: boolean;
       allQuiz: Quiz[] | null;
     }>({
@@ -55,7 +44,7 @@ export const useQuizStore = defineStore(
       openModal: false,
       openPlayModal: false,
       openEditModal: false,
-      createQuizForm: {
+      quizCreatePayload: {
         title: "",
         description: "",
         level_id: "",
@@ -63,7 +52,6 @@ export const useQuizStore = defineStore(
         is_public: false,
         status: "draft",
         duration: 0,
-        max_attempts: 0,
         pass_score: 0,
         thumbnail: null,
         questions: [],
@@ -156,7 +144,7 @@ export const useQuizStore = defineStore(
       }
     };
 
-    const create = async (payload: CreateQuizModal) => {
+    const create = async (payload: QuizCreatePayloadType) => {
       const formData = new FormData();
       formData.append("title", payload.title);
       formData.append("description", payload.description);
@@ -165,7 +153,6 @@ export const useQuizStore = defineStore(
       formData.append("is_public", payload.is_public ? "1" : "0");
       formData.append("status", payload.status);
       formData.append("duration", String(payload.duration));
-      formData.append("max_attempts", String(payload.max_attempts));
       formData.append("pass_score", String(payload.pass_score));
       if (payload.thumbnail) {
         formData.append("thumbnail", payload.thumbnail);
@@ -182,8 +169,10 @@ export const useQuizStore = defineStore(
           },
         });
         if (data.value?.id) await getOne(data.value.id);
+        return true
       } catch (e: any) {
         state.value.apiError = e.response?.data as ApiError;
+        return false
       } finally {
         state.value.loading = false;
       }
@@ -257,12 +246,28 @@ export const useQuizStore = defineStore(
       }
     };
 
+    const resetPayload = () => {
+      state.value.quizCreatePayload = {
+        title: "",
+        description: "",
+        level_id: "",
+        category_id: "",
+        is_public: false,
+        status: "draft",
+        duration: 0,
+        pass_score: 0,
+        thumbnail: null,
+        questions: [],
+      };
+    }
+
     return {
       state,
       getAll,
       getOne,
       getLevels,
       getCategories,
+      resetPayload,
       create,
       update,
       resetQuizForm,
