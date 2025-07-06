@@ -1,108 +1,120 @@
 <template>
-    <div class="flex flex-col gap-4">
-        <div class="flex flex-col gap-2">
-            <label class="font-semibold">Titre</label>
-            <Input v-model="formLocal.title" placeholder="Titre du quiz" />
-        </div>
-        <div class="flex flex-col gap-2">
-            <label class="font-semibold">Description</label>
-            <Input v-model="formLocal.description" placeholder="Description du quiz" />
-        </div>
-        <div class="flex flex-col gap-2">
-            <label class="font-semibold">Niveau</label>
-            <Select @update:open="fetchLevels()" v-model="formLocal.level_id">
-                <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un niveau" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem v-for="(val, index) in useQuiz.state.levels" :key="index" :value="val.id">
-                        {{ val.name }}
-                    </SelectItem>
-                </SelectContent>
-            </Select>
-        </div>
-        <div class="flex flex-col gap-2">
-            <label class="font-semibold">Catégorie</label>
-            <Select @update:open="fetchCategories()" v-model="formLocal.category_id">
-                <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner une catégorie" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem v-for="(cat, index) in useQuiz.state.categories" :key="index" :value="cat.id">
-                        {{ cat.name }}
-                    </SelectItem>
-                </SelectContent>
-            </Select>
-        </div>
-        <div class="flex flex-col gap-2">
-            <label class="font-semibold">Public</label>
-            <Select v-model="formLocal.is_public">
-                <SelectTrigger>
-                    <SelectValue placeholder="Le quiz est-il public ?" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem :value="'1'">Oui</SelectItem>
-                    <SelectItem :value="'0'">Non</SelectItem>
-                </SelectContent>
-            </Select>
-        </div>
-        <div class="flex flex-col gap-2">
-            <label class="font-semibold">Statut</label>
-            <Select v-model="formLocal.status">
-                <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner le statut du quiz" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="draft">Brouillon</SelectItem>
-                    <SelectItem value="published">Publié</SelectItem>
-                    <SelectItem value="archived">Archivé</SelectItem>
-                </SelectContent>
-            </Select>
-        </div>
+  <div class="flex flex-col gap-4">
+    <div
+      v-for="(field, index) in quizModalConfig.form"
+      :key="field.vModel"
+      class="space-y-1 w-full"
+    >
+      <FormField v-slot="{ componentField }" :name="field.vModel">
+        <FormItem v-auto-animate>
+          <FormLabel :for="field.vModel" v-if="field.type !== 'switch'">
+            {{ field.title }}
+          </FormLabel>
+          <FormControl>
+            <template v-if="field.type === 'text'">
+              <Input
+                v-bind="componentField"
+                v-model="values[field.vModel]"
+                :type="field.type"
+                :id="field.vModel"
+                :placeholder="field.placeholder"
+                :required="field.required"
+                class="w-full"
+              />
+            </template>
+            <template v-else-if="field.type === 'textarea'">
+              <Textarea
+                v-bind="componentField"
+                v-model="values[field.vModel]"
+                :id="field.vModel"
+                :placeholder="field.placeholder"
+                :required="field.required"
+                class="w-full"
+              />
+            </template>
+            <template v-else-if="field.type === 'number'">
+              <Input
+                v-bind="componentField"
+                v-model="values[field.vModel]"
+                type="number"
+                :id="field.vModel"
+                :placeholder="field.placeholder"
+                :required="field.required"
+                class="w-full"
+                min="0"
+                :max="field.vModel === 'pass_score' ? 100 : undefined"
+              />
+            </template>
+            <template v-else-if="field.type === 'select'">
+              <SelectComponent
+                class="w-full"
+                v-bind="componentField"
+                v-model="values[field.vModel]"
+                :options="
+                  Array.isArray(field.options)
+                    ? field.options
+                    : (useQuiz.state as any)[field.options] || []
+                "
+                :placeholder="field.placeholder"
+                @open="field.fetch ? fetchers[field.fetch] && fetchers[field.fetch]() : undefined"
+              />
+            </template>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, onMounted } from 'vue'
-import { useQuizStore } from '~/stores/quizStore'
-import Select from '~/components/ui/select/Select.vue'
-import SelectTrigger from '~/components/ui/select/SelectTrigger.vue'
-import SelectValue from '~/components/ui/select/SelectValue.vue'
-import SelectContent from '~/components/ui/select/SelectContent.vue'
-import SelectItem from '~/components/ui/select/SelectItem.vue'
+import { onMounted } from "vue";
+import { useQuizStore } from "~/stores/quizStore";
+import { quizModalConfig } from "~/constants/quizConfig";
+import FormItem from "@/components/ui/form/FormItem.vue";
+import FormLabel from "@/components/ui/form/FormLabel.vue";
+import FormControl from "@/components/ui/form/FormControl.vue";
+import FormMessage from "@/components/ui/form/FormMessage.vue";
+import Input from "@/components/ui/input/Input.vue";
+import SelectComponent from "~/components/common/interaction/SelectComponent.vue";
 
-const useQuiz = useQuizStore()
+const useQuiz = useQuizStore();
 
-const formLocal = reactive({
-    title: '',
-    description: '',
-    level_id: 0,
-    category_id: 0,
-    is_public: '0',
-    status: 'draft',
-})
+const fetchLevels = () => {
+  if (useQuiz.state.levels !== null) return;
+  useQuiz.getLevels();
+};
+const fetchCategories = () => {
+  if (useQuiz.state.categories !== null) return;
+  useQuiz.getCategories();
+};
+const fetchers = {
+  fetchLevels,
+  fetchCategories,
+};
 
-onMounted(() => {
-    if (useQuiz.state.quizForm) {
-        formLocal.title = useQuiz.state.quizForm.title || ''
-        formLocal.description = useQuiz.state.quizForm.description || ''
-        formLocal.level_id = useQuiz.state.quiz?.level.id || 0
-        formLocal.category_id = useQuiz.state.quiz?.category.id || 0
-        formLocal.is_public = useQuiz.state.quizForm.is_public || '0'
-        formLocal.status = useQuiz.state.quizForm.status || 'draft'
+// Pré-remplissage dynamique des champs à l'édition
+import { watch, reactive } from "vue";
+const values = reactive({});
+quizModalConfig.form.forEach((field) => {
+  values[field.vModel] = "";
+});
+
+watch(
+  () => useQuiz.state.quiz,
+  (newQuiz) => {
+    if (newQuiz) {
+      quizModalConfig.form.forEach((field) => {
+        if (field.vModel in newQuiz) {
+          values[field.vModel] = newQuiz[field.vModel];
+        } else if (field.vModel === "level_id" && newQuiz.level) {
+          values.level_id = newQuiz.level.id;
+        } else if (field.vModel === "category_id" && newQuiz.category) {
+          values.category_id = newQuiz.category.id;
+        }
+      });
     }
-})
-
-const fetchLevels = async () => {
-    if (!useQuiz.state.levels || useQuiz.state.levels.length === 0) {
-        await useQuiz.getLevels()
-    }
-}
-const fetchCategories = async () => {
-    if (!useQuiz.state.categories || useQuiz.state.categories.length === 0) {
-        await useQuiz.getCategories()
-    }
-}
-
-defineExpose({ formLocal })
+  },
+  { immediate: true },
+);
 </script>

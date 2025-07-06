@@ -26,6 +26,7 @@ export const useQuizStore = defineStore(
       quizCreatePayload: QuizCreatePayloadType
       ready: boolean;
       allQuiz: Quiz[] | null;
+      isOwner: boolean;
     }>({
       quizzes: null,
       quiz: null,
@@ -58,6 +59,7 @@ export const useQuizStore = defineStore(
       },
       ready: false,
       allQuiz: null,
+      isOwner: false,
     });
 
     const getAll = async () => {
@@ -67,6 +69,12 @@ export const useQuizStore = defineStore(
         const { data } = await useFetch<Quiz[]>("/api/quizzes", {
           baseURL: useRuntimeConfig().public.apiBase,
           method: "GET",
+          headers: {
+            Authorization: `Bearer ${auth.state.token}`,
+          },
+          query: {
+            mine: state.value.isOwner ? "1" : "0",
+          }
         });
         state.value.quizzes = data.value;
       } catch (e: any) {

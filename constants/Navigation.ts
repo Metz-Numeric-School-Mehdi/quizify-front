@@ -6,7 +6,7 @@ export const sidebarItems = [
   },
   {
     name: "Mes quizs",
-    path: "/my-quizzes",
+    path: "/quiz/my-quizzes",
     icon: "Layers",
   },
   {
