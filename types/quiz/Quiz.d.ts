@@ -12,7 +12,6 @@ export type Quiz = {
   level: Level;
   user_id: number;
   duration: number;
-  max_attempts: number;
   pass_score: number;
   thumbnail: string | null;
   thumbnail_url: string | null;

@@ -21,13 +21,15 @@
           label="Glissez-déposez une image ici ou cliquez pour sélectionner (optionnel)"
         />
       </div>
-      <Button type="submit">Créer un compte</Button>
+      <DefaultButton :ctaButton="true" class="justify-center" type="submit">
+        Créer un compte
+      </DefaultButton>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Button } from "@/components/ui/button";
+import DefaultButton from "@/components/interaction/buttons/DefaultButton.vue";
 import { Input } from "@/components/ui/input";
 import { vAutoAnimate } from "@formkit/auto-animate/vue";
 import { toast } from "@/components/ui/toast";

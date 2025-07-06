@@ -11,13 +11,12 @@
       alt="Quiz Image"
     />
 
-    <div class="flex flex-col items-center justify-center px-4 py-4 h-32 sm:h-36">
-      <h2 class="text-lg sm:text-xl font-bold text-gray-800 mb-1 truncate w-full text-center">
+    <div class="flex flex-col items-start justify-start px-4 py-4 h-32 sm:h-36">
+      <h2 class="text-lg sm:text-xl font-bold text-gray-800 mb-1 truncate w-full">
         {{ title }}
       </h2>
-      <div class="text-xs sm:text-sm text-gray-500 mb-2 truncate w-full text-center">
-        {{ duration }} min
-      </div>
+      <div class="text-xs sm:text-sm text-primary mb-2 truncate w-full">{{ duration }} min</div>
+      <div class="text-xs sm:text-sm text-text-color mb-2 truncate w-full">{{ description }}</div>
     </div>
   </div>
 </template>
@@ -28,6 +27,7 @@ const { title, duration, img, quizId } = defineProps<{
   duration: number;
   img: string;
   quizId: number;
+  description: string;
 }>();
 
 const router = useRouter();

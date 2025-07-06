@@ -1,13 +1,9 @@
 <template>
   <QuizInfoFields ref="fieldsRef" />
   <div class="flex justify-end">
-    <Button
-      class="bg-pink-500 text-white font-bold p-2 mt-4 rounded-xl hover:bg-pink-600 transition"
-      type="button"
-      @click="update"
-    >
+    <DefaultButton :ctaButton="true" type="button" class="p-2 mt-4" @click="update">
       Enregistrer les modifications
-    </Button>
+    </DefaultButton>
   </div>
 </template>
 
@@ -16,6 +12,7 @@ import { ref } from "vue";
 import QuizInfoFields from "./QuizInfoFields.vue";
 import { useQuizStore } from "~/stores/quizStore";
 import { toast } from "../ui/toast";
+import DefaultButton from "../interaction/buttons/DefaultButton.vue";
 const useQuiz = useQuizStore();
 
 const fieldsRef = ref<any>(null);

@@ -33,21 +33,14 @@
         </div>
       </li>
     </ul>
-    <div class="flex items-center gap-2">
-      <Button
-        class="bg-pink-500 w-fit text-white font-bold p-2 mt-4 rounded-xl hover:bg-pink-600 transition"
-        type="button"
-        @click="create"
-      >
+    <div class="flex items-center gap-4">
+      <DefaultButton :ctaButton="true" type="button" class="w-fit p-2 mt-4" @click="create">
         Ajouter une question
-      </Button>
-      <Button
-        class="bg-pink-500 w-fit text-white font-bold p-2 mt-4 rounded-xl hover:bg-pink-600 transition"
-        type="button"
-        @click="update"
-      >
+      </DefaultButton>
+
+      <DefaultButton :ctaButton="true" type="button" class="w-fit p-2 mt-4" @click="update">
         Enregistrer les modifications
-      </Button>
+      </DefaultButton>
     </div>
   </template>
 </template>
@@ -55,6 +48,7 @@
 <script lang="ts" setup>
 import type { CreateQuestion } from "~/types/question/Question";
 import { toast } from "../ui/toast";
+import DefaultButton from "../interaction/buttons/DefaultButton.vue";
 
 const useQuestion = useQuestionStore();
 const useQuiz = useQuizStore();
