@@ -7,7 +7,9 @@
       alt="Mascotte Quiz"
       class="w-12 h-12 rounded-full shadow-lg border-4 border-white"
     />
-    <span class="font-bold text-lg text-purple-700 drop-shadow text-center mr-4">Quizify</span>
+    <NuxtLink to="/" class="font-bold text-lg text-purple-700 drop-shadow text-center mr-4"
+      >Quizify</NuxtLink
+    >
     <nav class="flex-1 flex items-center gap-2 sm:gap-4 relative">
       <button
         type="button"
