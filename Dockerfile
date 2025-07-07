@@ -15,6 +15,9 @@ COPY . .
 # Installer curl pour le healthcheck
 RUN apt-get update && apt-get install -y curl
 
+# Build le projet
+RUN bun run build
+
 # Copier le script de vérification de santé dans le conteneur
 COPY healthcheck.sh /usr/local/bin/healthcheck.sh
 
