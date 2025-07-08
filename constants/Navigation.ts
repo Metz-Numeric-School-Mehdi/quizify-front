@@ -10,9 +10,9 @@ export const sidebarItems = [
     icon: "Layers",
   },
   {
-    name: "Réalisations",
+    name: "Classements",
     path: "/achievements",
-    icon: "ChartColumn",
+    icon: "Trophy",
   },
   {
     name: "Historique",
