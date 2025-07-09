@@ -68,8 +68,7 @@ const useAnswer = useAnswerStore();
 const useQuiz = useQuizStore();
 
 const create = async (id: number) => {
-  // Ajoute la réponse localement en clonant le tableau pour forcer la réactivité
-  const question = useQuiz.state.quiz?.questions.find(q => q.id === id);
+  const question = useQuiz.state.quiz?.questions.find((q) => q.id === id);
   if (question) {
     const tempId = Date.now() + Math.floor(Math.random() * 10000); // id temporaire unique
     question.answers = [
@@ -78,13 +77,8 @@ const create = async (id: number) => {
         id: tempId,
         content: "Nouvelle réponse",
         is_correct: false,
-      }
+      },
     ];
-    // await useAnswer.create({
-    //   question_id: id,
-    //   content: "Nouvelle réponse",
-    //   is_correct: false,
-    // });
   }
 };
 
