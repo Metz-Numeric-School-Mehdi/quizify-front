@@ -27,7 +27,7 @@
         <ul class="space-y-2">
           <li
             v-for="(answer, aIndex) in question.answers"
-            :key="answer.id || aIndex"
+            :key="answer.id"
             class="flex items-center gap-2"
           >
             <Input v-model="answer.content" />
@@ -61,20 +61,31 @@
 </template>
 
 <script lang="ts" setup>
-import type { CreateAnswer } from "~/types/answer/Answer";
 import { toast } from "../ui/toast";
 import DefaultButton from "../interaction/buttons/DefaultButton.vue";
 
-const useQuestion = useQuestionStore();
 const useAnswer = useAnswerStore();
 const useQuiz = useQuizStore();
 
 const create = async (id: number) => {
-  await useAnswer.create({
-    question_id: id,
-    content: "Nouvelle réponse",
-    is_correct: false,
-  });
+  // Ajoute la réponse localement en clonant le tableau pour forcer la réactivité
+  const question = useQuiz.state.quiz?.questions.find(q => q.id === id);
+  if (question) {
+    const tempId = Date.now() + Math.floor(Math.random() * 10000); // id temporaire unique
+    question.answers = [
+      ...question.answers,
+      {
+        id: tempId,
+        content: "Nouvelle réponse",
+        is_correct: false,
+      }
+    ];
+    // await useAnswer.create({
+    //   question_id: id,
+    //   content: "Nouvelle réponse",
+    //   is_correct: false,
+    // });
+  }
 };
 
 const update = async () => {

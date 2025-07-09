@@ -68,7 +68,6 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
 import { useQuizStore } from "~/stores/quizStore";
 import { quizModalConfig } from "~/constants/quizConfig";
 import FormItem from "@/components/ui/form/FormItem.vue";
@@ -93,24 +92,34 @@ const fetchers = {
   fetchCategories,
 };
 
-// Pré-remplissage dynamique des champs à l'édition
 import { watch, reactive } from "vue";
+import { computed } from "vue";
 const values = reactive({});
 quizModalConfig.form.forEach((field) => {
   values[field.vModel] = "";
 });
+
+const formLocal = computed(() => ({ ...values }));
+defineExpose({ formLocal });
 
 watch(
   () => useQuiz.state.quiz,
   (newQuiz) => {
     if (newQuiz) {
       quizModalConfig.form.forEach((field) => {
-        if (field.vModel in newQuiz) {
+        if (
+          field.vModel in newQuiz &&
+          newQuiz[field.vModel] !== undefined &&
+          newQuiz[field.vModel] !== null
+        ) {
           values[field.vModel] = newQuiz[field.vModel];
         } else if (field.vModel === "level_id" && newQuiz.level) {
           values.level_id = newQuiz.level.id;
         } else if (field.vModel === "category_id" && newQuiz.category) {
           values.category_id = newQuiz.category.id;
+        } else if (field.type === "select" && !values[field.vModel]) {
+          // Si la valeur n'est pas définie, on garde l'ancienne valeur (évite null)
+          values[field.vModel] = values[field.vModel] || "";
         }
       });
     }
