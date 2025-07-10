@@ -4,7 +4,14 @@
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-2 md:px-0"
     @click.self="closeModal"
   >
-    <div class="p-8 bg-white max-w-[45rem] rounded-xl overflow-y-auto max-h-[900px]">
+    <div class="relative p-8 bg-white max-w-[45rem] rounded-xl overflow-y-auto max-h-[900px]">
+      <button
+        type="button"
+        @click="closeModal"
+        class="absolute top-4 right-4 p-2 rounded hover:bg-pink-100"
+      >
+        <Icon name="X" :stroke-width="2" class="w-6 h-6 text-purple-700" />
+      </button>
       <h2 class="text-title font-[500]">{{ quizModalConfig.title }}</h2>
       <p class="text-gray-500 mb-4">{{ quizModalConfig.description }}</p>
       <form class="flex flex-wrap gap-4 pt-4 items-center" @submit="onSubmit">
