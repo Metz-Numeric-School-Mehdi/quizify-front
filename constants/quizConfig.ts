@@ -19,7 +19,7 @@ export const quizModalConfig: QuizConfigType = {
       required: true,
     },
     {
-      title: 'Durée (en secondes)',
+      title: 'Durée (en minutes)',
       vModel: 'duration',
       type: 'number',
       placeholder: 'Durée en minutes',
