@@ -1,5 +1,5 @@
 q<template>
-  <Tabs default-value="account" class="w-[400px]">
+  <Tabs default-value="account" class="w-[600px]">
     <TabsList class="grid w-full grid-cols-2">
       <TabsTrigger value="account"> Se connecter </TabsTrigger>
       <TabsTrigger value="password"> S'inscrire </TabsTrigger>
