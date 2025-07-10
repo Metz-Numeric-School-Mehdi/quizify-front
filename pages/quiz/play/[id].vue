@@ -4,7 +4,7 @@
       <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 flex flex-col gap-6">
         <!-- Titre et description toujours affichés en haut de la card -->
         <div class="text-start">
-          <h2 class="text-2xl font-bold mb-2 text-pink-600">
+          <h2 class="text-[2rem] font-bold mb-2 text-pink-600">
             {{ useQuiz.state.quiz?.title }}
           </h2>
           <div class="text-gray-600 mb-4">
@@ -43,23 +43,27 @@
               </li>
             </ul>
             <div class="flex justify-between mt-6">
-              <DefaultButton
-                v-if="activeQuestion > 1"
-                :ctaButton="false"
-                @click="previousQuestion()"
-              >
-                Précédent
-              </DefaultButton>
-              <DefaultButton
-                v-if="activeQuestion < useQuiz.state.quiz.questions?.length"
-                :ctaButton="true"
-                @click="nextQuestion()"
-              >
-                Suivant
-              </DefaultButton>
-              <DefaultButton v-else :ctaButton="true" @click="finishQuiz()">
-                Terminer
-              </DefaultButton>
+              <div>
+                <DefaultButton
+                  v-if="activeQuestion > 1"
+                  :ctaButton="false"
+                  @click="previousQuestion()"
+                >
+                  Précédent
+                </DefaultButton>
+              </div>
+              <div>
+                <DefaultButton
+                  v-if="activeQuestion < useQuiz.state.quiz.questions?.length"
+                  :ctaButton="true"
+                  @click="nextQuestion()"
+                >
+                  Suivant
+                </DefaultButton>
+                <DefaultButton v-else :ctaButton="true" @click="finishQuiz()">
+                  Terminer
+                </DefaultButton>
+              </div>
             </div>
           </div>
         </template>
