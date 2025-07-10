@@ -1,7 +1,9 @@
 <template>
   <template v-if="useQuiz.state.quiz?.questions && useQuiz.state.quiz?.questions.length < 1">
     <div class="flex items-center justify-center flex-col gap-4">
-      <Label class="text-lg font-semibold">Aucune question n'a été créée pour ce quiz.</Label>
+      <Label class="text-center text-gray-500 mt-10"
+        >Aucune question n'a été créée pour ce quiz.</Label
+      >
     </div>
   </template>
   <template v-else>
@@ -53,7 +55,7 @@
       </li>
     </ul>
     <div class="flex items-center gap-2">
-      <DefaultButton :ctaButton="true" type="button" class="w-fit p-2 mt-4" @click="update">
+      <DefaultButton :ctaButton="true" type="button" class="w-fit p-2 mt-4" @click="save()">
         Enregistrer les modifications
       </DefaultButton>
     </div>
@@ -70,11 +72,9 @@ const useQuiz = useQuizStore();
 const create = async (id: number) => {
   const question = useQuiz.state.quiz?.questions.find((q) => q.id === id);
   if (question) {
-    const tempId = Date.now() + Math.floor(Math.random() * 10000); // id temporaire unique
     question.answers = [
       ...question.answers,
       {
-        id: tempId,
         content: "Nouvelle réponse",
         is_correct: false,
       },
@@ -82,26 +82,56 @@ const create = async (id: number) => {
   }
 };
 
-const update = async () => {
+const save = async () => {
   if (useQuiz.state.quiz?.questions && useQuiz.state.quiz.questions.length > 0) {
     for (const question of useQuiz.state.quiz.questions) {
-      for (const answer of question.answers) {
-        const update = await useAnswer.update(
-          {
-            content: answer.content,
-            question_id: question.id,
-            is_correct: answer.is_correct,
-          },
-          answer.id,
-        );
+      // Sépare les réponses à créer et à mettre à jour
+      const answersToCreate = question.answers.filter(a => !a.id);
+      const answersToUpdate = question.answers.filter(a => a.id);
 
-        if (update) {
+      let resultCreate = null;
+      let resultUpdate = null;
+
+      // CREATE : payload sans id
+      if (answersToCreate.length > 0) {
+        const payload = {
+          question_id: question.id,
+          answers: answersToCreate.map(a => ({
+            content: a.content,
+            is_correct: a.is_correct,
+          })),
+        };
+        resultCreate = await useAnswer.create(payload);
+        if (resultCreate) {
           toast({
-            description: "Réponses mise à jour avec succès",
+            description: "Réponse(s) créée(s) avec succès",
           });
         } else {
           toast({
-            description: "Erreur lors de la mise à jour des réponses",
+            description: "Erreur lors de la création de la/les réponse(s)",
+            variant: "destructive",
+          });
+        }
+      }
+
+      // UPDATE : payload avec id
+      if (answersToUpdate.length > 0) {
+        const payload = {
+          question_id: question.id,
+          answers: answersToUpdate.map(a => ({
+            id: a.id,
+            content: a.content,
+            is_correct: a.is_correct,
+          })),
+        };
+        resultUpdate = await useAnswer.update(payload, question.id);
+        if (resultUpdate) {
+          toast({
+            description: "Réponse(s) mise(s) à jour avec succès",
+          });
+        } else {
+          toast({
+            description: "Erreur lors de la mise à jour de la/les réponse(s)",
             variant: "destructive",
           });
         }

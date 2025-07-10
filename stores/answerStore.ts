@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import type { Answer, CreateAnswer, updateAnswer } from "~/types/answer/Answer";
 import { authStore } from "./authStore";
-import type { Answer, CreateAnswer } from "~/types/answer/Answer";
 
 export const useAnswerStore = defineStore("answer", () => {
   const auth = authStore();
@@ -61,7 +61,7 @@ export const useAnswerStore = defineStore("answer", () => {
     return data.value;
   };
 
-  const update = async (payload: CreateAnswer, id: number) => {
+  const update = async (payload: updateAnswer, id: number) => {
     state.value.loading = true;
     state.value.error = null;
     const { data, error: err } = await useFetch(`/api/answers/${id}`, {
@@ -74,6 +74,23 @@ export const useAnswerStore = defineStore("answer", () => {
     if (useQuiz.state.quiz) {
       useQuiz.getOne(useQuiz.state.quiz.id);
     }
+    return data.value;
+  };
+
+  const updateMany = async (payload: CreateAnswer) => {
+    state.value.loading = true;
+    state.value.error = null;
+    const { data, error: err } = await useFetch(`/api/questions/${payload.question_id}/answers`, {
+      baseURL: useRuntimeConfig().public.apiBase,
+      method: "PUT",
+      body: payload,
+      headers: { Authorization: `Bearer ${auth.state.token}` },
+    });
+    if (err.value) state.value.error = err.value.data?.message;
+    if (useQuiz.state.quiz) {
+      useQuiz.getOne(useQuiz.state.quiz.id);
+    }
+    state.value.loading = false;
     return data.value;
   };
 
@@ -93,5 +110,5 @@ export const useAnswerStore = defineStore("answer", () => {
     return true;
   };
 
-  return { state, getAll, getOne, create, update, remove };
+  return { state, getAll, getOne, create, update, updateMany, remove };
 });

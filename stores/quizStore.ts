@@ -76,7 +76,14 @@ export const useQuizStore = defineStore(
             mine: state.value.isOwner ? "1" : "0",
           }
         });
-        state.value.quizzes = data.value;
+        state.value.quizzes = data.value
+          ? data.value.filter(quiz => {
+              if (state.value.isOwner) {
+                return true;
+              }
+              return Array.isArray(quiz.questions) && quiz.questions.length > 0;
+            })
+          : [];
       } catch (e: any) {
         state.value.apiError = e.response?.data as ApiError;
       } finally {

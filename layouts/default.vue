@@ -7,9 +7,9 @@
       alt="Mascotte Quiz"
       class="w-12 h-12 rounded-full shadow-lg border-4 border-white"
     />
-    <NuxtLink to="/" class="font-bold text-lg text-purple-700 drop-shadow text-center mr-4"
-      >Quizify</NuxtLink
-    >
+    <NuxtLink to="/" class="font-bold text-lg text-white text-whitedrop-shadow text-center mr-4">{{
+      useAuth.state.user?.username
+    }}</NuxtLink>
     <nav class="flex-1 flex items-center gap-2 sm:gap-4 relative">
       <button
         type="button"

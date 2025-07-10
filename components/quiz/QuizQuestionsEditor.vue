@@ -68,7 +68,7 @@ const create = async () => {
     content:
       useQuiz.state.quiz?.questions && useQuiz.state.quiz.questions.length > 0
         ? useQuiz.state.quiz.questions[0].content
-        : questionsForm.value.content.trim() + " ?",
+        : questionsForm.value.content.trim(),
     question_type_id: 3,
   });
 };
