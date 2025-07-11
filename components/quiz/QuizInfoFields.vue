@@ -30,7 +30,11 @@
                 :placeholder="field.placeholder"
                 :required="field.required"
                 class="w-full"
+                maxlength="250"
               />
+              <div class="text-right text-xs text-gray-400 mt-1">
+                {{ values[field.vModel]?.length || 0 }}/250 caractères
+              </div>
             </template>
             <template v-else-if="field.type === 'number'">
               <template v-if="field.vModel === 'duration'">
@@ -49,6 +53,25 @@
                     @click="values.duration = min"
                   >
                     {{ min }} min
+                  </button>
+                </div>
+              </template>
+              <template v-else-if="field.vModel === 'pass_score'">
+                <div class="flex gap-2 flex-wrap">
+                  <button
+                    v-for="score in [50, 60, 70, 80, 90, 100]"
+                    :key="score"
+                    type="button"
+                    :tabindex="values.pass_score === score ? 0 : -1"
+                    :class="[
+                      'px-4 py-2 rounded-full font-semibold border transition',
+                      values.pass_score === score
+                        ? 'bg-pink-500 text-white border-pink-500 ring-2 ring-pink-400'
+                        : 'bg-white text-pink-600 border-pink-200 hover:bg-pink-50'
+                    ]"
+                    @click="values.pass_score = score"
+                  >
+                    {{ score }} %
                   </button>
                 </div>
               </template>

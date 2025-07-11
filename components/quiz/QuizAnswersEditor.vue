@@ -8,15 +8,10 @@
   </template>
   <template v-else>
     <ul class="space-y-4" v-if="useQuiz.state.quiz?.questions">
-      <li
-        class="space-y-2"
-        v-for="(question, qIndex) in useQuiz.state.quiz.questions"
-        :key="question.id"
-      >
+      <li class="space-y-2" v-for="question in useQuiz.state.quiz.questions" :key="question.id">
         <div class="flex items-center gap-2">
           <Label>
-            {{ question.content
-            }}<span v-if="question.content && !question.content.trim().endsWith('?')">?</span>
+            {{ question.content }}
           </Label>
           <Button
             class="bg-pink-100 text-pink-600 font-bold px-3 py-1 rounded-lg hover:bg-pink-200 transition text-sm shadow-sm"
@@ -49,7 +44,7 @@
               @click="remove(answer.id)"
               name="Trash"
               :stroke-width="2"
-              class="text-red-500 cursor-pointer"
+              class="text-red-500 cursor-pointer transition-all duration-200 hover:bg-red-100 hover:scale-105 rounded-full p-1"
             />
           </li>
         </ul>
@@ -87,8 +82,8 @@ const save = async () => {
   if (useQuiz.state.quiz?.questions && useQuiz.state.quiz.questions.length > 0) {
     for (const question of useQuiz.state.quiz.questions) {
       // Sépare les réponses à créer et à mettre à jour
-      const answersToCreate = question.answers.filter(a => !a.id);
-      const answersToUpdate = question.answers.filter(a => a.id);
+      const answersToCreate = question.answers.filter((a) => !a.id);
+      const answersToUpdate = question.answers.filter((a) => a.id);
 
       let resultCreate = null;
       let resultUpdate = null;
@@ -97,7 +92,7 @@ const save = async () => {
       if (answersToCreate.length > 0) {
         const payload = {
           question_id: question.id,
-          answers: answersToCreate.map(a => ({
+          answers: answersToCreate.map((a) => ({
             content: a.content,
             is_correct: a.is_correct,
           })),
@@ -115,11 +110,10 @@ const save = async () => {
         }
       }
 
-      // UPDATE : payload avec id
       if (answersToUpdate.length > 0) {
         const payload = {
           question_id: question.id,
-          answers: answersToUpdate.map(a => ({
+          answers: answersToUpdate.map((a) => ({
             id: a.id,
             content: a.content,
             is_correct: a.is_correct,
@@ -141,17 +135,25 @@ const save = async () => {
   }
 };
 
-const remove = async (answer_id: number) => {
+const remove = async (answer_id: number | undefined) => {
+  if (!answer_id) {
+    useQuiz.state.quiz?.questions.forEach((question) => {
+      question.answers = question.answers.filter((ans) => ans.id !== answer_id);
+    });
+    return;
+  }
   if (useQuiz.state.quiz?.questions && useQuiz.state.quiz.questions.length > 0) {
     const remove = await useAnswer.remove(answer_id);
     if (remove) {
       toast({
         description: "Réponse supprimée avec succès",
+        duration: 3000,
       });
     } else {
       toast({
         description: "Erreur lors de la suppression de la réponse",
         variant: "destructive",
+        duration: 3000,
       });
     }
   }
