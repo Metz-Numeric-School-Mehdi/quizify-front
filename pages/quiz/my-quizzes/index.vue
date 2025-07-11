@@ -15,9 +15,7 @@
       ></div>
     </div>
     <div class="flex justify-between items-center mb-4 z-10">
-      <h1 class="text-[2rem] font-bold text-pink-600">
-        Mes quiz
-      </h1>
+      <h1 class="text-[2rem] font-bold text-pink-600">Mes quiz</h1>
       <DefaultButton :ctaButton="true" @click="useQuiz.state.openModal = true">
         <span class="text-xl sm:text-2xl">
           <Icon name="Plus" :stroke-width="2.5" :size="20" />
@@ -66,7 +64,7 @@
               {{ quiz.description?.slice(0, 60)
               }}<span v-if="quiz.description && quiz.description.length > 60">…</span>
             </td>
-            <td class="px-4 py-2 text-gray-600">{{ quiz.duration }}s</td>
+            <td class="px-4 py-2 text-gray-600">{{ quiz.duration }} min</td>
             <td class="px-4 py-2">
               <span
                 class="inline-block px-2 py-1 rounded text-xs font-semibold"
