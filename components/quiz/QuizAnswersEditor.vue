@@ -22,6 +22,7 @@
             class="bg-pink-100 text-pink-600 font-bold px-3 py-1 rounded-lg hover:bg-pink-200 transition text-sm shadow-sm"
             type="button"
             @click="create(question.id)"
+            :disabled="question.answers.length >= 4"
           >
             + Ajouter une réponse
           </Button>
@@ -71,7 +72,7 @@ const useQuiz = useQuizStore();
 
 const create = async (id: number) => {
   const question = useQuiz.state.quiz?.questions.find((q) => q.id === id);
-  if (question) {
+  if (question && question.answers.length < 4) {
     question.answers = [
       ...question.answers,
       {
