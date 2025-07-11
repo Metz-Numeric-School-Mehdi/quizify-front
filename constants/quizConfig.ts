@@ -19,14 +19,14 @@ export const quizModalConfig: QuizConfigType = {
       required: true,
     },
     {
-      title: 'Durée (en minutes)',
+      title: 'Durée',
       vModel: 'duration',
       type: 'number',
       placeholder: 'Durée en minutes',
       required: true,
     },
     {
-      title: 'Score de réussite (%)',
+      title: 'Score de réussite',
       vModel: 'pass_score',
       type: 'number',
       placeholder: 'Entrez le score minimum pour réussir',
