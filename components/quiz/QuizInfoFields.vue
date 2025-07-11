@@ -33,17 +33,38 @@
               />
             </template>
             <template v-else-if="field.type === 'number'">
-              <Input
-                v-bind="componentField"
-                v-model="values[field.vModel]"
-                type="number"
-                :id="field.vModel"
-                :placeholder="field.placeholder"
-                :required="field.required"
-                class="w-full"
-                min="0"
-                :max="field.vModel === 'pass_score' ? 100 : undefined"
-              />
+              <template v-if="field.vModel === 'duration'">
+                <div class="flex gap-2 flex-wrap">
+                  <button
+                    v-for="min in [1, 2, 3, 5, 10, 15, 20, 30, 45, 60]"
+                    :key="min"
+                    type="button"
+                    :tabindex="values.duration === min ? 0 : -1"
+                    :class="[
+                      'px-4 py-2 rounded-full font-semibold border transition',
+                      values.duration === min
+                        ? 'bg-pink-500 text-white border-pink-500 ring-2 ring-pink-400'
+                        : 'bg-white text-pink-600 border-pink-200 hover:bg-pink-50'
+                    ]"
+                    @click="values.duration = min"
+                  >
+                    {{ min }} min
+                  </button>
+                </div>
+              </template>
+              <template v-else>
+                <Input
+                  v-bind="componentField"
+                  v-model="values[field.vModel]"
+                  type="number"
+                  :id="field.vModel"
+                  :placeholder="field.placeholder"
+                  :required="field.required"
+                  class="w-full"
+                  min="0"
+                  :max="field.vModel === 'pass_score' ? 100 : undefined"
+                />
+              </template>
             </template>
             <template v-else-if="field.type === 'select'">
               <SelectComponent
@@ -53,7 +74,9 @@
                 :options="
                   Array.isArray(field.options)
                     ? field.options
-                    : (useQuiz.state as any)[field.options] || []
+                    : field.options !== undefined
+                      ? (useQuiz.state as any)[field.options as keyof typeof useQuiz.state] || []
+                      : []
                 "
                 :placeholder="field.placeholder"
                 @open="field.fetch ? fetchers[field.fetch] && fetchers[field.fetch]() : undefined"
@@ -87,24 +110,24 @@ const fetchCategories = () => {
   if (useQuiz.state.categories !== null) return;
   useQuiz.getCategories();
 };
-const fetchers = {
+const fetchers: { [key: string]: any } = {
   fetchLevels,
   fetchCategories,
 };
 
-import { watch, reactive } from "vue";
-import { computed } from "vue";
-const values = reactive({});
+const values = reactive<{ [key: string]: any }>({});
 quizModalConfig.form.forEach((field) => {
   values[field.vModel] = "";
 });
+
+
 
 const formLocal = computed(() => ({ ...values }));
 defineExpose({ formLocal });
 
 watch(
   () => useQuiz.state.quiz,
-  (newQuiz) => {
+  (newQuiz: { [key: string]: any }) => {
     if (newQuiz) {
       quizModalConfig.form.forEach((field) => {
         if (
@@ -112,13 +135,18 @@ watch(
           newQuiz[field.vModel] !== undefined &&
           newQuiz[field.vModel] !== null
         ) {
-          values[field.vModel] = newQuiz[field.vModel];
+          if (field.vModel === "is_public") {
+            values.is_public = newQuiz.is_public == 1 ? "true" : "false";
+          } else if (field.vModel === "duration") {
+            values.duration = newQuiz.duration ? Math.round(newQuiz.duration / 60) : 0;
+          } else {
+            values[field.vModel] = newQuiz[field.vModel];
+          }
         } else if (field.vModel === "level_id" && newQuiz.level) {
           values.level_id = newQuiz.level.id;
         } else if (field.vModel === "category_id" && newQuiz.category) {
           values.category_id = newQuiz.category.id;
         } else if (field.type === "select" && !values[field.vModel]) {
-          // Si la valeur n'est pas définie, on garde l'ancienne valeur (évite null)
           values[field.vModel] = values[field.vModel] || "";
         }
       });

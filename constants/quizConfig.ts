@@ -54,7 +54,7 @@ export const quizModalConfig: QuizConfigType = {
       title: 'Confidentialité',
       vModel: 'is_public',
       type: 'select',
-      placeholder: 'Rendre public ?',
+      placeholder: 'Confidentialité',
       required: true,
       options: [
         { id: 'true', name: 'Public' },

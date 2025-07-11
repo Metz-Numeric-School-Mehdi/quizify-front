@@ -77,12 +77,24 @@ export const useQuizStore = defineStore(
           }
         });
         state.value.quizzes = data.value
-          ? data.value.filter(quiz => {
-              if (state.value.isOwner) {
-                return true;
-              }
-              return Array.isArray(quiz.questions) && quiz.questions.length > 0;
-            })
+          ? data.value
+              .filter(quiz => {
+                if (state.value.isOwner) {
+                  return true;
+                }
+                return Array.isArray(quiz.questions) && quiz.questions.length > 0;
+              })
+              .map(quiz => ({
+                ...quiz,
+                duration: quiz.duration ? Math.round(quiz.duration / 60) : 0,
+              }))
+          : [];
+        // Conversion de duration en minutes pour allQuiz
+        state.value.allQuiz = data.value
+          ? data.value.map(quiz => ({
+              ...quiz,
+              duration: quiz.duration ? Math.round(quiz.duration / 60) : 0,
+            }))
           : [];
       } catch (e: any) {
         state.value.apiError = e.response?.data as ApiError;
@@ -195,6 +207,7 @@ export const useQuizStore = defineStore(
 
     const update = async (id: number, payload: QuizForm) => {
       state.value.apiError = null;
+      payload.is_public = payload.is_public === "true" ? true : false;
       try {
         const { data, error } = await useFetch(`/api/quizzes/${id}`, {
           baseURL: useRuntimeConfig().public.apiBase,
