@@ -1,7 +1,7 @@
 <template>
   <div
     @click="play()"
-    class="relative rounded-xl cursor-pointer overflow-hidden w-full max-w-xs h-64 sm:h-72 mx-auto bg-white shadow-md border border-gray-100 group transition-all duration-200 hover:shadow-xl hover:scale-105"
+    class="relative rounded-xl cursor-pointer overflow-hidden w-full max-w-xs h-64 sm:h-72 mx-auto bg-white shadow-md border border-gray-100 group transition-all duration-200 hover:scale-105"
   >
     <img v-if="img" class="w-full h-32 sm:h-36 object-cover" :src="img" alt="Quiz Image" />
     <img
