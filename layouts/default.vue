@@ -7,9 +7,9 @@
       alt="Mascotte Quiz"
       class="w-12 h-12 rounded-full shadow-lg border-4 border-white"
     />
-    <NuxtLink to="/" class="font-bold text-lg text-purple-700 drop-shadow text-center mr-4"
-      >Quizify</NuxtLink
-    >
+    <NuxtLink to="/" class="font-bold text-lg text-white text-whitedrop-shadow text-center mr-4">{{
+      useAuth.state.user?.username
+    }}</NuxtLink>
     <nav class="flex-1 flex items-center gap-2 sm:gap-4 relative">
       <button
         type="button"
@@ -61,22 +61,21 @@
         </template>
       </div>
       <transition name="fade">
-        <div v-if="showMobileMenu" class="fixed inset-0 z-40 bg-black/40 flex lg:hidden">
-          <div class="bg-white w-64 h-full shadow-lg p-6 flex flex-col gap-6 animate-slide-in-left">
+        <div
+          v-if="showMobileMenu"
+          class="fixed inset-0 z-40 bg-black/40 flex lg:hidden"
+          @click="showMobileMenu = false"
+        >
+          <div
+            class="bg-white w-64 h-full shadow-lg p-6 flex flex-col gap-6 animate-slide-in-left"
+            @click.stop
+          >
             <button
               type="button"
               @click="showMobileMenu = false"
               class="self-end mb-2 p-2 rounded hover:bg-pink-100"
             >
-              <svg
-                class="w-7 h-7 text-pink-600"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <Icon name="X" :stroke-width="2" class="w-6 h-6 text-purple-700" />
             </button>
             <ul class="flex flex-col gap-3">
               <li v-for="(link, index) in sidebarItems" :key="index">

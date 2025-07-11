@@ -10,3 +10,9 @@ export type CreateAnswer = {
   is_correct: boolean;
 };
 
+export type updateAnswer = {
+  id: number;
+  question_id: number;
+  content: string;
+  is_correct: boolean;
+}

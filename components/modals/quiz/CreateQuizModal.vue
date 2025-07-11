@@ -4,8 +4,13 @@
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-2 md:px-0"
     @click.self="closeModal"
   >
-    <div class="p-8 bg-white max-w-[45rem] rounded-xl overflow-y-auto max-h-[900px]">
-      <h2 class="text-title font-[500]">{{ quizModalConfig.title }}</h2>
+    <div class="p-8 bg-white max-w-[45rem] rounded-xl overflow-y-auto max-h-[90vh]">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-title font-[500]">{{ quizModalConfig.title }}</h2>
+        <button type="button" @click="closeModal" class="p-2 rounded hover:bg-pink-100">
+          <Icon name="X" :stroke-width="2" class="w-6 h-6 text-purple-700" />
+        </button>
+      </div>
       <p class="text-gray-500 mb-4">{{ quizModalConfig.description }}</p>
       <form class="flex flex-wrap gap-4 pt-4 items-center" @submit="onSubmit">
         <div
@@ -22,7 +27,6 @@
                 {{ field.title }}
               </FormLabel>
               <FormControl>
-                <!-- Text input -->
                 <template v-if="field.type === 'text'">
                   <Input
                     v-bind="componentField"
@@ -42,20 +46,58 @@
                     class="w-full resize-none h-[120px]"
                   />
                 </template>
-                <!-- Number input -->
                 <template v-else-if="field.type === 'number'">
-                  <Input
-                    v-bind="componentField"
-                    type="number"
-                    :id="field.vModel"
-                    :placeholder="field.placeholder"
-                    :required="field.required"
-                    class="w-full"
-                    min="0"
-                    :max="field.vModel === 'pass_score' ? 100 : undefined"
-                  />
+                  <template v-if="field.vModel === 'duration'">
+                    <div class="flex gap-2 flex-wrap">
+                      <button
+                        v-for="min in [1, 2, 3, 5, 10, 15, 20, 30, 45, 60]"
+                        :key="min"
+                        type="button"
+                        :tabindex="Number(values.duration) === min ? 0 : -1"
+                        :class="[
+                          'px-4 py-2 rounded-full font-semibold border transition',
+                          Number(values.duration) === min
+                            ? 'bg-pink-500 text-white border-pink-500 ring-2 ring-pink-400'
+                            : 'bg-white text-pink-600 border-pink-200 hover:bg-pink-50',
+                        ]"
+                        @click="componentField.onChange(min)"
+                      >
+                        {{ min }} min
+                      </button>
+                    </div>
+                  </template>
+                  <template v-else-if="field.vModel === 'pass_score'">
+                    <div class="flex gap-2 flex-wrap">
+                      <button
+                        v-for="score in [50, 60, 70, 80, 90, 100]"
+                        :key="score"
+                        type="button"
+                        :tabindex="Number(values.pass_score) === score ? 0 : -1"
+                        :class="[
+                          'px-4 py-2 rounded-full font-semibold border transition',
+                          Number(values.pass_score) === score
+                            ? 'bg-pink-500 text-white border-pink-500 ring-2 ring-pink-400'
+                            : 'bg-white text-pink-600 border-pink-200 hover:bg-pink-50',
+                        ]"
+                        @click="componentField.onChange(score)"
+                      >
+                        {{ score }} %
+                      </button>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <Input
+                      v-bind="componentField"
+                      type="number"
+                      :id="field.vModel"
+                      :placeholder="field.placeholder"
+                      :required="field.required"
+                      class="w-full"
+                      min="0"
+                      :max="field.vModel === 'pass_score' ? 100 : undefined"
+                    />
+                  </template>
                 </template>
-                <!-- Select input -->
                 <template v-else-if="field.type === 'select'">
                   <SelectComponent
                     v-bind="componentField"
@@ -79,77 +121,18 @@
           Créer
         </DefaultButton>
       </form>
-      <!-- <button class="absolute top-2 right-2 text-gray-400 hover:text-pink-500 text-2xl" @click="closeModal"
-        aria-label="Fermer">×</button>
-      <h2 class="text-xl font-bold mb-2 text-center">Créer un quiz</h2>
-      <form @submit.prevent="submit" class="flex flex-col gap-4">
-        <input v-model="form.title" type="text" placeholder="Titre du quiz" class="input" required />
-        <textarea v-model="form.description" placeholder="Description" class="input" required />
-        <Select @update:open="fetchLevels()" v-model="form.level_id">
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionner un niveau" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem v-for="(val, index) in useQuiz.state.levels" :key="index" :value="val.id">
-              {{ val.name }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-        <Select @update:open="fetchCategories" v-model="form.category_id">
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionner une catégorie" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem v-for="(val, index) in useQuiz.state.categories" :key="index" :value="val.id">
-              {{ val.name }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-        <Select v-model="form.is_public">
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionner une catégorie" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="true">Public</SelectItem>
-            <SelectItem value="false">Privé</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select v-model="form.status">
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionner le statut du quiz" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="draft">Brouillon</SelectItem>
-            <SelectItem value="published">Publié</SelectItem>
-            <SelectItem value="archived">Archivé</SelectItem>
-          </SelectContent>
-        </Select>
-        <NumberFieldTimer label="Durée" v-model="form.duration" />
-        <DragAndDropImage v-model="form.thumbnail" accept="image/*" :preview="true"
-          label="Glissez-déposez une image ici ou cliquez pour sélectionner une miniature (optionnel)" />
-        <DefaultButton :ctaButton="true" class="flex justify-center" type="submit">
-          Créer
-        </DefaultButton>
-      </form>
-      <EditQuizModal v-if="useQuiz.state.quiz" />
-      <div v-if="error" class="text-red-500 text-center">{{ error }}</div> -->
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import DragAndDropImage from "@/components/common/DragAndDropImage.vue";
-import type { CreateQuizModal } from "~/types/quiz/CreateQuizModal";
 import DefaultButton from "@/components/interaction/buttons/DefaultButton.vue";
 import { useQuizStore } from "~/stores/quizStore";
-import NumberFieldTimer from "~/components/common/NumberFieldTimer.vue";
 import { quizModalConfig } from "~/constants/quizConfig";
 import { vAutoAnimate } from "@formkit/auto-animate/vue";
 import SelectComponent from "~/components/common/interaction/SelectComponent.vue";
-import SwitchComponent from "~/components/common/interaction/SwitchComponent.vue";
 import { ref, watch, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
-import type { QuizCreatePayloadType } from "~/types/config/QuizConfigType";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { quizFormSchema } from "~/validation/quizFormSchema";
@@ -213,7 +196,6 @@ const { handleSubmit, values } = useForm({
 });
 
 const onSubmit = handleSubmit(async (formValues: any) => {
-  console.log(formValues);
   error.value = null;
   try {
     const result = await useQuiz.create(formValues);

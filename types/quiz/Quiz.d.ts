@@ -28,6 +28,6 @@ export type QuizForm = {
   description: string;
   level_id: number | null;
   category_id: number | null;
-  is_public: string;
+  is_public: string | boolean;
   status: "draft" | "published" | "archived";
 };

@@ -23,10 +23,6 @@
       </FormField>
       <DefaultButton :ctaButton="true" type="submit" class="w-full justify-center"> Se connecter </DefaultButton>
     </form>
-    <Button variant="outline" class="w-full rounded-full">
-      Se connecter avec Google
-      <Google />
-    </Button>
   </div>
 </template>
 

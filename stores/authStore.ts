@@ -123,7 +123,26 @@ export const authStore = defineStore("auth", () => {
     navigateTo("/");
   };
 
-  return { state, signUp, signIn, signOut, getData };
+  const verify = async () => {
+    const { data, error } = await useFetch("/auth/verify", {
+      baseURL: `${useRuntimeConfig().public.apiBase}/api`,
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${state.value.token}`,
+        Accept: "application/json",
+      },
+    });
+    if (error.value?.statusCode === 401) {
+      state.value.isAuthenticated = false;
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      state.value.token = "";
+      navigateTo("/");
+    }
+    return true
+  };
+
+  return { state, signUp, verify, signIn, signOut, getData };
 }, {
   persist: true,
 });

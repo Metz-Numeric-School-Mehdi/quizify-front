@@ -1,17 +1,19 @@
 <template>
   <div>
     <form class="grid gap-4" @submit="onSubmit">
-      <FormField v-slot="{ componentField }" v-for="(items, index) in signUp" :name="items.name" :key="index"
-        class="space-y-1">
-        <FormItem v-auto-animate>
-          <FormLabel :for="items.name"> {{ items.label }} </FormLabel>
-          <FormControl>
-            <Input v-model="store.state.signUpPayload[items.name]" :placeholder="items.placeholder" :type="items.type"
-              required v-bind="componentField" :autocomplete="items.type === 'password' ? 'new-password' : 'off'" />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormField v-slot="{ componentField }" v-for="(items, index) in signUp" :name="items.name" :key="index"
+          class="space-y-1">
+          <FormItem v-auto-animate>
+            <FormLabel :for="items.name"> {{ items.label }} </FormLabel>
+            <FormControl>
+              <Input v-model="store.state.signUpPayload[items.name]" :placeholder="items.placeholder" :type="items.type"
+                required v-bind="componentField" :autocomplete="items.type === 'password' ? 'new-password' : 'off'" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+      </div>
       <div class="mb-4">
         <label class="block font-semibold mb-1">Photo de profil</label>
         <DragAndDropImage

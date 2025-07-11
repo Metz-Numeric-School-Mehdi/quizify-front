@@ -28,7 +28,7 @@
             @click="remove(question.id)"
             name="Trash"
             :stroke-width="2"
-            class="text-red-500 cursor-pointer"
+            class="text-red-500 cursor-pointer p-1 transition-all duration-200 hover:bg-red-100 hover:scale-105 rounded-full"
           />
         </div>
       </li>
@@ -68,7 +68,7 @@ const create = async () => {
     content:
       useQuiz.state.quiz?.questions && useQuiz.state.quiz.questions.length > 0
         ? useQuiz.state.quiz.questions[0].content
-        : questionsForm.value.content.trim() + " ?",
+        : questionsForm.value.content.trim(),
     question_type_id: 3,
   });
 };
