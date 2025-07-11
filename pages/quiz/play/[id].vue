@@ -2,13 +2,40 @@
   <div class="max-w-2xl mx-auto py-8">
     <div>
       <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 flex flex-col gap-6">
-        <!-- Titre et description toujours affichés en haut de la card -->
-        <div class="text-start">
-          <h2 class="text-[2rem] font-bold mb-2 text-pink-600">
-            {{ useQuiz.state.quiz?.title }}
-          </h2>
-          <div class="text-gray-600 mb-4">
-            {{ useQuiz.state.quiz?.description }}
+        <div class="flex items-start justify-between mb-2 gap-4">
+          <div class="text-start flex-1">
+            <h2 class="text-[2rem] font-bold mb-2 text-pink-600">
+              {{ useQuiz.state.quiz?.title }}
+            </h2>
+            <div class="text-gray-600 mb-4">
+              {{ useQuiz.state.quiz?.description }}
+            </div>
+          </div>
+          <div v-if="useQuiz.state.quiz?.duration && !quizFinished" class="flex-shrink-0">
+            <div class="relative w-14 h-14">
+              <svg class="w-14 h-14 transform -rotate-90" viewBox="0 0 56 56">
+                <circle cx="28" cy="28" r="24" fill="none" stroke="#f3c6d4" stroke-width="6" />
+                <circle
+                  cx="28"
+                  cy="28"
+                  r="24"
+                  fill="none"
+                  :stroke="timer <= 10 ? '#ef4444' : '#ec4899'"
+                  stroke-width="6"
+                  :stroke-dasharray="2 * Math.PI * 24"
+                  :stroke-dashoffset="
+                    (1 - timer / (useQuiz.state.quiz?.duration || 1)) * 2 * Math.PI * 24
+                  "
+                  stroke-linecap="round"
+                  class="transition-all duration-300"
+                />
+              </svg>
+              <span
+                class="absolute inset-0 flex items-center justify-center text-lg font-bold text-pink-700 select-none"
+              >
+                {{ formattedTime }}
+              </span>
+            </div>
           </div>
         </div>
         <template v-if="!quizFinished">
@@ -97,8 +124,6 @@ import DefaultButton from "~/components/interaction/buttons/DefaultButton.vue";
 
 const config = useRuntimeConfig();
 const useQuiz = useQuizStore();
-const useQuestion = useQuestionStore();
-const useAnswer = useAnswerStore();
 
 const route = useRoute();
 
@@ -111,15 +136,65 @@ const storageKey = `quiz-progress-${quizId}`;
 
 const activeQuestion = ref(1);
 const selectedAnswers = ref<{ [questionIndex: number]: number | null }>({});
+const quizFinished = ref(false);
+const score = ref(0);
+
+const timer = ref(0);
+const intervalId = ref<number | null>(null);
+
+const formattedTime = computed(() => {
+  const min = Math.floor(timer.value / 60);
+  const sec = timer.value % 60;
+  return `${min}:${sec.toString().padStart(2, "0")}`;
+});
+
+function startTimer() {
+  if (intervalId.value) clearInterval(intervalId.value);
+  if (timer.value > 0 && !quizFinished.value) {
+    intervalId.value = setInterval(() => {
+      if (timer.value > 0) {
+        timer.value--;
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            activeQuestion: activeQuestion.value,
+            selectedAnswers: selectedAnswers.value,
+          }),
+        );
+      }
+      if (timer.value === 0 && !quizFinished.value) {
+        clearInterval(intervalId.value!);
+        quizFinished.value = true;
+        finishQuiz();
+      }
+    }, 1000);
+  }
+}
 
 onMounted(async () => {
   await useQuiz.getOne(quizId);
+
+  timer.value = useQuiz.state.quiz?.duration || 0;
 
   const saved = localStorage.getItem(storageKey);
   if (saved) {
     const progress = JSON.parse(saved);
     activeQuestion.value = progress.activeQuestion || 1;
     selectedAnswers.value = progress.selectedAnswers || {};
+  }
+
+  if (!quizFinished.value) {
+    startTimer();
+  }
+});
+
+onUnmounted(() => {
+  if (intervalId.value) clearInterval(intervalId.value);
+});
+
+watch(quizFinished, (finished) => {
+  if (finished && intervalId.value) {
+    clearInterval(intervalId.value);
   }
 });
 
@@ -145,9 +220,6 @@ const selectedAnswer = computed({
     selectedAnswers.value[activeQuestion.value] = val;
   },
 });
-
-const quizFinished = ref(false);
-const score = ref(0);
 
 const nextQuestion = () => {
   if (
@@ -207,7 +279,9 @@ const restartQuiz = () => {
   score.value = 0;
   activeQuestion.value = 1;
   selectedAnswers.value = {};
+  timer.value = useQuiz.state.quiz?.duration || 0;
   localStorage.removeItem(storageKey);
+  startTimer();
 };
 
 const isPassed = computed(() => {
@@ -220,6 +294,12 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const quitQuiz = () => {
-  router.push("/"); // Redirige vers la page d'accueil, adapte si besoin
+  localStorage.removeItem(storageKey);
+  quizFinished.value = false;
+  score.value = 0;
+  activeQuestion.value = 1;
+  selectedAnswers.value = {};
+  timer.value = useQuiz.state.quiz?.duration || 0;
+  router.push("/");
 };
 </script>
