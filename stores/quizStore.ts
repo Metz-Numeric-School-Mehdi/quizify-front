@@ -9,7 +9,6 @@ import { authStore } from "./authStore";
 export const useQuizStore = defineStore(
   "quiz",
   () => {
-    const config = useRuntimeConfig();
     const auth = authStore();
     const state = ref<{
        [key: string]: any
@@ -59,6 +58,7 @@ export const useQuizStore = defineStore(
       },
       ready: false,
       allQuiz: null,
+      filteredPublicQuizzes: null,
       isOwner: false,
     });
 
@@ -89,7 +89,6 @@ export const useQuizStore = defineStore(
                 duration: quiz.duration ? Math.round(quiz.duration / 60) : 0,
               }))
           : [];
-        // Conversion de duration en minutes pour allQuiz
         state.value.allQuiz = data.value
           ? data.value.map(quiz => ({
               ...quiz,
@@ -289,6 +288,41 @@ export const useQuizStore = defineStore(
       };
     }
 
+    const getPublishedAndPublicQuizzes = async () => {
+      state.value.loading = true;
+      state.value.apiError = null;
+      try {
+        const { data } = await useFetch<Quiz[]>("/api/quizzes", {
+          baseURL: useRuntimeConfig().public.apiBase,
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${auth.state.token}`,
+          }
+        });
+
+        if (data.value) {
+          // Filtrer pour n'avoir que les quiz publiés et publics
+          const publishedAndPublicQuizzes = data.value.filter(quiz => {
+            return quiz.status === 'published' && (quiz.is_public === 1 || quiz.is_public === true);
+          });
+
+          state.value.filteredPublicQuizzes = publishedAndPublicQuizzes.map(quiz => ({
+            ...quiz,
+            duration: quiz.duration ? Math.round(quiz.duration / 60) : 0,
+          }));
+
+          console.log('Filtered public and published quizzes:', state.value.filteredPublicQuizzes.length);
+        } else {
+          state.value.filteredPublicQuizzes = [];
+        }
+        state.value.ready = true;
+      } catch (e: any) {
+        state.value.apiError = e.response?.data as ApiError;
+      } finally {
+        state.value.loading = false;
+      }
+    };
+
     return {
       state,
       getAll,
@@ -302,6 +336,7 @@ export const useQuizStore = defineStore(
       remove,
       submit,
       setQuizFormFromQuiz,
+      getPublishedAndPublicQuizzes
     };
   },
   {

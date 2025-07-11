@@ -25,7 +25,7 @@
     </div>
     <CreateQuizModal @close="useQuiz.state.openModal = false" />
     <div
-      v-if="!useQuiz.state.ready && !useQuiz.state.quizzes"
+      v-if="!useQuiz.state.ready && !useQuiz.state.filteredPublicQuizzes"
       class="w-full h-screen flex justify-center items-center"
     >
       <p class="text-center text-2xl">Loading...</p>
@@ -80,18 +80,11 @@ import {
 
 const useQuiz = useQuizStore();
 
-const quizzesList = computed(() => {
-  const q = useQuiz.state.quizzes as any;
-  if (!q) return [];
-  if (Array.isArray(q)) return q;
-  if (q.data && Array.isArray(q.data)) return q.data;
-  return [];
-});
-
 const quizzesByCategory = computed(() => {
-  const quizzes = quizzesList.value;
+  const quizzes = useQuiz.state.filteredPublicQuizzes;
   const grouped: Record<string, any[]> = {};
-  for (const quiz of quizzes) {
+
+  for (const quiz of quizzes || []) {
     const cat = quiz.category?.name || "Autre";
     if (!grouped[cat]) grouped[cat] = [];
     grouped[cat].push(quiz);
@@ -100,8 +93,14 @@ const quizzesByCategory = computed(() => {
 });
 
 onMounted(async () => {
+  console.log("Mounting Home component");
   await nextTick();
-  useQuiz.getAll();
+  await useQuiz.getPublishedAndPublicQuizzes();
+  console.log(
+    "Filtered quiz data loaded:",
+    useQuiz.state.filteredPublicQuizzes?.length,
+    "public and published quizzes",
+  );
 });
 </script>
 
