@@ -1,131 +1,166 @@
 <template>
-  <div class="max-w-2xl mx-auto py-8">
-    <div>
-      <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 flex flex-col gap-6">
-        <div class="flex items-start justify-between mb-2 gap-4">
-          <div class="text-start flex-1">
-            <h2 class="text-[2rem] font-bold mb-2 text-pink-600">
-              {{ useQuiz.state.quiz?.title }}
-            </h2>
-            <div class="text-gray-600 mb-4">
-              {{ useQuiz.state.quiz?.description }}
-            </div>
-          </div>
-          <div v-if="useQuiz.state.quiz?.duration && !quizFinished" class="flex-shrink-0">
-            <div class="relative w-14 h-14">
-              <svg class="w-14 h-14 transform -rotate-90" viewBox="0 0 56 56">
-                <circle cx="28" cy="28" r="24" fill="none" stroke="#f3c6d4" stroke-width="6" />
-                <circle
-                  cx="28"
-                  cy="28"
-                  r="24"
-                  fill="none"
-                  :stroke="timer <= 10 ? '#ef4444' : '#ec4899'"
-                  stroke-width="6"
-                  :stroke-dasharray="2 * Math.PI * 24"
-                  :stroke-dashoffset="
-                    (1 - timer / (useQuiz.state.quiz?.duration || 1)) * 2 * Math.PI * 24
-                  "
-                  stroke-linecap="round"
-                  class="transition-all duration-300"
-                />
-              </svg>
-              <span
-                class="absolute inset-0 flex items-center justify-center text-lg font-bold text-pink-700 select-none"
-              >
-                {{ formattedTime }}
-              </span>
-            </div>
-          </div>
-        </div>
+  <AlertDialog :open="showExitConfirmation" @update:open="showExitConfirmation = $event">
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Quitter le quiz ?</AlertDialogTitle>
+        <AlertDialogDescription>
+          Votre progression sera perdue. Êtes-vous sûr de vouloir quitter ce quiz ?
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel @click="cancelNavigation">Annuler</AlertDialogCancel>
+        <AlertDialogAction @click="confirmNavigation">Quitter</AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+
+  <div class="max-w-4xl mx-auto py-8 px-4">
+    <button
+      @click="router.back()"
+      class="flex items-center hover:underline gap-2 text-pink-500 hover:text-pink-700 font-medium mb-6 transition"
+      type="button"
+    >
+      <Icon name="ArrowLeft" :size="20" :stroke-width="2.5" />
+      Revenir en arrière
+    </button>
+    <div class="relative">
+      <div
+        class="absolute -top-10 -right-10 w-40 h-40 bg-pink-100 rounded-full opacity-50 blur-xl"
+      ></div>
+      <div
+        class="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-100 rounded-full opacity-50 blur-xl"
+      ></div>
+
+      <div
+        class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 flex flex-col gap-6 relative z-10"
+      >
+        <QuizHeader :quiz="useQuiz.state.quiz" :timer="timer" :quizFinished="quizFinished" />
+
         <template v-if="!quizFinished">
-          <div>
-            <div class="mb-4">
-              <span class="font-bold">
-                Question {{ activeQuestion }} / {{ useQuiz.state.quiz?.questions?.length }}
-              </span>
-            </div>
-            <div class="mb-4">
-              <label class="block font-semibold text-lg mb-2">
-                {{ useQuiz.state.quiz?.questions?.[activeQuestion - 1]?.content }}
-              </label>
-            </div>
-            <ul>
-              <li
-                v-for="(answer, idx) in useQuiz.state.quiz?.questions?.[activeQuestion - 1]
-                  ?.answers"
-                :key="idx"
+          <QuizQuestions
+            :questions="useQuiz.state.quiz?.questions ?? []"
+            :active-question="activeQuestion"
+            :pass-score="useQuiz.state.quiz?.pass_score ?? 0"
+            v-model="selectedAnswer"
+          >
+            <template #prev-button>
+              <DefaultButton
+                v-if="activeQuestion > 1"
+                :ctaButton="false"
+                @click="previousQuestion()"
+                class="px-6 py-2.5 font-medium flex items-center gap-2"
               >
-                <input
-                  type="radio"
-                  :id="`answer-${activeQuestion}-${idx}`"
-                  :name="`question-${activeQuestion}`"
-                  class="mr-2 accent-pink-500"
-                  :value="answer.id"
-                  v-model="selectedAnswer"
-                />
-                <label :for="`answer-${activeQuestion}-${idx}`" class="inline-block align-middle">
-                  {{ answer.content }}
-                </label>
-              </li>
-            </ul>
-            <div class="flex justify-between mt-6">
-              <div>
-                <DefaultButton
-                  v-if="activeQuestion > 1"
-                  :ctaButton="false"
-                  @click="previousQuestion()"
+                <Icon name="ChevronLeft" :stroke-width="2.5" :size="16" />
+                Précédent
+              </DefaultButton>
+            </template>
+            <template #next-button>
+              <DefaultButton
+                v-if="activeQuestion < (useQuiz.state.quiz?.questions?.length ?? 0)"
+                :ctaButton="true"
+                @click="nextQuestion()"
+                class="px-6 py-2.5 font-medium flex items-center gap-2"
+              >
+                Suivant
+                <Icon name="ChevronRight" :stroke-width="2.5" :size="16" />
+              </DefaultButton>
+              <DefaultButton
+                v-else
+                :ctaButton="true"
+                @click="finishQuiz()"
+                class="px-6 py-2.5 font-medium flex items-center gap-2"
+              >
+                Terminer
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
                 >
-                  Précédent
-                </DefaultButton>
-              </div>
-              <div>
-                <DefaultButton
-                  v-if="activeQuestion < useQuiz.state.quiz.questions?.length"
-                  :ctaButton="true"
-                  @click="nextQuestion()"
-                >
-                  Suivant
-                </DefaultButton>
-                <DefaultButton v-else :ctaButton="true" @click="finishQuiz()">
-                  Terminer
-                </DefaultButton>
-              </div>
-            </div>
-          </div>
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </DefaultButton>
+            </template>
+          </QuizQuestions>
         </template>
+
         <template v-else>
-          <div class="text-start">
-            <h3 class="text-xl font-bold mb-4 text-pink-600">
-              {{ isPassed ? "Victoire 🎉" : "Échec 😢" }}
-            </h3>
-            <div class="text-lg mb-2">
-              Score :
-              <span class="font-bold"
-                >{{ score }} / {{ useQuiz.state.quiz?.questions?.length }}</span
+          <QuizResults
+            :score="score"
+            :total-questions="useQuiz.state.quiz?.questions?.length || 0"
+            :pass-score="useQuiz.state.quiz?.pass_score || 0"
+          >
+            <template #actions>
+              <DefaultButton :ctaButton="true" @click="restartQuiz" class="py-3 px-6 font-medium">
+                <Icon name="RefreshCcw" :stroke-width="2.5" :size="16" />
+                Recommencer
+              </DefaultButton>
+              <DefaultButton
+                :ctaButton="false"
+                @click="showCorrection = !showCorrection"
+                class="py-3 px-6 font-medium"
               >
-              <br />
-              Seuil de réussite : {{ useQuiz.state.quiz?.pass_score }}%
-            </div>
-            <div class="flex flex-col sm:flex-row gap-4 justify-start mt-6">
-              <DefaultButton :ctaButton="true" @click="restartQuiz"> Recommencer </DefaultButton>
-              <DefaultButton :ctaButton="false" @click="quitQuiz"> Quitter </DefaultButton>
-            </div>
-          </div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                  />
+                </svg>
+                {{ showCorrection ? "Masquer la correction" : "Afficher la correction" }}
+              </DefaultButton>
+              <DefaultButton :ctaButton="false" @click="directExit" class="py-3 px-6 font-medium">
+                <Icon name="LogOut" :stroke-width="2.5" :size="16" />
+                Quitter
+              </DefaultButton>
+            </template>
+            <template #correction>
+              <QuizCorrection
+                :show="showCorrection"
+                :questions="useQuiz.state.quiz?.questions ?? []"
+                :user-answers="selectedAnswers"
+              />
+            </template>
+          </QuizResults>
         </template>
       </div>
     </div>
-    <div class="text-center py-10 text-red-500"></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import DefaultButton from "~/components/interaction/buttons/DefaultButton.vue";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import QuizHeader from "~/components/play/QuizHeader.vue";
+import QuizQuestions from "~/components/play/QuizQuestions.vue";
+import QuizResults from "~/components/play/QuizResults.vue";
+import QuizCorrection from "~/components/play/QuizCorrection.vue";
 
 const config = useRuntimeConfig();
 const useQuiz = useQuizStore();
 
 const route = useRoute();
+const router = useRouter();
 
 onMounted(async () => {
   await useQuiz.getOne(Number(route.params.id));
@@ -138,17 +173,14 @@ const activeQuestion = ref(1);
 const selectedAnswers = ref<{ [questionIndex: number]: number | null }>({});
 const quizFinished = ref(false);
 const score = ref(0);
+const showCorrection = ref(false);
 
 const timer = ref(0);
 const intervalId = ref<number | null>(null);
+const showExitConfirmation = ref(false);
+const pendingNavigation = ref<string | null>(null);
 
-const formattedTime = computed(() => {
-  const min = Math.floor(timer.value / 60);
-  const sec = timer.value % 60;
-  return `${min}:${sec.toString().padStart(2, "0")}`;
-});
-
-function startTimer() {
+const startTimer = () => {
   if (intervalId.value) clearInterval(intervalId.value);
   if (timer.value > 0 && !quizFinished.value) {
     intervalId.value = setInterval(() => {
@@ -169,20 +201,14 @@ function startTimer() {
       }
     }, 1000);
   }
-}
+};
 
 onMounted(async () => {
   await useQuiz.getOne(quizId);
 
   timer.value = useQuiz.state.quiz?.duration || 0;
 
-  const saved = localStorage.getItem(storageKey);
-  if (saved) {
-    const progress = JSON.parse(saved);
-    activeQuestion.value = progress.activeQuestion || 1;
-    selectedAnswers.value = progress.selectedAnswers || {};
-  }
-
+  window.addEventListener("beforeunload", handleBeforeUnload);
   if (!quizFinished.value) {
     startTimer();
   }
@@ -190,6 +216,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   if (intervalId.value) clearInterval(intervalId.value);
+  window.removeEventListener("beforeunload", handleBeforeUnload);
 });
 
 watch(quizFinished, (finished) => {
@@ -197,20 +224,6 @@ watch(quizFinished, (finished) => {
     clearInterval(intervalId.value);
   }
 });
-
-watch(
-  [activeQuestion, selectedAnswers],
-  () => {
-    localStorage.setItem(
-      storageKey,
-      JSON.stringify({
-        activeQuestion: activeQuestion.value,
-        selectedAnswers: selectedAnswers.value,
-      }),
-    );
-  },
-  { deep: true },
-);
 
 const selectedAnswer = computed({
   get() {
@@ -244,7 +257,7 @@ const finishQuiz = async () => {
   let correct = 0;
   const questions = useQuiz.state.quiz?.questions || [];
   questions.forEach((question, idx) => {
-    const userAnswerId = selectedAnswers.value[idx + 1]; // activeQuestion commence à 1
+    const userAnswerId = selectedAnswers.value[idx + 1];
     const correctAnswer = question.answers.find((a) => a.is_correct);
     if (correctAnswer && userAnswerId == correctAnswer.id) {
       correct++;
@@ -284,22 +297,56 @@ const restartQuiz = () => {
   startTimer();
 };
 
-const isPassed = computed(() => {
-  const total = useQuiz.state.quiz?.questions?.length || 0;
-  if (!total) return false;
-  const percent = (score.value / total) * 100;
-  return percent >= (useQuiz.state.quiz?.pass_score || 0);
-});
-import { useRouter } from "vue-router";
-const router = useRouter();
-
-const quitQuiz = () => {
-  localStorage.removeItem(storageKey);
-  quizFinished.value = false;
-  score.value = 0;
-  activeQuestion.value = 1;
-  selectedAnswers.value = {};
-  timer.value = useQuiz.state.quiz?.duration || 0;
+const directExit = () => {
+  isNavigationConfirmed.value = true;
   router.push("/");
 };
+
+const confirmNavigation = () => {
+  const destination = pendingNavigation.value;
+  showExitConfirmation.value = false;
+  pendingNavigation.value = null;
+  isNavigationConfirmed.value = true;
+  setTimeout(() => {
+    if (destination) {
+      router.push(destination);
+    }
+  }, 0);
+};
+
+const cancelNavigation = () => {
+  showExitConfirmation.value = false;
+  pendingNavigation.value = null;
+};
+
+const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+  if (!quizFinished.value) {
+    event.preventDefault();
+    event.returnValue = "";
+    return "";
+  }
+};
+
+const isNavigationConfirmed = ref(false);
+
+router.beforeEach((to, from, next) => {
+  if (isNavigationConfirmed.value) {
+    isNavigationConfirmed.value = false;
+    next();
+    return;
+  }
+  if (
+    showExitConfirmation.value ||
+    quizFinished.value ||
+    to.path.includes(`/quiz/play/${quizId}`)
+  ) {
+    next();
+    return;
+  }
+
+  showExitConfirmation.value = true;
+  pendingNavigation.value = to.fullPath;
+
+  next(false);
+});
 </script>
