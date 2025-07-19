@@ -15,14 +15,14 @@ export const useLeaderboardStore = defineStore("leaderboard", () => {
     loading: false,
   });
 
-  const getGlobalLeaderboard = async (page: number = 1) => {
+  const getGlobalLeaderboard = async (page: number = 1, order: "asc" | "desc" = "desc") => {
     state.value.loading = true;
     state.value.error = null;
     try {
       const data = await $fetch<LeaderboardResponse>("/api/leaderboard", {
         baseURL: useRuntimeConfig().public.apiBase,
         method: "GET",
-        query: { page }
+        query: { page, order }
       });
       state.value.leaderboard = data;
     } catch (err: any) {
@@ -31,14 +31,14 @@ export const useLeaderboardStore = defineStore("leaderboard", () => {
     state.value.loading = false;
   };
 
-  const getLeaderboardByCategory = async (categoryId: number, page: number = 1) => {
+  const getLeaderboardByCategory = async (categoryId: number, page: number = 1, order: "asc" | "desc" = "desc") => {
     state.value.loading = true;
     state.value.error = null;
     try {
       const data = await $fetch<LeaderboardResponse>(`/api/leaderboard/category/${categoryId}`, {
         baseURL: useRuntimeConfig().public.apiBase,
         method: "GET",
-        query: { page }
+        query: { page, order }
       });
       state.value.leaderboard = data;
     } catch (err: any) {
@@ -47,14 +47,14 @@ export const useLeaderboardStore = defineStore("leaderboard", () => {
     state.value.loading = false;
   };
 
-  const getLeaderboardByOrganization = async (organizationId: number, page: number = 1) => {
+  const getLeaderboardByOrganization = async (organizationId: number, page: number = 1, order: "asc" | "desc" = "desc") => {
     state.value.loading = true;
     state.value.error = null;
     try {
       const data = await $fetch<LeaderboardResponse>(`/api/leaderboard/organization/${organizationId}`, {
         baseURL: useRuntimeConfig().public.apiBase,
         method: "GET",
-        query: { page }
+        query: { page, order }
       });
       state.value.leaderboard = data;
     } catch (err: any) {
