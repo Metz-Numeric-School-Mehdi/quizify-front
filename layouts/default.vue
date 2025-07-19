@@ -27,7 +27,7 @@
         </svg>
       </button>
       <ul class="hidden lg:flex flex-1 items-center gap-2 sm:gap-4">
-        <li v-for="(link, index) in sidebarItems" :key="index">
+        <li v-for="(link, index) in sidebarLinks" :key="index">
           <NuxtLink
             :to="link.path"
             :class="[
@@ -78,7 +78,7 @@
               <Icon name="X" :stroke-width="2" class="w-6 h-6 text-purple-700" />
             </button>
             <ul class="flex flex-col gap-3">
-              <li v-for="(link, index) in sidebarItems" :key="index">
+              <li v-for="(link, index) in sidebarLinks" :key="index">
                 <NuxtLink
                   @click.native="showMobileMenu = false"
                   :to="link.path"
@@ -138,10 +138,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import DefaultButton from "~/components/interaction/buttons/DefaultButton.vue";
-import { sidebarItems } from "~/constants/Navigation";
+import { getSidebarItems } from "~/constants/Navigation";
 import { useQuizStore } from "~/stores/quizStore";
+import { authStore } from "~/stores/authStore";
 
 const route = useRoute();
 const router = useRouter();
@@ -149,6 +150,15 @@ const router = useRouter();
 const useAuth = authStore();
 const useQuiz = useQuizStore();
 const showMobileMenu = ref(false);
+
+const sidebarLinks = computed(() => {
+  const items = getSidebarItems();
+  if (!useAuth.state.isAuthenticated) {
+    return items.filter(item => item.name !== "Mes quizs");
+  }
+  return items;
+});
+
 onMounted(() => {
   useQuiz.state.openModal = false;
 });
