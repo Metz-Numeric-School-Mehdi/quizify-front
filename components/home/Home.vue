@@ -15,7 +15,11 @@
       ></div>
     </div>
     <div class="flex justify-end mb-4 z-10">
-      <DefaultButton :ctaButton="true" @click="useQuiz.state.openModal = true">
+      <DefaultButton
+        v-if="useAuth.state.isAuthenticated"
+        :ctaButton="true"
+        @click="useQuiz.state.openModal = true"
+      >
         <span class="text-xl sm:text-2xl">
           <Icon name="Plus" :stroke-width="2.5" :size="20" />
         </span>
@@ -79,6 +83,7 @@ import {
 } from "@/components/ui/carousel";
 
 const useQuiz = useQuizStore();
+const useAuth = authStore();
 
 const quizzesByCategory = computed(() => {
   const quizzes = useQuiz.state.filteredPublicQuizzes;
