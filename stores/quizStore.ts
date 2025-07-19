@@ -226,6 +226,26 @@ export const useQuizStore = defineStore(
       }
     };
 
+    const deleteQuiz = async (id: number) => {
+      state.value.apiError = null;
+      try {
+        const { data, error } = await useFetch(`/api/quizzes/${id}`, {
+          baseURL: useRuntimeConfig().public.apiBase,
+          method: "PUT",
+          body: payload,
+          headers: { Authorization: `Bearer ${auth.state.token}` },
+        });
+        if (error.value) {
+          state.value.apiError = error.value.data as ApiError;
+          return false;
+        }
+        getOne(id);
+        return true;
+      } catch (e: any) {
+        state.value.apiError = e.response?.data as ApiError;
+        return false;
+      }
+    };
 
     const resetQuizForm = () => {
       state.value.quizForm = {
@@ -329,6 +349,7 @@ export const useQuizStore = defineStore(
       getOne,
       getLevels,
       getCategories,
+      deleteQuiz,
       resetPayload,
       create,
       update,
