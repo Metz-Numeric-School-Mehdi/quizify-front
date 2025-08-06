@@ -1,12 +1,12 @@
 <template>
   <div
     @click="play()"
-    class="relative rounded-xl cursor-pointer overflow-hidden w-full max-w-xs h-64 sm:h-72 mx-auto bg-white shadow-md border border-gray-100 group transition-all duration-200 hover:scale-105"
+    class="relative rounded-xl cursor-pointer overflow-hidden w-full max-w-xs h-64 sm:h-72 mx-auto group bg-transparent transition-all duration-200 hover:bg-gray-200"
   >
     <img v-if="img" class="w-full h-32 sm:h-36 object-cover" :src="img" alt="Quiz Image" />
     <img
       v-else
-      class="w-full h-32 sm:h-36 object-cover"
+      class="w-full h-32 p-1 sm:h-36 object-cover rounded-xl"
       src="@/assets/img/card_wallp.jpeg"
       alt="Quiz Image"
     />
