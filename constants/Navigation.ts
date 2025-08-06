@@ -1,4 +1,4 @@
-export const sidebarItems = [
+export const getSidebarItems = () => [
   {
     name: "Accueil",
     path: "/",
@@ -11,7 +11,7 @@ export const sidebarItems = [
   },
   {
     name: "Classements",
-    path: "/achievements",
+    path: "/leaderboard",
     icon: "Trophy",
   },
   {
