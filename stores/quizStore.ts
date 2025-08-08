@@ -321,7 +321,6 @@ export const useQuizStore = defineStore(
         });
 
         if (data.value) {
-          // Filtrer pour n'avoir que les quiz publiés et publics
           const publishedAndPublicQuizzes = data.value.filter(quiz => {
             return quiz.status === 'published' && (quiz.is_public === 1 || quiz.is_public === true);
           });
@@ -330,8 +329,6 @@ export const useQuizStore = defineStore(
             ...quiz,
             duration: quiz.duration ? Math.round(quiz.duration / 60) : 0,
           }));
-
-          console.log('Filtered public and published quizzes:', state.value.filteredPublicQuizzes.length);
         } else {
           state.value.filteredPublicQuizzes = [];
         }
