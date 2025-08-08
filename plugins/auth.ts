@@ -6,7 +6,7 @@ export default defineNuxtPlugin(async nuxtApp => {
   try {
     await store.verify()
   } catch (error) {
-    console.log('Non authentifié')
+    console.error('Non authentifié')
   }
 
   addRouteMiddleware(
