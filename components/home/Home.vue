@@ -1,92 +1,213 @@
 <template>
   <div class="flex flex-col gap-4 relative">
-    <div class="absolute inset-0 -z-10 pointer-events-none">
+    <div class="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
       <div
-        class="absolute w-32 h-32 bg-pink-200 opacity-30 rounded-full top-10 left-10 animate-pulse"
-      ></div>
+        class="absolute w-56 h-56 bg-gradient-to-r from-pink-200 to-purple-200 opacity-20 rounded-full -top-20 -left-20 animate-pulse">
+      </div>
       <div
-        class="absolute w-24 h-24 bg-blue-200 opacity-20 rounded-full bottom-20 right-20 animate-ping"
-      ></div>
+        class="absolute w-64 h-64 bg-gradient-to-br from-blue-200 to-cyan-200 opacity-15 rounded-full -bottom-32 -right-32 animate-pulse">
+      </div>
       <div
-        class="absolute w-16 h-16 bg-yellow-200 opacity-20 rounded-full top-1/2 left-1/2 animate-bounce"
-      ></div>
+        class="absolute w-40 h-40 bg-gradient-to-l from-yellow-200 to-orange-200 opacity-10 rounded-full top-1/3 right-10 animate-pulse">
+      </div>
       <div
-        class="absolute w-20 h-20 bg-purple-200 opacity-10 rounded-full bottom-10 left-1/3 animate-spin-slow"
-      ></div>
+        class="absolute w-48 h-48 bg-gradient-to-t from-purple-200 to-indigo-200 opacity-10 rounded-full bottom-20 left-1/4 animate-pulse">
+      </div>
     </div>
-    <div class="flex justify-end mb-4 z-10">
-      <DefaultButton
-        v-if="useAuth.state.isAuthenticated"
-        :ctaButton="true"
-        @click="useQuiz.state.openModal = true"
-      >
-        <span class="text-xl sm:text-2xl">
-          <Icon name="Plus" :stroke-width="2.5" :size="20" />
-        </span>
-        <span class="hidden sm:inline">Créer un quiz</span>
-        <span class="inline sm:hidden">Créer</span>
-      </DefaultButton>
+
+    <div
+      class="bg-white/70 dark:bg-background/90 backdrop-blur-sm py-4 px-4 sm:px-6 rounded-xl shadow-sm border border-border/20 mb-2 z-10">
+      <div class="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-primary-linear mb-1">Explorez les Quiz</h1>
+          <p class="text-sm text-text-color/80">Découvrez et testez vos connaissances avec nos quiz interactifs</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+          <div class="flex-grow order-1 sm:order-none">
+            <SimpleSearch @search-result="handleSearchResult" />
+          </div>
+
+          <div class="flex gap-2 ml-auto sm:ml-0 order-2 sm:order-none">
+            <Button variant="outline" size="sm" class="flex-shrink-0 whitespace-nowrap" @click="toggleShowFilters()">
+              <Icon :name="showFilters ? 'X' : 'Filter'" :size="16" class="mr-1" />
+              {{ showFilters ? 'Fermer les filtres' : 'Filtrer' }}
+            </Button>
+
+            <DefaultButton v-if="useAuth.state.isAuthenticated" :ctaButton="true"
+              @click="useQuiz.state.openModal = true" class="flex-shrink-0">
+              <span class="text-lg sm:text-xl">
+                <Icon name="Plus" :stroke-width="2.5" :size="20" />
+              </span>
+              <span class="hidden sm:inline">Créer un quiz</span>
+              <span class="inline sm:hidden">Créer</span>
+            </DefaultButton>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="showFilters" class="mt-4 bg-white/60 dark:bg-card/60 p-4 rounded-xl border border-border/30">
+        <SimpleFilters @search-result="handleSearchResult" />
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 mt-4">
+        <button @click="showAll = !showAll" class="px-4 py-1.5 rounded-full text-sm font-medium transition-colors"
+          :class="showAll ? 'bg-primary-linear text-white' : 'bg-white dark:bg-card text-text-color border border-border/30 hover:bg-primary-linear/10'">
+          <span class="flex items-center gap-1.5">
+            <Icon name="LayoutGrid" :size="16" />
+            Tous les quiz
+          </span>
+        </button>
+        <button @click="showAll = false" class="px-4 py-1.5 rounded-full text-sm font-medium transition-colors"
+          :class="!showAll ? 'bg-primary-linear text-white' : 'bg-white dark:bg-card text-text-color border border-border/30 hover:bg-primary-linear/10'">
+          <span class="flex items-center gap-1.5">
+            <Icon name="FolderOpen" :size="16" />
+            Par catégorie
+          </span>
+        </button>
+      </div>
     </div>
     <CreateQuizModal @close="useQuiz.state.openModal = false" />
-    <div
-      v-if="!useQuiz.state.ready && !useQuiz.state.filteredPublicQuizzes"
-      class="w-full h-screen flex justify-center items-center"
-    >
-      <p class="text-center text-2xl">Loading...</p>
+
+    <div v-if="loading" class="w-full min-h-[60vh] flex justify-center items-center">
+      <div
+        class="bg-white/70 dark:bg-background/90 backdrop-blur-sm p-8 rounded-xl shadow-sm border border-border/20 flex flex-col items-center">
+        <div class="w-16 h-16 border-4 border-primary-linear border-t-transparent rounded-full animate-spin mb-6"></div>
+        <p class="text-center text-lg font-medium text-primary-linear mb-2">Chargement des quiz</p>
+        <p class="text-sm text-text-color/70">Merci de patienter un instant...</p>
+      </div>
     </div>
-    <main v-else class="flex-1 flex flex-col gap-10 p-2 sm:p-6">
-      <template v-for="(quizzes, category) in quizzesByCategory" :key="category">
-        <section class="mb-12">
-          <h2 class="text-3xl sm:text-[1.7rem] font-bold text-pink-600 mb-4 ml-2 tracking-wide">
-            {{ category }}
-          </h2>
-          <Carousel class="relative w-full" :opts="{ align: 'start' }">
-            <CarouselContent class="-ml-1 flex gap-1">
-              <CarouselItem
-                v-for="quiz in quizzes"
-                :key="quiz.id"
-                class="pl-1 md:basis-1/2 lg:basis-1/3"
-              >
-                <div class="p-5">
-                  <QuizCard
-                    :img="quiz.thumbnail_url || ''"
-                    :quizId="quiz.id"
-                    :title="quiz.title"
-                    :duration="quiz.duration"
-                    :description="quiz.description"
-                    class="min-w-[260px] max-w-xs flex-shrink-0 bg-card text-card-foreground rounded-xl"
-                  />
-                </div>
-              </CarouselItem>
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+
+    <div v-else-if="error" class="w-full min-h-[60vh] flex justify-center items-center p-4">
+      <div
+        class="bg-white/70 dark:bg-background/90 backdrop-blur-sm p-8 rounded-xl shadow-sm border border-red-300/50 max-w-md w-full">
+        <div class="flex flex-col items-center text-center">
+          <div class="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-4">
+            <Icon name="AlertCircle" :size="32" class="text-red-500" />
+          </div>
+          <h3 class="text-lg font-semibold text-red-600 mb-2">Une erreur est survenue</h3>
+          <p class="text-sm text-text-color/80 mb-6">{{ error }}</p>
+          <button @click="search"
+            class="flex items-center gap-2 bg-primary-linear hover:bg-primary-linear/90 text-white font-medium py-2 px-6 rounded-full transition-colors">
+            <Icon name="RefreshCw" :size="16" />
+            Réessayer
+          </button>
+        </div>
+      </div>
+    </div>
+    <main v-else class="flex-1 flex flex-col gap-6 sm:gap-10 p-0 sm:p-2">
+      <template v-if="showAll">
+        <section
+          class="bg-white/70 dark:bg-background/90 backdrop-blur-sm p-4 sm:p-6 rounded-xl shadow-sm border border-border/20">
+          <div class="flex items-center justify-between mb-5">
+            <h2 class="text-xl sm:text-2xl font-bold text-primary-linear">
+              <span class="inline-flex items-center gap-2">
+                <Icon name="Layout" :size="20" class="text-primary-linear/80" />
+                Tous les quiz
+              </span>
+            </h2>
+            <div class="text-sm text-text-color/70">{{ items?.length || 0 }} quiz disponibles</div>
+          </div>
+
+          <div v-if="!items?.length" class="flex flex-col items-center justify-center py-16 text-center">
+            <div class="w-20 h-20 bg-primary-linear/10 rounded-full flex items-center justify-center mb-4">
+              <Icon name="Search" :size="32" class="text-primary-linear/60" />
+            </div>
+            <h3 class="text-lg font-semibold text-text-color mb-2">Aucun quiz trouvé</h3>
+            <p class="text-sm text-text-color/70 max-w-md">Essayez de modifier vos critères de recherche ou créez votre
+              propre quiz !</p>
+          </div>
+
+          <div v-else
+            class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 sm:gap-6">
+            <QuizCard v-for="quiz in items" :key="quiz.id" :img="quiz.thumbnail_url || ''" :quizId="quiz.id"
+              :title="quiz.title" :duration="quiz.duration" :description="quiz.description"
+              class="w-full max-w-full sm:max-w-xs h-full" />
+          </div>
         </section>
+      </template>
+
+      <template v-else>
+        <template v-if="Object.keys(quizzesByCategory).length === 0">
+          <div
+            class="bg-white/70 dark:bg-background/90 backdrop-blur-sm p-6 sm:p-8 rounded-xl shadow-sm border border-border/20 flex flex-col items-center justify-center py-16 text-center">
+            <div class="w-20 h-20 bg-primary-linear/10 rounded-full flex items-center justify-center mb-4">
+              <Icon name="FolderOpen" :size="32" class="text-primary-linear/60" />
+            </div>
+            <h3 class="text-lg font-semibold text-text-color mb-2">Aucune catégorie trouvée</h3>
+            <p class="text-sm text-text-color/70 max-w-md">Essayez de modifier vos critères de recherche ou créez votre
+              propre quiz !</p>
+          </div>
+        </template>
+
+        <template v-else v-for="(quizzes, category) in quizzesByCategory" :key="category">
+          <section
+            class="bg-white/70 dark:bg-background/90 backdrop-blur-sm p-4 sm:p-6 rounded-xl shadow-sm border border-border/20">
+            <div class="flex items-center justify-between mb-5">
+              <h2 class="text-xl sm:text-2xl font-bold text-primary-linear">
+                <span class="inline-flex items-center gap-2">
+                  <Icon name="FolderOpen" :size="20" class="text-primary-linear/80" />
+                  {{ category }}
+                </span>
+              </h2>
+              <div class="text-sm text-text-color/70">{{ quizzes.length }} quiz</div>
+            </div>
+
+            <div
+              class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 sm:gap-6">
+              <QuizCard v-for="quiz in quizzes" :key="quiz.id" :img="quiz.thumbnail_url || ''" :quizId="quiz.id"
+                :title="quiz.title" :duration="quiz.duration" :description="quiz.description"
+                class="w-full max-w-full sm:max-w-xs h-full" />
+            </div>
+          </section>
+        </template>
       </template>
     </main>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, nextTick } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useQuizStore } from "~/stores/quizStore";
+import { useQuizSearch } from "~/composables/useQuizzesSearch";
 import QuizCard from "../QuizCard.vue";
 import CreateQuizModal from "../modals/quiz/CreateQuizModal.vue";
 import DefaultButton from "../interaction/buttons/DefaultButton.vue";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+import SimpleSearch from "../quiz/search/SimpleSearch.vue";
+import SimpleFilters from "../quiz/search/SimpleFilters.vue";
+import { Button } from "../ui/button";
 
 const useQuiz = useQuizStore();
 const useAuth = authStore();
 
+const { items, meta, loading, error, search } = useQuizSearch();
+const showFilters = ref(false);
+
+const showAll = ref(false);
+
+onMounted(() => {
+  showAll.value = false;
+  search();
+});
+
+const toggleShowFilters = () => {
+  showFilters.value = !showFilters.value;
+};
+
+const handleSearchResult = (results: any) => {
+  if (results.items) {
+    items.value = results.items;
+  }
+
+  if (results.meta) {
+    meta.value = results.meta;
+  }
+
+  showAll.value = true;
+};
+
 const quizzesByCategory = computed(() => {
-  const quizzes = useQuiz.state.filteredPublicQuizzes;
+  const quizzes = items.value;
   const grouped: Record<string, any[]> = {};
 
   for (const quiz of quizzes || []) {
@@ -94,18 +215,13 @@ const quizzesByCategory = computed(() => {
     if (!grouped[cat]) grouped[cat] = [];
     grouped[cat].push(quiz);
   }
-  return grouped;
-});
 
-onMounted(async () => {
-  console.log("Mounting Home component");
-  await nextTick();
-  await useQuiz.getPublishedAndPublicQuizzes();
-  console.log(
-    "Filtered quiz data loaded:",
-    useQuiz.state.filteredPublicQuizzes?.length,
-    "public and published quizzes",
-  );
+  return Object.keys(grouped)
+    .sort()
+    .reduce((acc, key) => {
+      acc[key] = grouped[key];
+      return acc;
+    }, {} as Record<string, any[]>);
 });
 </script>
 
@@ -114,6 +230,7 @@ onMounted(async () => {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
