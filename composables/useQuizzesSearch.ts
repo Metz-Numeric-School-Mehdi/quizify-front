@@ -31,18 +31,16 @@ export function useQuizSearch() {
         params,
         baseURL: useRuntimeConfig().public.apiBase,
       });
+      // Conversion de duration en minutes pour chaque quiz
       items.value =
-        data &&
-        typeof data === "object" &&
-        data !== null &&
-        "items" in data
-          ? ((data as any).items as Quiz[])
+        data && typeof data === "object" && data !== null && "items" in data
+          ? ((data as any).items as Quiz[]).map((quiz) => ({
+              ...quiz,
+              duration: quiz.duration ? Math.round(quiz.duration / 60) : 0,
+            }))
           : [];
       meta.value =
-        data &&
-        typeof data === "object" &&
-        data !== null &&
-        "meta" in data
+        data && typeof data === "object" && data !== null && "meta" in data
           ? ((data as any).meta as QuizMeta)
           : null;
     } catch (err) {
