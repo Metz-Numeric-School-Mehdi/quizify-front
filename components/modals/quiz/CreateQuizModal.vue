@@ -1,9 +1,6 @@
 <template>
-  <div
-    v-if="useQuiz.state.openModal"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-2 md:px-0"
-    @click.self="closeModal"
-  >
+  <div v-if="useQuiz.state.openModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-2 md:px-0" @click.self="closeModal">
     <div class="p-8 bg-white max-w-[45rem] rounded-xl overflow-y-auto max-h-[90vh]">
       <div class="flex items-center justify-between mb-2">
         <h2 class="text-title font-[500]">{{ quizModalConfig.title }}</h2>
@@ -13,14 +10,9 @@
       </div>
       <p class="text-gray-500 mb-4">{{ quizModalConfig.description }}</p>
       <form class="flex flex-wrap gap-4 pt-4 items-center" @submit="onSubmit">
-        <div
-          v-for="(field, index) in quizModalConfig.form"
-          :key="field.vModel"
-          class="space-y-1 w-full"
-          :class="{
-            'md:w-[calc(50%-0.5rem)]': quizModalConfig.form.length > 3 && index > 2,
-          }"
-        >
+        <div v-for="(field, index) in quizModalConfig.form" :key="field.vModel" class="space-y-1 w-full" :class="{
+          'md:w-[calc(50%-0.5rem)]': quizModalConfig.form.length > 3 && index > 2,
+        }">
           <FormField v-slot="{ componentField }" :name="field.vModel">
             <FormItem v-auto-animate>
               <FormLabel :for="field.vModel" v-if="field.type !== 'switch'">
@@ -28,89 +20,53 @@
               </FormLabel>
               <FormControl>
                 <template v-if="field.type === 'text'">
-                  <Input
-                    v-bind="componentField"
-                    :type="field.type"
-                    :id="field.vModel"
-                    :placeholder="field.placeholder"
-                    :required="field.required"
-                    class="w-full"
-                  />
+                  <Input v-bind="componentField" :type="field.type" :id="field.vModel" :placeholder="field.placeholder"
+                    :required="field.required" class="w-full" />
                 </template>
                 <template v-else-if="field.type === 'textarea'">
-                  <Textarea
-                    v-bind="componentField"
-                    :id="field.vModel"
-                    :placeholder="field.placeholder"
-                    :required="field.required"
-                    class="w-full resize-none h-[120px]"
-                  />
+                  <Textarea v-bind="componentField" :id="field.vModel" :placeholder="field.placeholder"
+                    :required="field.required" class="w-full resize-none h-[120px]" />
                 </template>
                 <template v-else-if="field.type === 'number'">
                   <template v-if="field.vModel === 'duration'">
                     <div class="flex gap-2 flex-wrap">
-                      <button
-                        v-for="min in [1, 2, 3, 5, 10, 15, 20, 30, 45, 60]"
-                        :key="min"
-                        type="button"
-                        :tabindex="Number(values.duration) === min ? 0 : -1"
-                        :class="[
+                      <button v-for="min in [1, 2, 3, 5, 10, 15, 20, 30, 45, 60]" :key="min" type="button"
+                        :tabindex="Number(values.duration) === min ? 0 : -1" :class="[
                           'px-4 py-2 rounded-full font-semibold border transition',
                           Number(values.duration) === min
                             ? 'bg-pink-500 text-white border-pink-500 ring-2 ring-pink-400'
                             : 'bg-white text-pink-600 border-pink-200 hover:bg-pink-50',
-                        ]"
-                        @click="componentField.onChange(min)"
-                      >
+                        ]" @click="componentField.onChange(min)">
                         {{ min }} min
                       </button>
                     </div>
                   </template>
                   <template v-else-if="field.vModel === 'pass_score'">
                     <div class="flex gap-2 flex-wrap">
-                      <button
-                        v-for="score in [50, 60, 70, 80, 90, 100]"
-                        :key="score"
-                        type="button"
-                        :tabindex="Number(values.pass_score) === score ? 0 : -1"
-                        :class="[
+                      <button v-for="score in [50, 60, 70, 80, 90, 100]" :key="score" type="button"
+                        :tabindex="Number(values.pass_score) === score ? 0 : -1" :class="[
                           'px-4 py-2 rounded-full font-semibold border transition',
                           Number(values.pass_score) === score
                             ? 'bg-pink-500 text-white border-pink-500 ring-2 ring-pink-400'
                             : 'bg-white text-pink-600 border-pink-200 hover:bg-pink-50',
-                        ]"
-                        @click="componentField.onChange(score)"
-                      >
+                        ]" @click="componentField.onChange(score)">
                         {{ score }} %
                       </button>
                     </div>
                   </template>
                   <template v-else>
-                    <Input
-                      v-bind="componentField"
-                      type="number"
-                      :id="field.vModel"
-                      :placeholder="field.placeholder"
-                      :required="field.required"
-                      class="w-full"
-                      min="0"
-                      :max="field.vModel === 'pass_score' ? 100 : undefined"
-                    />
+                    <Input v-bind="componentField" type="number" :id="field.vModel" :placeholder="field.placeholder"
+                      :required="field.required" class="w-full" min="0"
+                      :max="field.vModel === 'pass_score' ? 100 : undefined" />
                   </template>
                 </template>
                 <template v-else-if="field.type === 'select'">
-                  <SelectComponent
-                    v-bind="componentField"
-                    :options="
-                      Array.isArray(field.options)
-                        ? field.options
-                        : (useQuiz.state as any)[field.options] || []
-                    "
-                    :placeholder="field.placeholder"
-                    @open="
+                  <SelectComponent v-bind="componentField" :options="Array.isArray(field.options)
+                    ? field.options
+                    : (useQuiz.state as any)[field.options] || []
+                    " :placeholder="field.placeholder" @open="
                       field.fetch ? fetchers[field.fetch] && fetchers[field.fetch]() : undefined
-                    "
-                  />
+                      " />
                 </template>
               </FormControl>
               <FormMessage />
@@ -198,12 +154,11 @@ const { handleSubmit, values } = useForm({
 const onSubmit = handleSubmit(async (formValues: any) => {
   error.value = null;
   try {
-    const result = await useQuiz.create(formValues);
-
-    if (result) {
+    const createdQuiz = await useQuiz.create(formValues);
+    if (createdQuiz && createdQuiz.id) {
       closeModal();
+      router.push(`/quiz/edit/${createdQuiz.id}`);
       await useQuiz.getAll();
-      router.push(`/quiz/edit/${useQuiz.state.quiz?.id}`);
     } else {
       error.value = "Erreur lors de la création du quiz.";
     }
