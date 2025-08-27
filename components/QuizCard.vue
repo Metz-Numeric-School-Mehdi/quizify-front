@@ -25,7 +25,7 @@
         
         <div class="absolute top-3 right-3 z-20">
           <span class="bg-white/80 text-primary-linear text-2xsmall sm:text-xsmall font-semibold px-2 py-0.5 sm:px-3 sm:py-1 rounded-full shadow-md backdrop-blur-sm border border-primary-linear/30 transition-all duration-300 group-hover:bg-primary-linear group-hover:text-white">
-            <slot name="level">Niveau</slot>
+            <slot name="level">{{ level.name }}</slot>
           </span>
         </div>
       </div>
@@ -63,15 +63,16 @@
 </template>
 
 <script setup lang="ts">
-const { title, duration, img, quizId, description } = defineProps<{
+import type { Level } from '~/types/quiz/Level';
+
+const { title, duration, img, quizId, description, level } = defineProps<{
   title: string;
   duration: number | null;
   img: string;
   quizId: number;
   description: string;
+  level: Level;
 }>();
-
-console.log(duration)
 
 const router = useRouter();
 

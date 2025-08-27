@@ -20,7 +20,7 @@ export function useQuizSearch() {
 
   /**
    * Performs a quiz search.
-   * @param {object} params - Search parameters (q, level_id, category_id, status, is_public, page)
+   * @param {object} params
    */
   async function search(params = {}) {
     loading.value = true;
@@ -31,7 +31,6 @@ export function useQuizSearch() {
         params,
         baseURL: useRuntimeConfig().public.apiBase,
       });
-      // Conversion de duration en minutes pour chaque quiz
       items.value =
         data && typeof data === "object" && data !== null && "items" in data
           ? ((data as any).items as Quiz[]).map((quiz) => ({
