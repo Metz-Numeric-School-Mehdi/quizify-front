@@ -29,10 +29,10 @@
           </div>
 
           <div class="flex gap-2 ml-auto sm:ml-0 order-2 sm:order-none">
-            <Button variant="outline" size="sm" class="flex-shrink-0 whitespace-nowrap" @click="toggleShowFilters()">
+            <!-- <Button variant="outline" size="sm" class="flex-shrink-0 whitespace-nowrap" @click="toggleShowFilters()">
               <Icon :name="showFilters ? 'X' : 'Filter'" :size="16" class="mr-1" />
               {{ showFilters ? 'Fermer les filtres' : 'Filtrer' }}
-            </Button>
+            </Button> -->
           </div>
         </div>
       </div>
@@ -157,7 +157,7 @@
             <div
               class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 sm:gap-6">
               <QuizCard v-for="quiz in quizzes" :key="quiz.id" :img="quiz.thumbnail_url || ''" :quizId="quiz.id"
-                :title="quiz.title" :duration="quiz.duration" :description="quiz.description"
+                :title="quiz.title" :duration="quiz.duration" :description="quiz.description" :level="quiz.level"
                 class="w-full max-w-full sm:max-w-xs h-full" />
             </div>
           </section>

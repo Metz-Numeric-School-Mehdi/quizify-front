@@ -11,7 +11,7 @@ export const useQuizStore = defineStore(
   () => {
     const auth = authStore();
     const state = ref<{
-       [key: string]: any
+      [key: string]: any;
       quizzes: Quiz[] | null;
       quiz: Quiz | null;
       levels: Level[] | null;
@@ -22,7 +22,7 @@ export const useQuizStore = defineStore(
       openModal: boolean;
       openPlayModal: boolean;
       openEditModal: boolean;
-      quizCreatePayload: QuizCreatePayloadType
+      quizCreatePayload: QuizCreatePayloadType;
       ready: boolean;
       allQuiz: Quiz[] | null;
       isOwner: boolean;
@@ -74,23 +74,25 @@ export const useQuizStore = defineStore(
           },
           query: {
             mine: state.value.isOwner ? "1" : "0",
-          }
+          },
         });
         state.value.quizzes = data.value
           ? data.value
-              .filter(quiz => {
+              .filter((quiz) => {
                 if (state.value.isOwner) {
                   return true;
                 }
-                return Array.isArray(quiz.questions) && quiz.questions.length > 0;
+                return (
+                  Array.isArray(quiz.questions) && quiz.questions.length > 0
+                );
               })
-              .map(quiz => ({
+              .map((quiz) => ({
                 ...quiz,
                 duration: quiz.duration ? Math.round(quiz.duration / 60) : 0,
               }))
           : [];
         state.value.allQuiz = data.value
-          ? data.value.map(quiz => ({
+          ? data.value.map((quiz) => ({
               ...quiz,
               duration: quiz.duration ? Math.round(quiz.duration / 60) : 0,
             }))
@@ -119,7 +121,9 @@ export const useQuizStore = defineStore(
       state.value.loading = true;
       state.value.apiError = null;
       try {
-        const response = await fetch(`${useRuntimeConfig().public.apiBase}/api/quizzes/${id}`);
+        const response = await fetch(
+          `${useRuntimeConfig().public.apiBase}/api/quizzes/${id}`
+        );
         if (!response.ok) {
           const errorData = await response.json();
           throw { response: { data: errorData } };
@@ -155,13 +159,10 @@ export const useQuizStore = defineStore(
       state.value.loading = true;
       state.value.apiError = null;
       try {
-        const { data } = await useFetch<Category[]>(
-          "/api/categories",
-          {
-            baseURL: useRuntimeConfig().public.apiBase,
-            method: "GET",
-          }
-        );
+        const { data } = await useFetch<Category[]>("/api/categories", {
+          baseURL: useRuntimeConfig().public.apiBase,
+          method: "GET",
+        });
         state.value.categories = data.value;
       } catch (e: any) {
         state.value.apiError = e.response?.data as ApiError;
@@ -169,6 +170,8 @@ export const useQuizStore = defineStore(
         state.value.loading = false;
       }
     };
+
+    const useAuth = authStore();
 
     const create = async (payload: QuizCreatePayloadType) => {
       const formData = new FormData();
@@ -183,22 +186,28 @@ export const useQuizStore = defineStore(
       if (payload.thumbnail) {
         formData.append("thumbnail", payload.thumbnail);
       }
+      if (useAuth.state.user?.id) {
+        formData.append("user_id", String(useAuth.state.user.id));
+      }
       state.value.loading = true;
       state.value.apiError = null;
       try {
-        const { data } = await useFetch<Quiz>("/api/quizzes", {
-          baseURL: useRuntimeConfig().public.apiBase,
-          method: "POST",
-          body: formData,
-          headers: {
-            Authorization: `Bearer ${auth.state.token}`,
-          },
-        });
-        if (data.value?.id) await getOne(data.value.id);
-        return true
+        const { data } = await useFetch<{ data: Quiz; message: string }>(
+          "/api/quizzes",
+          {
+            baseURL: useRuntimeConfig().public.apiBase,
+            method: "POST",
+            body: formData,
+            headers: {
+              Authorization: `Bearer ${auth.state.token}`,
+            },
+          }
+        );
+        if (data.value?.data?.id) await getOne(data.value.data.id);
+        return data.value?.data;
       } catch (e: any) {
         state.value.apiError = e.response?.data as ApiError;
-        return false
+        return false;
       } finally {
         state.value.loading = false;
       }
@@ -306,7 +315,7 @@ export const useQuizStore = defineStore(
         thumbnail: null,
         questions: [],
       };
-    }
+    };
 
     const getPublishedAndPublicQuizzes = async () => {
       state.value.loading = true;
@@ -317,18 +326,23 @@ export const useQuizStore = defineStore(
           method: "GET",
           headers: {
             Authorization: `Bearer ${auth.state.token}`,
-          }
+          },
         });
 
         if (data.value) {
-          const publishedAndPublicQuizzes = data.value.filter(quiz => {
-            return quiz.status === 'published' && (quiz.is_public === 1 || quiz.is_public === true);
+          const publishedAndPublicQuizzes = data.value.filter((quiz) => {
+            return (
+              quiz.status === "published" &&
+              (quiz.is_public === 1 || quiz.is_public === true)
+            );
           });
 
-          state.value.filteredPublicQuizzes = publishedAndPublicQuizzes.map(quiz => ({
-            ...quiz,
-            duration: quiz.duration ? Math.round(quiz.duration / 60) : 0,
-          }));
+          state.value.filteredPublicQuizzes = publishedAndPublicQuizzes.map(
+            (quiz) => ({
+              ...quiz,
+              duration: quiz.duration ? Math.round(quiz.duration / 60) : 0,
+            })
+          );
         } else {
           state.value.filteredPublicQuizzes = [];
         }
@@ -354,7 +368,7 @@ export const useQuizStore = defineStore(
       remove,
       submit,
       setQuizFormFromQuiz,
-      getPublishedAndPublicQuizzes
+      getPublishedAndPublicQuizzes,
     };
   },
   {
