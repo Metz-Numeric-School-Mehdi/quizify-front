@@ -15,73 +15,42 @@
   </AlertDialog>
 
   <div class="max-w-4xl mx-auto py-8 px-4">
-    <button
-      @click="router.back()"
+    <button @click="router.back()"
       class="flex items-center hover:underline gap-2 text-pink-500 hover:text-pink-700 font-medium mb-6 transition"
-      type="button"
-    >
+      type="button">
       <Icon name="ArrowLeft" :size="20" :stroke-width="2.5" />
       Revenir en arrière
     </button>
     <div class="relative">
-      <div
-        class="absolute -top-10 -right-10 w-40 h-40 bg-pink-100 rounded-full opacity-50 blur-xl"
-      ></div>
-      <div
-        class="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-100 rounded-full opacity-50 blur-xl"
-      ></div>
+      <div class="absolute -top-10 -right-10 w-40 h-40 bg-pink-100 rounded-full opacity-50 blur-xl"></div>
+      <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-100 rounded-full opacity-50 blur-xl"></div>
 
-      <div
-        class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 flex flex-col gap-6 relative z-10"
-      >
+      <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 flex flex-col gap-6 relative z-10">
         <QuizHeader :quiz="useQuiz.state.quiz" :timer="timer" :quizFinished="quizFinished" />
 
         <template v-if="!quizFinished">
-          <QuizQuestions
-            :questions="useQuiz.state.quiz?.questions ?? []"
-            :active-question="activeQuestion"
-            :pass-score="useQuiz.state.quiz?.pass_score ?? 0"
-            v-model="selectedAnswer"
-          >
+          <QuizQuestions :questions="useQuiz.state.quiz?.questions ?? []" :active-question="activeQuestion"
+            :pass-score="useQuiz.state.quiz?.pass_score ?? 0" v-model="selectedAnswer">
             <template #prev-button>
-              <DefaultButton
-                v-if="activeQuestion > 1"
-                :ctaButton="false"
-                @click="previousQuestion()"
-                class="px-6 py-2.5 font-medium flex items-center gap-2"
-              >
+              <DefaultButton v-if="activeQuestion > 1" :ctaButton="false" @click="previousQuestion()"
+                class="px-6 py-2.5 font-medium flex items-center gap-2">
                 <Icon name="ChevronLeft" :stroke-width="2.5" :size="16" />
                 Précédent
               </DefaultButton>
             </template>
             <template #next-button>
-              <DefaultButton
-                v-if="activeQuestion < (useQuiz.state.quiz?.questions?.length ?? 0)"
-                :ctaButton="true"
-                @click="nextQuestion()"
-                class="px-6 py-2.5 font-medium flex items-center gap-2"
-              >
+              <DefaultButton v-if="activeQuestion < (useQuiz.state.quiz?.questions?.length ?? 0)" :ctaButton="true"
+                @click="nextQuestion()" class="px-6 py-2.5 font-medium flex items-center gap-2">
                 Suivant
                 <Icon name="ChevronRight" :stroke-width="2.5" :size="16" />
               </DefaultButton>
-              <DefaultButton
-                v-else
-                :ctaButton="true"
-                @click="finishQuiz()"
-                class="px-6 py-2.5 font-medium flex items-center gap-2"
-              >
+              <DefaultButton v-else :ctaButton="true" @click="finishQuiz()"
+                class="px-6 py-2.5 font-medium flex items-center gap-2">
                 Terminer
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"
-                  />
+                    clip-rule="evenodd" />
                 </svg>
               </DefaultButton>
             </template>
@@ -89,34 +58,18 @@
         </template>
 
         <template v-else>
-          <QuizResults
-            :score="score"
-            :total-questions="useQuiz.state.quiz?.questions?.length || 0"
-            :pass-score="useQuiz.state.quiz?.pass_score || 0"
-          >
+          <QuizResults :result="quizResult" :score="score" :total-questions="useQuiz.state.quiz?.questions?.length || 0"
+            :pass-score="useQuiz.state.quiz?.pass_score || 0">
             <template #actions>
               <DefaultButton :ctaButton="true" @click="restartQuiz" class="py-3 px-6 font-medium">
                 <Icon name="RefreshCcw" :stroke-width="2.5" :size="16" />
                 Recommencer
               </DefaultButton>
-              <DefaultButton
-                :ctaButton="false"
-                @click="showCorrection = !showCorrection"
-                class="py-3 px-6 font-medium"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                  />
+              <DefaultButton :ctaButton="false" @click="showCorrection = !showCorrection" class="py-3 px-6 font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
                 {{ showCorrection ? "Masquer la correction" : "Afficher la correction" }}
               </DefaultButton>
@@ -126,13 +79,10 @@
               </DefaultButton>
             </template>
             <template #correction>
-              <QuizCorrection
-                :show="showCorrection"
-                :questions="useQuiz.state.quiz?.questions ?? []"
-                :user-answers="selectedAnswers"
-              />
+              <QuizCorrection :show="showCorrection" :questions="useQuiz.state.quiz?.questions ?? []"
+                :user-answers="selectedAnswers" />
             </template>
-          </QuizResults>
+          </QuizResults />
         </template>
       </div>
     </div>
@@ -161,6 +111,8 @@ const useQuiz = useQuizStore();
 
 const route = useRoute();
 const router = useRouter();
+
+const quizResult = ref<QuizSubmitResult>();
 
 onMounted(async () => {
   await useQuiz.getOne(Number(route.params.id));
@@ -252,13 +204,22 @@ const previousQuestion = () => {
 
 const useAuth = authStore();
 import { useRuntimeConfig } from "#app";
+import type { QuizSubmitResult } from "~/types/quiz/QuizSubmitResult";
 
 const finishQuiz = async () => {
   let correct = 0;
   const questions = useQuiz.state.quiz?.questions || [];
-  questions.forEach((question, idx) => {
+  let responses = questions.map((question: any, idx: number) => {
+    return {
+      question_id: question.id,
+      answer_id: selectedAnswers.value[idx + 1] ?? null,
+    };
+  });
+  responses = responses.filter((r: any) => r.answer_id !== null && r.answer_id !== undefined);
+
+  questions.forEach((question: any, idx: number) => {
     const userAnswerId = selectedAnswers.value[idx + 1];
-    const correctAnswer = question.answers.find((a) => a.is_correct);
+    const correctAnswer = question.answers.find((a: any) => a.is_correct);
     if (correctAnswer && userAnswerId == correctAnswer.id) {
       correct++;
     }
@@ -266,10 +227,13 @@ const finishQuiz = async () => {
   score.value = correct;
   quizFinished.value = true;
 
+  const duration = useQuiz.state.quiz?.duration || 0;
+  const time_spent = duration - timer.value;
+
   const quizId = useQuiz.state.quiz?.id;
   if (quizId && useAuth.state.token) {
     try {
-      await useFetch(`/api/quizzes/${quizId}/attempt`, {
+      const { data } = await useFetch<QuizSubmitResult>(`/api/quizzes/${quizId}/submit`, {
         baseURL: config.public.apiBase,
         method: "POST",
         headers: {
@@ -277,10 +241,12 @@ const finishQuiz = async () => {
           "Content-Type": "application/json",
         },
         body: {
-          score: score.value,
-          max_score: questions.length,
+          responses,
+          time_spent,
         },
       });
+
+      if (data.value) quizResult.value = data.value;
     } catch (e) {
       console.error("Erreur lors de l'enregistrement du score", e);
     }
