@@ -68,7 +68,7 @@
         <span class="inline sm:hidden">Créer</span>
       </DefaultButton>
     </div>
-    <CreateQuizModal @close="useQuiz.state.openModal = false" />
+    <CreateQuizModalAdvanced @close="useQuiz.state.openModal = false" />
 
     <div v-if="loading" class="w-full min-h-[60vh] flex justify-center items-center">
       <div
@@ -172,7 +172,7 @@ import { computed, onMounted, ref } from "vue";
 import { useQuizStore } from "~/stores/quizStore";
 import { useQuizSearch } from "~/composables/useQuizzesSearch";
 import QuizCard from "../QuizCard.vue";
-import CreateQuizModal from "../modals/quiz/CreateQuizModal.vue";
+import CreateQuizModalAdvanced from "../modals/quiz/CreateQuizModalAdvanced.vue";
 import DefaultButton from "../interaction/buttons/DefaultButton.vue";
 import SimpleSearch from "../quiz/search/SimpleSearch.vue";
 import SimpleFilters from "../quiz/search/SimpleFilters.vue";
