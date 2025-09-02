@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { authStore } from "./authStore";
-import type { CreateQuestion, Question } from "~/types/question/Question";
+import type { CreateQuestion, Question, OrderingQuestion, OrderingQuestionResponse } from "~/types/question/Question";
 
 export const useQuestionStore = defineStore("question", () => {
   const config = useRuntimeConfig();
@@ -62,6 +62,21 @@ export const useQuestionStore = defineStore("question", () => {
     return data.value;
   };
 
+  const createOrdering = async (payload: OrderingQuestion) => {
+    state.value.loading = true;
+    state.value.error = null;
+    const { data, error: err } = await useFetch<OrderingQuestionResponse>("/api/ordering-questions", {
+      baseURL: useRuntimeConfig().public.apiBase,
+      method: "POST",
+      body: payload,
+      headers: { Authorization: `Bearer ${auth.state.token}` },
+    });
+    if (err.value) state.value.error = err.value.data?.message;
+    state.value.loading = false;
+    await useQuiz.getOne(payload.quiz_id);
+    return data.value;
+  };
+
   const update = async (payload: CreateQuestion, id: number) => {
     state.value.loading = true;
     state.value.error = null;
@@ -90,5 +105,5 @@ export const useQuestionStore = defineStore("question", () => {
     return true;
   };
 
-  return { state, getAll, getOne, create, update, remove };
+  return { state, getAll, getOne, create, createOrdering, update, remove };
 });

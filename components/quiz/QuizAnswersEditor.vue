@@ -1,14 +1,17 @@
 <template>
-  <template v-if="useQuiz.state.quiz?.questions && useQuiz.state.quiz?.questions.length < 1">
+  <template v-if="questionsWithoutOrdering && questionsWithoutOrdering.length < 1">
     <div class="flex items-center justify-center flex-col gap-4">
       <Label class="text-center text-gray-500 mt-10"
-        >Aucune question n'a été créée pour ce quiz.</Label
+        >Aucune question compatible n'a été créée pour ce quiz.</Label
       >
+      <p class="text-sm text-gray-400 text-center">
+        Les questions de type "Remise dans l'ordre" sont gérées dans l'onglet Questions.
+      </p>
     </div>
   </template>
   <template v-else>
-    <ul class="space-y-4" v-if="useQuiz.state.quiz?.questions">
-      <li class="space-y-2" v-for="question in useQuiz.state.quiz.questions" :key="question.id">
+    <ul class="space-y-4" v-if="questionsWithoutOrdering">
+      <li class="space-y-2" v-for="question in questionsWithoutOrdering" :key="question.id">
         <div class="flex items-center gap-2">
           <Label>
             {{ question.content }}
@@ -59,28 +62,34 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
 import { toast } from "../ui/toast";
 import DefaultButton from "../interaction/buttons/DefaultButton.vue";
 
 const useAnswer = useAnswerStore();
 const useQuiz = useQuizStore();
 
+// Filtrer les questions pour exclure celles de type "Remise dans l'ordre" (id = 4)
+const questionsWithoutOrdering = computed(() => {
+  return useQuiz.state.quiz?.questions?.filter(q => q.question_type_id !== 4) || [];
+});
+
 const create = async (id: number) => {
-  const question = useQuiz.state.quiz?.questions.find((q) => q.id === id);
+  const question = questionsWithoutOrdering.value.find((q) => q.id === id);
   if (question && question.answers.length < 4) {
     question.answers = [
       ...question.answers,
       {
         content: "Nouvelle réponse",
         is_correct: false,
-      },
+      } as any,
     ];
   }
 };
 
 const save = async () => {
-  if (useQuiz.state.quiz?.questions && useQuiz.state.quiz.questions.length > 0) {
-    for (const question of useQuiz.state.quiz.questions) {
+  if (questionsWithoutOrdering.value && questionsWithoutOrdering.value.length > 0) {
+    for (const question of questionsWithoutOrdering.value) {
       // Sépare les réponses à créer et à mettre à jour
       const answersToCreate = question.answers.filter((a) => !a.id);
       const answersToUpdate = question.answers.filter((a) => a.id);
@@ -97,7 +106,7 @@ const save = async () => {
             is_correct: a.is_correct,
           })),
         };
-        resultCreate = await useAnswer.create(payload);
+        resultCreate = await useAnswer.createBulk(payload);
         if (resultCreate) {
           toast({
             description: "Réponse(s) créée(s) avec succès",
@@ -111,16 +120,16 @@ const save = async () => {
       }
 
       if (answersToUpdate.length > 0) {
-        const payload = {
-          question_id: question.id,
-          answers: answersToUpdate.map((a) => ({
-            id: a.id,
-            content: a.content,
-            is_correct: a.is_correct,
-          })),
-        };
-        resultUpdate = await useAnswer.update(payload, question.id);
-        if (resultUpdate) {
+        for (const answer of answersToUpdate) {
+          const updatePayload = {
+            id: answer.id,
+            content: answer.content,
+            is_correct: answer.is_correct,
+            question_id: question.id,
+          };
+          resultUpdate = await useAnswer.update(updatePayload, answer.id!);
+        }
+        if (resultUpdate !== null) {
           toast({
             description: "Réponse(s) mise(s) à jour avec succès",
           });
@@ -137,12 +146,12 @@ const save = async () => {
 
 const remove = async (answer_id: number | undefined) => {
   if (!answer_id) {
-    useQuiz.state.quiz?.questions.forEach((question) => {
+    questionsWithoutOrdering.value.forEach((question) => {
       question.answers = question.answers.filter((ans) => ans.id !== answer_id);
     });
     return;
   }
-  if (useQuiz.state.quiz?.questions && useQuiz.state.quiz.questions.length > 0) {
+  if (questionsWithoutOrdering.value && questionsWithoutOrdering.value.length > 0) {
     const remove = await useAnswer.remove(answer_id);
     if (remove) {
       toast({

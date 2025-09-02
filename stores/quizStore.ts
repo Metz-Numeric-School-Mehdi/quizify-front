@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import type { QuizCreatePayloadType } from "~/types/config/QuizConfigType";
+import type { QuizCreatePayloadType, QuizBasicCreatePayload } from "~/types/config/QuizConfigType";
 import type { ApiError } from "~/types/error/ApiError";
 import type { Category } from "~/types/quiz/Category";
 import type { Level } from "~/types/quiz/Level";

@@ -28,5 +28,18 @@ export type QuizCreatePayloadType = {
   duration: number;
   pass_score: number;
   thumbnail: File | null;
-  questions: any[];
+  questions?: any[];
+}
+
+export type QuizBasicCreatePayload = {
+  title: string;
+  description?: string;
+  level_id: string | number;
+  category_id: string | number;
+  is_public: boolean | string;
+  status: string;
+  duration?: number;
+  pass_score?: number;
+  max_attempts?: number;
+  thumbnail?: File | null;
 }
