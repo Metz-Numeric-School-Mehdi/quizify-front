@@ -158,7 +158,7 @@ const startTimer = () => {
 onMounted(async () => {
   await useQuiz.getOne(quizId);
 
-  timer.value = useQuiz.state.quiz?.duration || 0;
+  timer.value = (useQuiz.state.quiz?.duration || 0) * 60;
 
   window.addEventListener("beforeunload", handleBeforeUnload);
   if (!quizFinished.value) {
@@ -255,7 +255,7 @@ const finishQuiz = async () => {
   score.value = correct;
   quizFinished.value = true;
 
-  const duration = useQuiz.state.quiz?.duration || 0;
+  const duration = (useQuiz.state.quiz?.duration || 0) * 60;
   const time_spent = duration - timer.value;
 
   const quizId = useQuiz.state.quiz?.id;
@@ -286,7 +286,7 @@ const restartQuiz = () => {
   score.value = 0;
   activeQuestion.value = 1;
   selectedAnswers.value = {};
-  timer.value = useQuiz.state.quiz?.duration || 0;
+  timer.value = (useQuiz.state.quiz?.duration || 0) * 60;
   localStorage.removeItem(storageKey);
   startTimer();
 };

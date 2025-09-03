@@ -33,10 +33,7 @@ export function useQuizSearch() {
       });
       items.value =
         data && typeof data === "object" && data !== null && "items" in data
-          ? ((data as any).items as Quiz[]).map((quiz) => ({
-              ...quiz,
-              duration: quiz.duration ? Math.round(quiz.duration / 60) : 0,
-            }))
+          ? ((data as any).items as Quiz[])
           : [];
       meta.value =
         data && typeof data === "object" && data !== null && "meta" in data

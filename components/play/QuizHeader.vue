@@ -20,7 +20,7 @@
             :stroke="timer <= 10 ? '#ef4444' : '#ec4899'"
             stroke-width="4"
             :stroke-dasharray="2 * Math.PI * 24"
-            :stroke-dashoffset="(1 - timer / (quiz?.duration || 1)) * 2 * Math.PI * 24"
+            :stroke-dashoffset="(1 - timer / durationInSeconds) * 2 * Math.PI * 24"
             stroke-linecap="round"
             class="transition-all duration-300"
           />
@@ -48,5 +48,9 @@ const formattedTime = computed(() => {
   const min = Math.floor(timer / 60);
   const sec = timer % 60;
   return `${min}:${sec.toString().padStart(2, "0")}`;
+});
+
+const durationInSeconds = computed(() => {
+  return quiz?.duration ? quiz.duration * 60 : 1;
 });
 </script>

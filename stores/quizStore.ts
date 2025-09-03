@@ -89,17 +89,8 @@ export const useQuizStore = defineStore(
                   Array.isArray(quiz.questions) && quiz.questions.length > 0
                 );
               })
-              .map((quiz) => ({
-                ...quiz,
-                duration: quiz.duration ? Math.round(quiz.duration / 60) : 0,
-              }))
           : [];
-        state.value.allQuiz = data.value
-          ? data.value.map((quiz) => ({
-              ...quiz,
-              duration: quiz.duration ? Math.round(quiz.duration / 60) : 0,
-            }))
-          : [];
+        state.value.allQuiz = data.value || [];
       } catch (e: any) {
         state.value.apiError = e.response?.data as ApiError;
       } finally {
@@ -341,12 +332,7 @@ export const useQuizStore = defineStore(
             );
           });
 
-          state.value.filteredPublicQuizzes = publishedAndPublicQuizzes.map(
-            (quiz) => ({
-              ...quiz,
-              duration: quiz.duration ? Math.round(quiz.duration / 60) : 0,
-            })
-          );
+          state.value.filteredPublicQuizzes = publishedAndPublicQuizzes;
         } else {
           state.value.filteredPublicQuizzes = [];
         }
