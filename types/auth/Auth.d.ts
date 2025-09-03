@@ -5,12 +5,13 @@ export type SignIn = {
 };
 
 export type SignUp = {
-  [key: string]: string;
+  [key: string]: string | File | null;
   email: string;
   password: string;
   confirmPassword: string;
-  photo: glocalThis.File | null;
+  username: string;
+  photo: File | null;
+  avatar: string;
 };
 
 export default SignIn;
-export default SignUp;

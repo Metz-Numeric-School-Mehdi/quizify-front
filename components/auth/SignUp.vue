@@ -1,30 +1,29 @@
 <template>
-  <div>
-    <form class="grid gap-4" @submit="onSubmit">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="w-full max-w-lg mx-auto space-y-6">
+    <form class="space-y-6" @submit="onSubmit">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField v-slot="{ componentField }" v-for="(items, index) in signUp" :name="items.name" :key="index"
-          class="space-y-1">
+          class="space-y-2">
           <FormItem v-auto-animate>
-            <FormLabel :for="items.name"> {{ items.label }} </FormLabel>
+            <FormLabel :for="items.name" class="text-sm font-medium">
+              {{ items.label }}
+            </FormLabel>
             <FormControl>
               <Input v-model="store.state.signUpPayload[items.name]" :placeholder="items.placeholder" :type="items.type"
-                required v-bind="componentField" :autocomplete="items.type === 'password' ? 'new-password' : 'off'" />
+                required v-bind="componentField" :autocomplete="items.type === 'password' ? 'new-password' : 'off'"
+                class="w-full" />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
       </div>
-      <div class="mb-4">
-        <label class="block font-semibold mb-1">Photo de profil</label>
-        <DragAndDropImage
-          v-model="store.state.signUpPayload.photo"
-          accept="image/*"
-          :preview="true"
-          label="Glissez-déposez une image ici ou cliquez pour sélectionner (optionnel)"
-        />
+
+      <div class="space-y-2">
+        <AvatarSelector v-model="store.state.signUpPayload.avatar" />
       </div>
-      <DefaultButton :ctaButton="true" class="justify-center" type="submit">
-        Créer un compte
+
+      <DefaultButton :ctaButton="true" class="w-full justify-center py-3 text-base font-medium" type="submit">
+        Créer mon compte
       </DefaultButton>
     </form>
   </div>
@@ -41,25 +40,29 @@ import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
 import { signUp } from "~/constants/Auth";
 import { authStore } from '~/stores/authStore'
-import DragAndDropImage from '@/components/common/DragAndDropImage.vue';
+import AvatarSelector from '@/components/common/AvatarSelector.vue';
 
 const store = authStore();
 
 const formSchema = toTypedSchema(
   z
     .object({
-      email: z.string().email("E-mail invalide"),
-      password: z.string().min(6, "Mot de passe invalide"),
-      confirmPassword: z.string().min(6),
-      username: z.string().min(3, "Nom d'utilisateur invalide"),
+      email: z.string({ required_error: "L'e-mail est requis" })
+      .email("E-mail invalide"),
+      password: z.string({ required_error: "Le mot de passe est requis" })
+      .min(6, "Mot de passe invalide"),
+      confirmPassword: z.string({ required_error: "La confirmation du mot de passe est requise" })
+      .min(6, "Mot de passe invalide"),
+      username: z.string({ required_error: "Le nom d'utilisateur est requis" })
+      .min(3, "Nom d'utilisateur invalide"),
     })
     .superRefine(({ confirmPassword, password }, ctx) => {
       if (confirmPassword !== password) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Les mots de passe ne correspondent pas",
-          path: ["confirmPassword"],
-        });
+      ctx.addIssue({
+        code: "custom",
+        message: "Les mots de passe ne correspondent pas",
+        path: ["confirmPassword"],
+      });
       }
     }),
 );

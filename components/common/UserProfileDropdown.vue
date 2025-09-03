@@ -100,7 +100,9 @@ const userInitials = computed(() => {
 });
 
 const userAvatar = computed(() => {
-    return useAuth.state.user?.profile_photo || '';
+    if (useAuth.state.user?.avatar) {
+        return useAuth.state.user.avatar;
+    }
 });
 
 const subscriptionPlan = computed(() => {

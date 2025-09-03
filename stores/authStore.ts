@@ -7,7 +7,6 @@ import { localStorageIsAvailable } from "~/utils/client";
 import fetchAPI from "~/utils/request/fetch";
 
 export const authStore = defineStore("auth", () => {
-  const config = useRuntimeConfig();
   const state = ref<{
     user: User | null;
     token: string;
@@ -30,7 +29,9 @@ export const authStore = defineStore("auth", () => {
       email: "",
       password: "",
       confirmPassword: "",
-      photo: "",
+      username: "",
+      photo: null,
+      avatar: "",
     },
   });
 
@@ -51,10 +52,12 @@ export const authStore = defineStore("auth", () => {
   };
 
   const signUp = async (userData: SignUp) => {
+    console.log(userData)
     const formData = new FormData();
     formData.append("email", userData.email);
     formData.append("password", userData.password);
     formData.append("username", userData.username);
+    formData.append("avatar", userData.avatar);
     if (userData.photo) formData.append("photo", userData.photo);
     state.value.responseErrors = "";
     try {

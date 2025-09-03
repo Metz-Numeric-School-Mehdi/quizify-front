@@ -8,6 +8,7 @@ export type User = {
   email: string;
   role_id?: number;
   profile_photo?: string | null;
+  avatar?: string | null;
   ranking?: number | null;
   team_id?: number | null;
   organization_id?: number | null;
