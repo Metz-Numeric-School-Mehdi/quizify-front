@@ -14,6 +14,23 @@
     </AlertDialogContent>
   </AlertDialog>
 
+  <AlertDialog :open="showDeleteConfirmation" @update:open="showDeleteConfirmation = $event">
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Supprimer le quiz ?</AlertDialogTitle>
+        <AlertDialogDescription>
+          Cette action est irréversible. Le quiz et toutes ses données seront définitivement supprimés.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel @click="cancelDelete">Annuler</AlertDialogCancel>
+        <AlertDialogAction @click="confirmDelete" class="bg-red-600 hover:bg-red-700">
+          Supprimer
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+
   <div class="max-w-4xl mx-auto py-8 px-4">
     <button @click="router.back()"
       class="flex items-center hover:underline gap-2 text-pink-500 hover:text-pink-700 font-medium mb-6 transition"
