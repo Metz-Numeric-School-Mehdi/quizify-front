@@ -1,7 +1,7 @@
 <template>
     <DropdownMenu>
         <DropdownMenuTrigger as-child>
-            <Button variant="ghost" class="relative h-10 w-10 rounded-full">
+            <Button variant="ghost" class="relative hover:bg-transparent h-12 w-auto rounded-full flex items-center gap-3 px-3">
                 <Avatar class="h-10 w-10">
                     <AvatarImage :src="userAvatar" :alt="userDisplayName" />
                     <AvatarFallback
@@ -9,6 +9,10 @@
                         {{ userInitials }}
                     </AvatarFallback>
                 </Avatar>
+                <div class="flex flex-col items-start min-w-0">
+                    <span class="text-sm font-medium truncate">{{ userDisplayName }}</span>
+                    <span class="text-xs text-muted-foreground truncate">@{{ useAuth.state.user?.username }}</span>
+                </div>
             </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent class="w-56" align="end" :side-offset="5">
