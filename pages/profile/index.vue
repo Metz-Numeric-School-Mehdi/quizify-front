@@ -4,12 +4,12 @@
       <div class="bg-white rounded-lg shadow-sm border p-6">
         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
           <div class="flex-shrink-0">
-            <div v-if="auth.state.user?.avatar || auth.state.user?.profile_photo" class="relative">
-              <img :src="auth.state.user?.profile_photo || auth.state.user?.avatar" :alt="userDisplayName"
+            <div v-if="auth.state.user?.avatar" class="relative">
+              <img :src="auth.state.user?.avatar" :alt="userDisplayName"
                 class="w-24 h-24 rounded-full border-4 border-gray-200" />
             </div>
-            <div v-else
-              class="w-24 h-24 rounded-full border-4 border-dashed border-gray-300 flex items-center justify-center bg-gray-50">
+            <div v-else @click="openAvatarSelector"
+              class="w-24 h-24 rounded-full border-4 border-dashed border-gray-300 flex items-center justify-center bg-gray-50 cursor-pointer hover:border-gray-400 transition-colors">
               <Icon name="User" class="w-8 h-8 text-gray-400" />
             </div>
           </div>
@@ -79,7 +79,7 @@
             </FormField>
           </div>
 
-          <div class="space-y-2">
+          <div class="space-y-2" data-avatar-selector>
             <AvatarSelector v-model="store.state.updateProfilePayload.avatar" />
           </div>
 
@@ -124,11 +124,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import * as z from 'zod'
 import { useToast } from "@/components/ui/toast/use-toast"
+import AvatarSelector from '~/components/common/AvatarSelector.vue'
 
 const { toast } = useToast()
 
@@ -138,6 +139,9 @@ definePageMeta({
 
 const auth = authStore()
 const store = userStore()
+
+// Ref pour contrôler l'ouverture de l'AvatarSelector
+const avatarSelectorRef = ref<InstanceType<typeof AvatarSelector> | null>(null)
 
 const profileFormSchema = z.object({
   firstname: z.string().min(2, 'Le prénom doit contenir au moins 2 caractères'),
@@ -187,6 +191,22 @@ const initializeForm = () => {
 const resetForm = () => {
   initializeForm()
   resetFormFields()
+}
+
+const openAvatarSelector = () => {
+  // Faire défiler vers l'AvatarSelector et l'ouvrir
+  const avatarSelectorElement = document.querySelector('[data-avatar-selector]')
+  if (avatarSelectorElement) {
+    avatarSelectorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+    // Délai pour laisser le scroll se terminer avant d'ouvrir le modal
+    setTimeout(() => {
+      const trigger = avatarSelectorElement.querySelector('[data-avatar-trigger]') as HTMLElement
+      if (trigger) {
+        trigger.click()
+      }
+    }, 500)
+  }
 }
 
 const onSubmit = handleSubmit(async (values) => {

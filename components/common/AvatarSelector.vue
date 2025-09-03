@@ -15,7 +15,7 @@
                     </div>
                 </div>
 
-                <Button type="button" @click.stop="openAvatarSelection" variant="outline" size="sm">
+                <Button type="button" @click.stop="openAvatarSelection" variant="outline" size="sm" data-avatar-trigger>
                     <Icon name="ImageIcon" class="w-4 h-4 mr-2" />
                     {{ selectedAvatar ? 'Changer d\'avatar' : 'Choisir un avatar' }}
                 </Button>

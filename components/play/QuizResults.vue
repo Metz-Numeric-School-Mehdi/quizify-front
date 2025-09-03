@@ -71,10 +71,6 @@
               {{ Math.round(result?.percentage ?? (score / (totalQuestions || 1)) * 100) }}%
             </span>
           </li>
-          <li class="flex justify-between items-center" v-if="result?.points?.breakdown">
-            <span class="text-gray-600">Temps passé :</span>
-            <span class="font-semibold">{{ result.points.breakdown.time_spent }}s</span>
-          </li>
         </ul>
       </div>
     </div>
