@@ -196,17 +196,63 @@
                 Question {{ questionIndex + 1 }}
               </h3>
             </div>
-            <p class="text-gray-700">{{ question.content }}</p>
+            <div v-if="editingQuestion === question.id && question.question_type_id === 4">
+              <Textarea
+                v-model="editingQuestionContent"
+                placeholder="Modifiez votre question..."
+                rows="2"
+                class="w-full mb-2"
+              />
+            </div>
+            <div v-else>
+              <p class="text-gray-700">{{ question.content }}</p>
+            </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            @click="deleteQuestion(question.id)"
-            type="button"
-            class="text-red-500 hover:text-red-700"
-          >
-            <Icon name="Trash2" class="w-4 h-4" />
-          </Button>
+          <div class="flex gap-2">
+            <!-- Boutons d'édition uniquement pour les questions d'ordonnancement (type 4) -->
+            <template v-if="question.question_type_id === 4">
+              <Button
+                v-if="editingQuestion === question.id"
+                variant="ghost"
+                size="sm"
+                @click="saveQuestionEdit(question)"
+                type="button"
+                class="text-green-500 hover:text-green-700"
+              >
+                <Icon name="Check" class="w-4 h-4" />
+              </Button>
+              <Button
+                v-if="editingQuestion === question.id"
+                variant="ghost"
+                size="sm"
+                @click="cancelQuestionEdit"
+                type="button"
+                class="text-gray-500 hover:text-gray-700"
+              >
+                <Icon name="X" class="w-4 h-4" />
+              </Button>
+              <Button
+                v-if="editingQuestion !== question.id"
+                variant="ghost"
+                size="sm"
+                @click="startQuestionEdit(question)"
+                type="button"
+                class="text-blue-500 hover:text-blue-700"
+              >
+                <Icon name="Edit" class="w-4 h-4" />
+              </Button>
+            </template>
+            <!-- Bouton de suppression pour toutes les questions -->
+            <Button
+              variant="ghost"
+              size="sm"
+              @click="deleteQuestion(question.id)"
+              type="button"
+              class="text-red-500 hover:text-red-700"
+            >
+              <Icon name="Trash2" class="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
         <!-- Affichage des réponses selon le type -->
@@ -263,6 +309,8 @@ const questionTypeStore = useQuestionTypeStore();
 
 const showCreateForm = ref(false);
 const isCreating = ref(false);
+const editingQuestion = ref<number | null>(null);
+const editingQuestionContent = ref('');
 
 const newQuestion = ref({
   content: '',
@@ -456,5 +504,45 @@ const cancelCreate = () => {
     question_type_id: '',
     answers: []
   };
+};
+
+// Fonctions d'édition pour les questions d'ordonnancement
+const startQuestionEdit = (question: any) => {
+  // Vérifier que c'est bien une question d'ordonnancement (type 4)
+  if (question.question_type_id !== 4) {
+    console.warn('Seules les questions d\'ordonnancement peuvent être éditées');
+    return;
+  }
+  editingQuestion.value = question.id;
+  editingQuestionContent.value = question.content;
+};
+
+const saveQuestionEdit = async (question: any) => {
+  if (!editingQuestionContent.value.trim()) return;
+  
+  // Vérifier que c'est bien une question d'ordonnancement (type 4)
+  if (question.question_type_id !== 4) {
+    console.warn('Seules les questions d\'ordonnancement peuvent être éditées');
+    return;
+  }
+  
+  try {
+    await questionStore.update({
+      content: editingQuestionContent.value.trim(),
+      question_type_id: question.question_type_id,
+      quiz_id: question.quiz_id
+    }, question.id);
+    editingQuestion.value = null;
+    editingQuestionContent.value = '';
+    // Actualiser le quiz pour refléter les changements
+    await quizStore.getOne(question.quiz_id);
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de la question:', error);
+  }
+};
+
+const cancelQuestionEdit = () => {
+  editingQuestion.value = null;
+  editingQuestionContent.value = '';
 };
 </script>
