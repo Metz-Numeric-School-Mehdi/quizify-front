@@ -219,6 +219,7 @@ export const useQuizStore = defineStore(
     const update = async (id: number, payload: QuizForm) => {
       state.value.apiError = null;
       payload.is_public = payload.is_public === "true" ? true : false;
+      payload.duration = payload.duration ? payload.duration : null;
       try {
         const { data, error } = await useFetch(`/api/quizzes/${id}`, {
           baseURL: useRuntimeConfig().public.apiBase,
@@ -288,6 +289,7 @@ export const useQuizStore = defineStore(
     const submit = async (id: number, responses: any) => {
       state.value.loading = true;
       state.value.apiError = null;
+      responses.time_spent = responses.time_spent ? responses.time_spent : null;
       try {
         const { data } = await useFetch(`/api/quizzes/${id}/submit`, {
           baseURL: useRuntimeConfig().public.apiBase,

@@ -47,6 +47,7 @@ export interface QuizMeta {
 export type QuizForm = {
   title: string;
   description: string;
+  duration: number | null;
   level_id: number | null;
   category_id: number | null;
   is_public: string | boolean;
