@@ -215,22 +215,18 @@ const finishQuiz = async () => {
     const userAnswer = selectedAnswers.value[idx + 1];
     
     if (question.question_type_id === 4) {
-      // Pour les questions d'ordonnancement, créer une réponse avec l'ordre sérialisé
       const orderArray = Array.isArray(userAnswer) ? userAnswer : [];
       if (orderArray.length > 0) {
         responses.push({
           question_id: question.id,
-          answer_id: orderArray[0], // Premier élément comme référence
-          user_answer: JSON.stringify(orderArray), // Ordre complet en JSON
+          user_answer: JSON.stringify(orderArray), 
         });
       }
     } else {
-      // Pour les autres types
       if (userAnswer !== null && userAnswer !== undefined) {
         responses.push({
           question_id: question.id,
           answer_id: userAnswer,
-          user_answer: null,
         });
       }
     }
