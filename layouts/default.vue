@@ -2,12 +2,8 @@
   <header
     class="sticky top-0 z-30 w-full bg-gradient-to-r from-pink-300 via-purple-300 to-blue-300 shadow-2lg flex items-center px-4 py-2 gap-4">
     <img
-      src="https://img.freepik.com/vecteurs-premium/logo-quiz-symboles-bulle-discours-concept-spectacle-questionnaire-chante-bouton-quiz-concours-questions-icone-neon-illustration-vectorielle-stock_100456-3471.jpg"
+      src="/quizifyIcon.png"
       alt="Mascotte Quiz" class="w-12 h-12 rounded-full shadow-lg border-4 border-white" />
-    <NuxtLink to="/" class="font-bold text-lg text-white text-whitedrop-shadow text-center mr-4">{{
-      useAuth.state.user?.username
-      }}
-    </NuxtLink>
     <p>{{ useAuth.state.user?.subscription_plan ? (useAuth.state.user?.subscription_plan.name !== 'Gratuit' ?
       useAuth.state.user?.subscription_plan.name : '') : '' }}</p>
     <nav class="flex-1 flex items-center gap-2 sm:gap-4 relative">
@@ -32,18 +28,7 @@
         </li>
       </ul>
       <div class="hidden lg:flex ml-2 items-center gap-2">
-        <template v-if="!useAuth.state.token">
-          <DefaultButton :ctaButton="true" @click="router.push('/login')">
-            <Icon name="LogIn" :stroke-width="2" />
-            Se connecter
-          </DefaultButton>
-        </template>
-        <template v-else>
-          <DefaultButton :ctaButton="false" @click="useAuth.signOut()">
-            <Icon name="LogOut" :stroke-width="2" />
-            Se déconnecter
-          </DefaultButton>
-        </template>
+        <UserProfileDropdown />
       </div>
       <transition name="fade">
         <div v-if="showMobileMenu" class="fixed inset-0 z-40 bg-black/40 flex lg:hidden"
@@ -67,18 +52,7 @@
               </li>
             </ul>
             <div class="flex flex-col gap-2 mt-6">
-              <template v-if="!useAuth.state.token">
-                <DefaultButton :ctaButton="true" @click="router.push('/login')">
-                  <Icon name="LogIn" :stroke-width="2" />
-                  Se connecter
-                </DefaultButton>
-              </template>
-              <template v-else>
-                <DefaultButton :ctaButton="true" @click="useAuth.signOut()">
-                  <Icon name="LogOut" :stroke-width="2" />
-                  Se déconnecter
-                </DefaultButton>
-              </template>
+              <UserProfileDropdown />
             </div>
           </div>
         </div>
@@ -107,6 +81,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import DefaultButton from "~/components/interaction/buttons/DefaultButton.vue";
+import UserProfileDropdown from "~/components/common/UserProfileDropdown.vue";
 import { getSidebarItems } from "~/constants/Navigation";
 import { useQuizStore } from "~/stores/quizStore";
 import { authStore } from "~/stores/authStore";
