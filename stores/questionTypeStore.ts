@@ -84,5 +84,5 @@ export const useQuestionTypeStore = defineStore("questionType", () => {
     state.value.loading = false;
   };
 
-  return { state };
+  return { state, getAll, getOne, create, update, remove };
 });

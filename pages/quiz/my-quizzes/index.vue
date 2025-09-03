@@ -84,27 +84,78 @@
               </span>
             </td>
             <td class="px-4 py-2">
-              <DefaultButton size="icon" @click="editQuiz(quiz.id)">
-                <Icon name="Pencil" :size="18" />
-              </DefaultButton>
+              <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                  <Button variant="outline" size="icon">
+                    <Icon name="MoreHorizontal" :size="18" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent class="w-48">
+                  <DropdownMenuItem @click="editQuiz(quiz.id)">
+                    <Icon name="Pencil" class="mr-2 h-4 w-4" />
+                    <span>Modifier</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem @click="confirmDeleteQuiz(quiz)" class="text-red-600 hover:text-red-700">
+                    <Icon name="Trash2" class="mr-2 h-4 w-4" />
+                    <span>Supprimer</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
     <CreateQuizModal @close="useQuiz.state.openModal = false" />
+    
+    <AlertDialog :open="showDeleteConfirmation" @update:open="showDeleteConfirmation = $event">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Supprimer le quiz ?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Êtes-vous sûr de vouloir supprimer le quiz "{{ quizToDelete?.title }}" ? Cette action est irréversible.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel @click="cancelDelete">Annuler</AlertDialogCancel>
+          <AlertDialogAction @click="confirmDelete" class="bg-red-600 hover:bg-red-700">Supprimer</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import CreateQuizModal from "@/components/modals/quiz/CreateQuizModal.vue";
-import { onMounted, onUnmounted, nextTick } from "vue";
+import { onMounted, onUnmounted, nextTick, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useQuizStore } from "~/stores/quizStore";
 import DefaultButton from "@/components/interaction/buttons/DefaultButton.vue";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import type { Quiz } from "~/types/quiz/Quiz";
 
 const useQuiz = useQuizStore();
 const router = useRouter();
+
+// État pour la confirmation de suppression
+const showDeleteConfirmation = ref(false);
+const quizToDelete = ref<Quiz | null>(null);
 
 onMounted(async () => {
   useQuiz.state.isOwner = true;
@@ -118,5 +169,33 @@ onUnmounted(() => {
 
 function editQuiz(quizId: number) {
   router.push(`/quiz/edit/${quizId}`);
+}
+
+function confirmDeleteQuiz(quiz: Quiz) {
+  quizToDelete.value = quiz;
+  showDeleteConfirmation.value = true;
+}
+
+function cancelDelete() {
+  showDeleteConfirmation.value = false;
+  quizToDelete.value = null;
+}
+
+async function confirmDelete() {
+  if (quizToDelete.value) {
+    try {
+      const success = await useQuiz.deleteQuiz(quizToDelete.value.id);
+      
+      if (success) {
+        showDeleteConfirmation.value = false;
+        quizToDelete.value = null;
+      } else {
+        // Gérer l'erreur si nécessaire
+        console.error('Erreur lors de la suppression du quiz:', useQuiz.state.apiError);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suppression du quiz:', error);
+    }
+  }
 }
 </script>

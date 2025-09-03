@@ -1,6 +1,9 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import type { QuizCreatePayloadType } from "~/types/config/QuizConfigType";
+import type {
+  QuizCreatePayloadType,
+  QuizBasicCreatePayload,
+} from "~/types/config/QuizConfigType";
 import type { ApiError } from "~/types/error/ApiError";
 import type { Category } from "~/types/quiz/Category";
 import type { Level } from "~/types/quiz/Level";
@@ -216,6 +219,7 @@ export const useQuizStore = defineStore(
     const update = async (id: number, payload: QuizForm) => {
       state.value.apiError = null;
       payload.is_public = payload.is_public === "true" ? true : false;
+      payload.duration = payload.duration ? payload.duration : null;
       try {
         const { data, error } = await useFetch(`/api/quizzes/${id}`, {
           baseURL: useRuntimeConfig().public.apiBase,
@@ -240,15 +244,14 @@ export const useQuizStore = defineStore(
       try {
         const { data, error } = await useFetch(`/api/quizzes/${id}`, {
           baseURL: useRuntimeConfig().public.apiBase,
-          method: "PUT",
-          body: payload,
+          method: "DELETE",
           headers: { Authorization: `Bearer ${auth.state.token}` },
         });
         if (error.value) {
           state.value.apiError = error.value.data as ApiError;
           return false;
         }
-        getOne(id);
+        await getAll();
         return true;
       } catch (e: any) {
         state.value.apiError = e.response?.data as ApiError;
@@ -286,6 +289,7 @@ export const useQuizStore = defineStore(
     const submit = async (id: number, responses: any) => {
       state.value.loading = true;
       state.value.apiError = null;
+      responses.time_spent = responses.time_spent ? responses.time_spent : null;
       try {
         const { data } = await useFetch(`/api/quizzes/${id}/submit`, {
           baseURL: useRuntimeConfig().public.apiBase,

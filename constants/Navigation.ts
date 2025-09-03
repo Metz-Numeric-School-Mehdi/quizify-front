@@ -14,9 +14,4 @@ export const getSidebarItems = () => [
     path: "/leaderboard",
     icon: "Trophy",
   },
-  {
-    name: "Historique",
-    path: "/history",
-    icon: "History",
-  },
 ];

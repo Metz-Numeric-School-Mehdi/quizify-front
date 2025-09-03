@@ -120,6 +120,7 @@ export const authStore = defineStore("auth", () => {
     localStorage.removeItem("user");
     state.value.token = "";
     state.value.isAuthenticated = false;
+    state.value.user = null;
     navigateTo("/");
   };
 

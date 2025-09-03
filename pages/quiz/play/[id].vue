@@ -122,7 +122,7 @@ const quizId = Number(route.params.id);
 const storageKey = `quiz-progress-${quizId}`;
 
 const activeQuestion = ref(1);
-const selectedAnswers = ref<{ [questionIndex: number]: number | null }>({});
+const selectedAnswers = ref<{ [questionIndex: number]: number | number[] | null }>({});
 const quizFinished = ref(false);
 const score = ref(0);
 const showCorrection = ref(false);
@@ -209,19 +209,47 @@ import type { QuizSubmitResult } from "~/types/quiz/QuizSubmitResult";
 const finishQuiz = async () => {
   let correct = 0;
   const questions = useQuiz.state.quiz?.questions || [];
-  let responses = questions.map((question: any, idx: number) => {
-    return {
-      question_id: question.id,
-      answer_id: selectedAnswers.value[idx + 1] ?? null,
-    };
+  let responses: any[] = [];
+  
+  questions.forEach((question: any, idx: number) => {
+    const userAnswer = selectedAnswers.value[idx + 1];
+    
+    if (question.question_type_id === 4) {
+      const orderArray = Array.isArray(userAnswer) ? userAnswer : [];
+      if (orderArray.length > 0) {
+        responses.push({
+          question_id: question.id,
+          user_answer: JSON.stringify(orderArray), 
+        });
+      }
+    } else {
+      if (userAnswer !== null && userAnswer !== undefined) {
+        responses.push({
+          question_id: question.id,
+          answer_id: userAnswer,
+        });
+      }
+    }
   });
-  responses = responses.filter((r: any) => r.answer_id !== null && r.answer_id !== undefined);
 
   questions.forEach((question: any, idx: number) => {
-    const userAnswerId = selectedAnswers.value[idx + 1];
-    const correctAnswer = question.answers.find((a: any) => a.is_correct);
-    if (correctAnswer && userAnswerId == correctAnswer.id) {
-      correct++;
+    const userAnswer = selectedAnswers.value[idx + 1];
+    
+    if (question.question_type_id === 4) {
+      if (Array.isArray(userAnswer) && userAnswer.length > 0) {
+        const correctOrder = question.answers
+          .sort((a: any, b: any) => (a.order_position || 0) - (b.order_position || 0))
+          .map((a: any) => a.id);
+        
+        if (JSON.stringify(userAnswer) === JSON.stringify(correctOrder)) {
+          correct++;
+        }
+      }
+    } else {
+      const correctAnswer = question.answers.find((a: any) => a.is_correct);
+      if (correctAnswer && userAnswer == correctAnswer.id) {
+        correct++;
+      }
     }
   });
   score.value = correct;

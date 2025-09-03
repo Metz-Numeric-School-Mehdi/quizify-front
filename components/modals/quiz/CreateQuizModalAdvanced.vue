@@ -1,74 +1,18 @@
 <template>
   <div v-if="useQuiz.state.openModal"
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-2 md:px-0" @click.self="closeModal">
-    <div class="p-8 bg-white max-w-[45rem] rounded-xl overflow-y-auto max-h-[90vh]">
-      <div class="flex items-center justify-between mb-2">
-        <h2 class="text-title font-[500]">{{ quizModalConfig.title }}</h2>
+    <div class="p-8 bg-white max-w-2xl w-full rounded-xl overflow-y-auto max-h-[90vh]">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-semibold">Créer un nouveau quiz</h2>
         <button type="button" @click="closeModal" class="p-2 rounded hover:bg-pink-100">
           <Icon name="X" :stroke-width="2" class="w-6 h-6 text-purple-700" />
         </button>
       </div>
-      <p class="text-gray-500 mb-4">{{ quizModalConfig.description }}</p>
-      
-      <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-        <label class="block text-sm font-medium text-gray-700 mb-3">Type de quiz</label>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div 
-            @click="selectedQuizType = 'choix_unique'"
-            :class="[
-              'relative cursor-pointer border-2 rounded-lg p-4 transition-all',
-              selectedQuizType === 'choix_unique' 
-                ? 'border-pink-500 bg-pink-50 shadow-md' 
-                : 'border-gray-200 hover:border-pink-300'
-            ]"
-          >
-            <div class="flex items-start">
-              <div class="flex items-center h-5">
-                <input
-                  type="radio"
-                  value="choix_unique"
-                  v-model="selectedQuizType"
-                  class="w-4 h-4 text-pink-600 border-gray-300 focus:ring-pink-500"
-                />
-              </div>
-              <div class="ml-3">
-                <h3 class="text-sm font-medium text-gray-900">Quiz à choix unique</h3>
-                <p class="text-xs text-gray-500 mt-1">Questions avec une seule réponse correcte</p>
-              </div>
-            </div>
-          </div>
-          
-          <div 
-            @click="selectedQuizType = 'remise_ordre'"
-            :class="[
-              'relative cursor-pointer border-2 rounded-lg p-4 transition-all',
-              selectedQuizType === 'remise_ordre' 
-                ? 'border-pink-500 bg-pink-50 shadow-md' 
-                : 'border-gray-200 hover:border-pink-300'
-            ]"
-          >
-            <div class="flex items-start">
-              <div class="flex items-center h-5">
-                <input
-                  type="radio"
-                  value="remise_ordre"
-                  v-model="selectedQuizType"
-                  class="w-4 h-4 text-pink-600 border-gray-300 focus:ring-pink-500"
-                />
-              </div>
-              <div class="ml-3">
-                <h3 class="text-sm font-medium text-gray-900">Quiz de remise dans l'ordre</h3>
-                <p class="text-xs text-gray-500 mt-1">Questions d'ordonnancement d'éléments</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <form class="flex flex-wrap gap-4 pt-4 items-center" @submit="onSubmit">
-        <div v-for="(field, index) in quizModalConfig.form" :key="field.vModel" class="space-y-1 w-full" :class="{
-          'md:w-[calc(50%-0.5rem)]': quizModalConfig.form.length > 3 && index > 2,
-        }">
+
+      <p class="text-gray-500 mb-6">Remplissez les informations de base de votre quiz. Vous pourrez ajouter les questions après la création.</p>
+
+      <form class="space-y-6" @submit="onSubmit">
+        <div v-for="(field, index) in quizModalConfig.form" :key="field.vModel" class="space-y-1">
           <FormField v-slot="{ componentField }" :name="field.vModel">
             <FormItem v-auto-animate>
               <FormLabel :for="field.vModel" v-if="field.type !== 'switch'">
@@ -129,31 +73,47 @@
             </FormItem>
           </FormField>
         </div>
-        <DefaultButton :ctaButton="true" type="submit" class="w-full justify-center">
-          Créer
-        </DefaultButton>
+
+        <div v-if="error" class="text-sm text-red-500 bg-red-50 p-3 rounded">
+          {{ error }}
+        </div>
+
+        <div class="flex gap-3">
+          <Button type="button" variant="outline" @click="closeModal" class="flex-1">
+            Annuler
+          </Button>
+          <Button 
+            type="submit" 
+            :disabled="isLoading"
+            class="flex-1 bg-pink-500 hover:bg-pink-600"
+          >
+            <Icon v-if="isLoading" name="Loader2" class="w-4 h-4 mr-2 animate-spin" />
+            {{ isLoading ? 'Création...' : 'Créer le quiz' }}
+          </Button>
+        </div>
       </form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import DefaultButton from "@/components/interaction/buttons/DefaultButton.vue";
-import { useQuizStore } from "~/stores/quizStore";
-import { quizModalConfig } from "~/constants/quizConfig";
-import { vAutoAnimate } from "@formkit/auto-animate/vue";
-import SelectComponent from "~/components/common/interaction/SelectComponent.vue";
 import { ref, watch, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
+import { vAutoAnimate } from "@formkit/auto-animate/vue";
+
+import { useQuizStore } from "~/stores/quizStore";
+import { quizModalConfig } from "~/constants/quizConfig";
 import { quizFormSchema } from "~/validation/quizFormSchema";
 
-const useQuiz = useQuizStore();
-const error = ref<string | null>(null);
-const selectedQuizType = ref<'choix_unique' | 'remise_ordre'>('choix_unique');
+import SelectComponent from "~/components/common/interaction/SelectComponent.vue";
 
+const useQuiz = useQuizStore();
 const router = useRouter();
+
+const error = ref<string | null>(null);
+const isLoading = ref(false);
 
 watch(
   () => useQuiz.state.openModal,
@@ -162,6 +122,7 @@ watch(
       document.body.classList.add("overflow-hidden");
     } else {
       document.body.classList.remove("overflow-hidden");
+      resetForm();
     }
   },
 );
@@ -185,14 +146,9 @@ const fetchers: Record<string, () => void> = {
   fetchCategories,
 };
 
-const closeModal = () => {
-  useQuiz.state.openModal = false;
-  useQuiz.resetPayload();
-};
-
 const formSchema = toTypedSchema(quizFormSchema);
 
-const { handleSubmit, values } = useForm({
+const { handleSubmit, values, resetForm: resetVeeForm } = useForm({
   validationSchema: formSchema,
   initialValues: {
     title: "",
@@ -208,23 +164,42 @@ const { handleSubmit, values } = useForm({
   },
 });
 
+const closeModal = () => {
+  useQuiz.state.openModal = false;
+  resetForm();
+};
+
+const resetForm = () => {
+  resetVeeForm();
+  error.value = null;
+  isLoading.value = false;
+};
+
 const onSubmit = handleSubmit(async (formValues: any) => {
   error.value = null;
+  isLoading.value = true;
+
   try {
-    const createdQuiz = await useQuiz.create(formValues);
-    if (createdQuiz && createdQuiz.id) {
-      closeModal();
-      if (selectedQuizType.value === 'remise_ordre') {
-        router.push(`/quiz/edit/${createdQuiz.id}?type=ordering`);
-      } else {
-        router.push(`/quiz/edit/${createdQuiz.id}`);
-      }
-      await useQuiz.getAll();
-    } else {
-      error.value = "Erreur lors de la création du quiz.";
+    const quizPayload = {
+      ...formValues,
+      questions: []
+    };
+    
+    const createdQuiz = await useQuiz.create(quizPayload as any);
+    
+    if (!createdQuiz || !createdQuiz.id) {
+      throw new Error("Erreur lors de la création du quiz");
     }
+
+    closeModal();
+    router.push(`/quiz/edit/${createdQuiz.id}`);
+    await useQuiz.getAll();
+    
   } catch (e: any) {
     console.error("Error creating quiz:", e);
+    error.value = "Erreur lors de la création du quiz. Veuillez réessayer.";
+  } finally {
+    isLoading.value = false;
   }
 });
 </script>

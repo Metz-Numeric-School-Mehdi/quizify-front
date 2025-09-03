@@ -29,7 +29,51 @@
               <span class="font-medium">Aucune réponse fournie pour cette question</span>
             </div>
           </div>
-          <ul class="space-y-3 mb-2">
+          
+          <!-- Pour les questions d'ordonnancement -->
+          <div v-if="question.question_type_id === 4">
+            <div class="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div class="flex items-center gap-2 text-blue-700 mb-2">
+                <Icon name="List" :stroke-width="2.5" :size="16" class="text-blue-500" />
+                <span class="font-medium">Question d'ordonnancement</span>
+              </div>
+              <div v-if="Array.isArray(userAnswers[qIndex + 1]) && userAnswers[qIndex + 1].length > 0">
+                <p class="text-sm text-blue-600 mb-2"><strong>Votre ordre :</strong></p>
+                <ol class="text-sm text-blue-700 space-y-1">
+                  <li v-for="(answerId, index) in userAnswers[qIndex + 1]" :key="answerId">
+                    {{ index + 1 }}. {{ question.answers.find(a => a.id === answerId)?.content }}
+                  </li>
+                </ol>
+              </div>
+            </div>
+            
+            <div class="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <div class="flex items-center gap-2 text-green-700 mb-2">
+                <Icon name="Check" :stroke-width="2.5" :size="16" class="text-green-500" />
+                <span class="font-medium">Ordre correct :</span>
+              </div>
+              <ol class="text-sm text-green-700 space-y-1">
+                <li v-for="answer in question.answers.sort((a, b) => (a.order_position || 0) - (b.order_position || 0))" :key="answer.id">
+                  {{ answer.order_position }}. {{ answer.content }}
+                </li>
+              </ol>
+            </div>
+            
+            <div class="p-3 rounded-lg" 
+                 :class="isOrderingCorrect(question, userAnswers[qIndex + 1]) ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'">
+              <div class="flex items-center gap-2" 
+                   :class="isOrderingCorrect(question, userAnswers[qIndex + 1]) ? 'text-green-700' : 'text-red-700'">
+                <Icon :name="isOrderingCorrect(question, userAnswers[qIndex + 1]) ? 'Check' : 'X'" 
+                      :stroke-width="2.5" :size="16" />
+                <span class="font-medium">
+                  {{ isOrderingCorrect(question, userAnswers[qIndex + 1]) ? 'Réponse correcte !' : 'Réponse incorrecte' }}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Pour les autres types de questions -->
+          <ul v-else class="space-y-3 mb-2">
             <li
               v-for="answer in question.answers"
               :key="answer.id"
@@ -110,4 +154,14 @@ const { show, questions, userAnswers } = defineProps<{
   questions: Question[];
   userAnswers: Record<number, any>;
 }>();
+
+const isOrderingCorrect = (question: Question, userOrder: number[]) => {
+  if (!Array.isArray(userOrder) || userOrder.length === 0) return false;
+  
+  const correctOrder = question.answers
+    .sort((a, b) => (a.order_position || 0) - (b.order_position || 0))
+    .map(a => a.id);
+  
+  return JSON.stringify(userOrder) === JSON.stringify(correctOrder);
+};
 </script>

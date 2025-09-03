@@ -12,7 +12,7 @@
       <div
         v-for="tab in tabs"
         :key="tab.value"
-        @click="activeTab = tab.value as 'info' | 'questions'"
+        @click="switchTab(tab.value)"
         class="cursor-pointer py-2 px-6 rounded-lg font-semibold transition-all duration-150"
         :class="{
           'bg-pink-500 text-white shadow scale-105': activeTab === tab.value,
@@ -22,7 +22,7 @@
         {{ tab.label }}
       </div>
     </div>
-    <form v-if="!store.state.loading && store.state.quiz" class="flex flex-col gap-6">
+    <div v-if="!store.state.loading && store.state.quiz" class="flex flex-col gap-6">
       <div v-if="activeTab === 'info'">
         <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
           <h1 class="text-[2rem] font-bold text-pink-600 mb-6">
@@ -36,7 +36,7 @@
           <h1 class="text-[2rem] font-bold text-pink-600 mb-6">
             {{ store.state.quiz?.title }}
           </h1>
-          <QuizQuestionsEditor />
+          <QuizQuestionsEditorAdvanced />
         </div>
       </div>
       <div v-else-if="activeTab === 'answers'">
@@ -47,7 +47,7 @@
           <QuizAnswersEditor />
         </div>
       </div>
-    </form>
+    </div>
     <div v-else class="text-center py-10">
       <Loading />
     </div>
@@ -55,10 +55,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useQuizStore } from "~/stores/quizStore";
 import QuizInfoEditor from "~/components/quiz/QuizInfoEditor.vue";
+import QuizQuestionsEditorAdvanced from "~/components/quiz/QuizQuestionsEditorAdvanced.vue";
 import Loading from "~/components/common/Loading.vue";
 
 const route = useRoute();
@@ -67,13 +68,39 @@ const store = useQuizStore();
 
 const activeTab = ref<string>("info");
 
-const tabs = [
-  { value: "info", label: "Informations" },
-  { value: "questions", label: "Questions" },
-  { value: "answers", label: "Réponses" },
-];
+const hasOrderingQuestions = computed(() => {
+  return store.state.quiz?.questions?.some(q => q.question_type?.name === 'Remise dans l\'ordre') || false;
+});
+
+const tabs = computed(() => {
+  const baseTabs = [
+    { value: "info", label: "Informations" },
+    { value: "questions", label: "Questions" }
+  ];
+  
+  if (!hasOrderingQuestions.value) {
+    baseTabs.push({ value: "answers", label: "Réponses" });
+  }
+  
+  return baseTabs;
+});
 
 const infoEditorRef = ref<any>(null);
+
+const switchTab = (tabValue: string) => {
+  activeTab.value = tabValue;
+  // Si on essaie d'aller sur "answers" alors qu'il y a des questions d'ordre, rediriger vers "questions"
+  if (tabValue === 'answers' && hasOrderingQuestions.value) {
+    activeTab.value = 'questions';
+  }
+};
+
+// Watcher pour rediriger automatiquement si on était sur "answers" et qu'on ajoute une question d'ordre
+watch(hasOrderingQuestions, (hasOrdering) => {
+  if (hasOrdering && activeTab.value === 'answers') {
+    activeTab.value = 'questions';
+  }
+});
 
 onMounted(async () => {
   await store.getOne(Number(route.params.id));
