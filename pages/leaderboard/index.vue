@@ -3,9 +3,7 @@
 </template>
 
 <script setup lang="ts">
-const LeaderboardDisplay = defineAsyncComponent(
-  () => import("~/components/leaderboard/LeaderboardDisplay.vue"),
-);
+import LeaderboardDisplay from '~/components/leaderboard/LeaderboardDisplay.vue';
 
 definePageMeta({
   layout: "default",
