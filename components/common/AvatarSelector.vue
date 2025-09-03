@@ -15,7 +15,7 @@
                     </div>
                 </div>
 
-                <Button @click="openAvatarSelection" variant="outline" size="sm">
+                <Button type="button" @click.stop="openAvatarSelection" variant="outline" size="sm">
                     <Icon name="ImageIcon" class="w-4 h-4 mr-2" />
                     {{ selectedAvatar ? 'Changer d\'avatar' : 'Choisir un avatar' }}
                 </Button>
@@ -23,7 +23,7 @@
         </div>
 
         <Sheet v-model:open="isDialogOpen">
-            <SheetContent side="bottom" class="h-[80vh]">
+            <SheetContent side="bottom" class="min-h-[60vh] sm:min-h-[50vh]">
                 <SheetHeader>
                     <SheetTitle>Choisissez votre avatar</SheetTitle>
                     <SheetDescription>
@@ -50,11 +50,11 @@
                     </div>
                 </div>
 
-                <SheetFooter class="mt-6">
-                    <Button @click="isDialogOpen = false" variant="outline">
+                <SheetFooter class="mt-6 max-md:flex-col flex gap-2 items-center">
+                    <Button class="w-full" @click="isDialogOpen = false" variant="outline">
                         Annuler
                     </Button>
-                    <Button @click="confirmSelection" :disabled="!selectedAvatar">
+                    <Button class="w-full" @click="confirmSelection" :disabled="!selectedAvatar">
                         Confirmer
                     </Button>
                 </SheetFooter>

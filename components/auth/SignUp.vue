@@ -1,6 +1,6 @@
 <template>
   <div class="w-full max-w-lg mx-auto space-y-6">
-    <form class="space-y-6" @submit="onSubmit">
+    <form class="space-y-6" @submit.prevent="onSubmit">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField v-slot="{ componentField }" v-for="(items, index) in signUp" :name="items.name" :key="index"
           class="space-y-2">
