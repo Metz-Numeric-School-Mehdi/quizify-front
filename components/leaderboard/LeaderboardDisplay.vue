@@ -1,11 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 relative">
-    <div class="absolute inset-0 -z-10 pointer-events-none">
-      <div class="absolute w-32 h-32 bg-pink-200 opacity-30 rounded-full top-10 left-10 animate-pulse"></div>
-      <div class="absolute w-24 h-24 bg-blue-200 opacity-20 rounded-full bottom-20 right-20 animate-ping"></div>
-      <div class="absolute w-16 h-16 bg-yellow-200 opacity-20 rounded-full top-1/2 left-1/2 animate-bounce"></div>
-      <div class="absolute w-20 h-20 bg-purple-200 opacity-10 rounded-full bottom-10 left-1/3 animate-spin-slow"></div>
-    </div>
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4 z-10">
       <h1 class="text-[2rem] font-bold text-pink-600 w-full">Classement</h1>
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
