@@ -106,19 +106,19 @@
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Statistiques</h3>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div class="text-center">
-            <div class="text-2xl font-bold text-blue-600">0</div>
+            <div class="text-2xl font-bold text-blue-600">{{ store.state.user?.statistics.quizzes_created_count }}</div>
             <div class="text-sm text-gray-600">Quiz créés</div>
           </div>
           <div class="text-center">
-            <div class="text-2xl font-bold text-green-600">0</div>
+            <div class="text-2xl font-bold text-green-600">{{ store.state.user?.statistics.quizzes_played_count }}</div>
             <div class="text-sm text-gray-600">Quiz terminés</div>
           </div>
           <div class="text-center">
-            <div class="text-2xl font-bold text-purple-600">0</div>
+            <div class="text-2xl font-bold text-purple-600">{{ store.state.user?.statistics.total_points }}</div>
             <div class="text-sm text-gray-600">Points</div>
           </div>
           <div class="text-center">
-            <div class="text-2xl font-bold text-orange-600">-</div>
+            <div class="text-2xl font-bold text-orange-600">{{ store.state.user?.ranking }}</div>
             <div class="text-sm text-gray-600">Classement</div>
           </div>
         </div>
@@ -143,9 +143,6 @@ definePageMeta({
 
 const auth = authStore()
 const store = userStore()
-
-// Ref pour contrôler l'ouverture de l'AvatarSelector
-const avatarSelectorRef = ref<InstanceType<typeof AvatarSelector> | null>(null)
 
 const profileFormSchema = z.object({
   firstname: z.string().min(2, 'Le prénom doit contenir au moins 2 caractères'),
@@ -198,12 +195,10 @@ const resetForm = () => {
 }
 
 const openAvatarSelector = () => {
-  // Faire défiler vers l'AvatarSelector et l'ouvrir
   const avatarSelectorElement = document.querySelector('[data-avatar-selector]')
   if (avatarSelectorElement) {
     avatarSelectorElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
-    // Délai pour laisser le scroll se terminer avant d'ouvrir le modal
     setTimeout(() => {
       const trigger = avatarSelectorElement.querySelector('[data-avatar-trigger]') as HTMLElement
       if (trigger) {
@@ -235,6 +230,10 @@ const onSubmit = handleSubmit(async (values) => {
 
 onMounted(() => {
   initializeForm()
+})
+
+onBeforeMount(() => {
+  store.getProfile()
 })
 </script>
 

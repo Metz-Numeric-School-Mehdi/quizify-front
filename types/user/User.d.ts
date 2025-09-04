@@ -1,26 +1,37 @@
 import type { SubscriptionPlan } from "../subscription/Subscription";
 
+type UserStatistics = {
+  quizzes_created_count: number;
+  quizzes_played_count: number;
+  total_points: number;
+};
+
+type UserSubscription = {
+  subscription_plan_id: number | null;
+  subscription_plan: SubscriptionPlan | null;
+  stripe_id: string | null;
+  trial_ends_at: string | null;
+};
+
 export type User = {
   id: number;
   username: string;
-  firstname?: string;
-  lastname?: string;
   email: string;
-  role_id?: number;
-  profile_photo?: string | null;
-  avatar?: string | null;
-  ranking?: number | null;
-  team_id?: number | null;
-  organization_id?: number | null;
-  subscription_plan_id?: number | null;
-  created_at?: string;
-  updated_at?: string;
-  deleted_at?: string | null;
-  stripe_id?: string;
-  pm_type?: string;
-  pm_last_four?: string;
-  trial_ends_at?: string | null;
-  subscription_plan?: SubscriptionPlan | null;
+  firstname: string;
+  lastname: string;
+  avatar: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  organization_id: number | null;
+  pm_last_four: string | null;
+  pm_type: string | null;
+  profile_photo: string;
+  ranking: number | null;
+  role_id: number;
+  statistics: UserStatistics;
+  subscription: UserSubscription;
+  team_id: number | null;
 };
 
 export default User;

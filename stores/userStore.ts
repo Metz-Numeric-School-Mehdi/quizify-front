@@ -3,13 +3,12 @@ import { ref } from "vue";
 import { authStore } from "./authStore";
 import type User from "~/types/user/User";
 import { localStorageIsAvailable } from "~/utils/client";
-import fetchAPI from "~/utils/request/fetch";
 
 export const userStore = defineStore("user", () => {
-  const config = useRuntimeConfig();
   const auth = authStore();
 
   const state = ref<{
+    user: User | null;
     updateProfilePayload: {
       username: string;
       firstname: string;
@@ -20,6 +19,7 @@ export const userStore = defineStore("user", () => {
     isUpdating: boolean;
     responseErrors: string;
   }>({
+    user: null,
     updateProfilePayload: {
       username: "",
       firstname: "",
@@ -31,7 +31,19 @@ export const userStore = defineStore("user", () => {
     responseErrors: "",
   });
 
-  // Initialiser les données du profil avec les données de l'utilisateur connecté
+  const getProfile = async () => {
+    const data = await $fetch<{user: User | null}>("/user", {
+      baseURL: `${useRuntimeConfig().public.apiBase}/api`,
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${auth.state.token}`,
+        Accept: "application/json",
+      },
+    });
+
+    if (data.user) state.value.user = data.user;
+  };
+  
   const initializeProfile = () => {
     if (auth.state.user) {
       state.value.updateProfilePayload = {
@@ -44,31 +56,35 @@ export const userStore = defineStore("user", () => {
     }
   };
 
-  // Mettre à jour le profil
-  const updateProfile = async (profileData: typeof state.value.updateProfilePayload) => {
+  const updateProfile = async (
+    profileData: typeof state.value.updateProfilePayload
+  ) => {
     state.value.isUpdating = true;
     state.value.responseErrors = "";
 
     try {
-      const { data, error } = await useFetch<{ user: User; message: string }>("/user/profile", {
-        method: "PUT",
-        body: profileData,
-        baseURL: `${useRuntimeConfig().public.apiBase}/api`,
-        headers: {
-          Authorization: `Bearer ${auth.state.token}`,
-        },
-      });
+      const { data, error } = await useFetch<{ user: User; message: string }>(
+        "/user/profile",
+        {
+          method: "PUT",
+          body: profileData,
+          baseURL: `${useRuntimeConfig().public.apiBase}/api`,
+          headers: {
+            Authorization: `Bearer ${auth.state.token}`,
+          },
+        }
+      );
 
       if (error.value) {
-        state.value.responseErrors = error.value.data?.message || "Erreur lors de la mise à jour du profil";
+        state.value.responseErrors =
+          error.value.data?.message ||
+          "Erreur lors de la mise à jour du profil";
         return false;
       }
 
       if (data.value?.user) {
-        // Mettre à jour les données utilisateur dans authStore
         auth.state.user = data.value.user;
-        
-        // Mettre à jour localStorage si disponible
+
         if (localStorageIsAvailable()) {
           localStorage.setItem("user", JSON.stringify(data.value.user));
         }
@@ -78,7 +94,8 @@ export const userStore = defineStore("user", () => {
 
       return false;
     } catch (err: any) {
-      state.value.responseErrors = err.message || "Erreur lors de la mise à jour du profil";
+      state.value.responseErrors =
+        err.message || "Erreur lors de la mise à jour du profil";
       return false;
     } finally {
       state.value.isUpdating = false;
@@ -89,8 +106,6 @@ export const userStore = defineStore("user", () => {
     state,
     initializeProfile,
     updateProfile,
+    getProfile,
   };
 });
-
-
-
