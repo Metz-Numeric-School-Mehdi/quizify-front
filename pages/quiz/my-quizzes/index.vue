@@ -27,7 +27,7 @@
     <div v-if="useQuiz.state.quizzes?.length === 0" class="text-center text-gray-500 mt-10">
       <div>Tu n’as pas encore créé de quiz.<br />Clique sur "Créer un quiz" pour commencer !</div>
     </div>
-    <div v-else class="overflow-x-auto">
+    <div v-else class="overflow-x-auto hidden md:block">
       <table class="min-w-full bg-white rounded-xl shadow divide-y divide-gray-200">
         <thead class="bg-gradient-to-r from-pink-100 via-purple-100 to-blue-100">
           <tr>
@@ -106,7 +106,42 @@
         </tbody>
       </table>
     </div>
-    <CreateQuizModal @close="useQuiz.state.openModal = false" />
+    <!-- Cards mobile -->
+  <div v-if="Array.isArray(useQuiz.state.quizzes) && useQuiz.state.quizzes.length > 0" class="block md:hidden">
+      <div class="flex flex-col gap-4">
+        <div v-for="quiz in useQuiz.state.quizzes" :key="quiz.id" class="bg-white rounded-xl shadow p-4 border border-gray-100 flex gap-3 items-center">
+          <div>
+            <img v-if="quiz.thumbnail_url" :src="quiz.thumbnail_url" alt="Miniature" class="w-16 h-16 object-cover rounded-lg border" />
+            <div v-else class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+              <Icon name="Image" :size="24" />
+            </div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="font-semibold text-pink-700 text-base truncate">{{ quiz.title }}</div>
+            <div class="text-gray-600 text-sm truncate">{{ quiz.description?.slice(0, 40) }}<span v-if="quiz.description && quiz.description.length > 40">…</span></div>
+            <div class="text-xs text-gray-500 mt-1">{{ quiz.duration }} min</div>
+            <span class="inline-block px-2 py-1 rounded text-xs font-semibold mt-1"
+              :class="{
+                'bg-green-100 text-green-700': quiz.status === 'published',
+                'bg-yellow-100 text-yellow-700': quiz.status === 'draft',
+                'bg-gray-200 text-gray-600': quiz.status === 'archived',
+              }"
+            >
+              {{ quiz.status === "published" ? "Publié" : quiz.status === "draft" ? "Brouillon" : "Archivé" }}
+            </span>
+          </div>
+          <div class="flex flex-col gap-2">
+            <Button variant="outline" size="icon" @click="editQuiz(quiz.id)">
+              <Icon name="Pencil" :size="18" />
+            </Button>
+            <Button variant="outline" size="icon" @click="confirmDeleteQuiz(quiz)">
+              <Icon name="Trash2" :size="18" class="text-red-600" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <CreateQuizModalAdvanced @close="useQuiz.state.openModal = false" />
     
     <AlertDialog :open="showDeleteConfirmation" @update:open="showDeleteConfirmation = $event">
       <AlertDialogContent>
@@ -149,6 +184,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import type { Quiz } from "~/types/quiz/Quiz";
+import CreateQuizModalAdvanced from "~/components/modals/quiz/CreateQuizModalAdvanced.vue";
 
 const useQuiz = useQuizStore();
 const router = useRouter();

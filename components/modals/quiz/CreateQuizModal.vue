@@ -202,7 +202,7 @@ const { handleSubmit, values } = useForm({
     level_id: "",
     category_id: "",
     is_public: "true",
-    status: "draft",
+    status: "published",
     max_attempts: 1,
     thumbnail: null,
   },

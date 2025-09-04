@@ -61,17 +61,17 @@ export const quizModalConfig: QuizConfigType = {
         { id: 'false', name: 'Privé' }
       ]
     },
-    {
-      title: 'Statut',
-      vModel: 'status',
-      type: 'select',
-      placeholder: 'Renseigner le statut',
-      required: true,
-      options: [
-        { id: 'draft', name: 'Brouillon' },
-        { id: 'published', name: 'Publié' },
-        { id: 'archived', name: 'Archivé' }
-      ]
-    },
+    // {
+    //   title: 'Statut',
+    //   vModel: 'status',
+    //   type: 'select',
+    //   placeholder: 'Renseigner le statut',
+    //   required: true,
+    //   options: [
+    //     { id: 'draft', name: 'Brouillon' },
+    //     { id: 'published', name: 'Publié' },
+    //     { id: 'archived', name: 'Archivé' }
+    //   ]
+    // },
   ]
 }

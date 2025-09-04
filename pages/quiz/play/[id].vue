@@ -61,11 +61,12 @@
           <QuizResults :result="quizResult" :score="score" :total-questions="useQuiz.state.quiz?.questions?.length || 0"
             :pass-score="useQuiz.state.quiz?.pass_score || 0">
             <template #actions>
-              <DefaultButton :ctaButton="true" @click="restartQuiz" class="py-3 px-6 font-medium">
+              <DefaultButton :ctaButton="true" @click="restartQuiz" class="py-3 px-6 max-md:w-full font-medium">
                 <Icon name="RefreshCcw" :stroke-width="2.5" :size="16" />
                 Recommencer
               </DefaultButton>
-              <DefaultButton :ctaButton="false" @click="showCorrection = !showCorrection" class="py-3 px-6 font-medium">
+              <DefaultButton :ctaButton="false" @click="showCorrection = !showCorrection"
+                class="py-3 max-md:w-full px-6 font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -73,7 +74,7 @@
                 </svg>
                 {{ showCorrection ? "Masquer la correction" : "Afficher la correction" }}
               </DefaultButton>
-              <DefaultButton :ctaButton="false" @click="directExit" class="py-3 px-6 font-medium">
+              <DefaultButton :ctaButton="false" @click="directExit" class="py-3 max-md:w-full px-6 font-medium">
                 <Icon name="LogOut" :stroke-width="2.5" :size="16" />
                 Quitter
               </DefaultButton>
@@ -210,16 +211,16 @@ const finishQuiz = async () => {
   let correct = 0;
   const questions = useQuiz.state.quiz?.questions || [];
   let responses: any[] = [];
-  
+
   questions.forEach((question: any, idx: number) => {
     const userAnswer = selectedAnswers.value[idx + 1];
-    
+
     if (question.question_type_id === 4) {
       const orderArray = Array.isArray(userAnswer) ? userAnswer : [];
       if (orderArray.length > 0) {
         responses.push({
           question_id: question.id,
-          user_answer: JSON.stringify(orderArray), 
+          user_answer: JSON.stringify(orderArray),
         });
       }
     } else {
@@ -234,13 +235,13 @@ const finishQuiz = async () => {
 
   questions.forEach((question: any, idx: number) => {
     const userAnswer = selectedAnswers.value[idx + 1];
-    
+
     if (question.question_type_id === 4) {
       if (Array.isArray(userAnswer) && userAnswer.length > 0) {
         const correctOrder = question.answers
           .sort((a: any, b: any) => (a.order_position || 0) - (b.order_position || 0))
           .map((a: any) => a.id);
-        
+
         if (JSON.stringify(userAnswer) === JSON.stringify(correctOrder)) {
           correct++;
         }

@@ -3,7 +3,7 @@
         <div class="flex flex-col space-y-3">
             <label class="text-sm font-medium">Avatar de profil</label>
 
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center max-md:space-x-0 max-md:flex-col max-md:gap-2 space-x-4">
                 <div class="flex-shrink-0">
                     <div v-if="selectedAvatar" class="relative">
                         <img :src="selectedAvatar.url" :alt="`Avatar ${selectedAvatar.style}`"

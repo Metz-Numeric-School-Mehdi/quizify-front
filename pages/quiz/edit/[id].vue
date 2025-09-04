@@ -8,12 +8,12 @@
       <Icon name="ArrowLeft" :size="20" :stroke-width="2.5" />
       Revenir en arrière
     </button>
-    <div class="flex flex-row gap-4 mb-6">
+    <div class="flex overflow-x-auto overflow-y-hidden flex-row gap-4 mb-6">
       <div
         v-for="tab in tabs"
         :key="tab.value"
         @click="switchTab(tab.value)"
-        class="cursor-pointer py-2 px-6 rounded-lg font-semibold transition-all duration-150"
+        class="cursor-pointer py-2 px-6 rounded-lg ml-1 font-semibold transition-all duration-150"
         :class="{
           'bg-pink-500 text-white shadow scale-105': activeTab === tab.value,
           'bg-white text-pink-500 border border-pink-200 hover:bg-pink-50': activeTab !== tab.value,
@@ -89,13 +89,11 @@ const infoEditorRef = ref<any>(null);
 
 const switchTab = (tabValue: string) => {
   activeTab.value = tabValue;
-  // Si on essaie d'aller sur "answers" alors qu'il y a des questions d'ordre, rediriger vers "questions"
   if (tabValue === 'answers' && hasOrderingQuestions.value) {
     activeTab.value = 'questions';
   }
 };
 
-// Watcher pour rediriger automatiquement si on était sur "answers" et qu'on ajoute une question d'ordre
 watch(hasOrderingQuestions, (hasOrdering) => {
   if (hasOrdering && activeTab.value === 'answers') {
     activeTab.value = 'questions';

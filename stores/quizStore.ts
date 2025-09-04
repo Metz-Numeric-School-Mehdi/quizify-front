@@ -53,7 +53,7 @@ export const useQuizStore = defineStore(
         level_id: "",
         category_id: "",
         is_public: false,
-        status: "draft",
+        status: "published",
         duration: 0,
         pass_score: 0,
         thumbnail: null,
@@ -80,15 +80,12 @@ export const useQuizStore = defineStore(
           },
         });
         state.value.quizzes = data.value
-          ? data.value
-              .filter((quiz) => {
-                if (state.value.isOwner) {
-                  return true;
-                }
-                return (
-                  Array.isArray(quiz.questions) && quiz.questions.length > 0
-                );
-              })
+          ? data.value.filter((quiz) => {
+              if (state.value.isOwner) {
+                return true;
+              }
+              return Array.isArray(quiz.questions) && quiz.questions.length > 0;
+            })
           : [];
         state.value.allQuiz = data.value || [];
       } catch (e: any) {
@@ -106,7 +103,7 @@ export const useQuizStore = defineStore(
           level_id: state.value.quiz.level_id || null,
           category_id: state.value.quiz.category_id || null,
           is_public: state.value.quiz.is_public ? "1" : "0",
-          status: state.value.quiz.status || "draft",
+          status: state.value.quiz.status || "published",
         };
       }
     };
@@ -174,7 +171,7 @@ export const useQuizStore = defineStore(
       formData.append("level_id", String(payload.level_id));
       formData.append("category_id", String(payload.category_id));
       formData.append("is_public", payload.is_public ? "1" : "0");
-      formData.append("status", payload.status);
+      formData.append("status", "published");
       formData.append("duration", String(payload.duration));
       formData.append("pass_score", String(payload.pass_score));
       if (payload.thumbnail) {
@@ -211,6 +208,7 @@ export const useQuizStore = defineStore(
       state.value.apiError = null;
       payload.is_public = payload.is_public === "true" ? true : false;
       payload.duration = payload.duration ? payload.duration : null;
+      payload.status = "published";
       try {
         const { data, error } = await useFetch(`/api/quizzes/${id}`, {
           baseURL: useRuntimeConfig().public.apiBase,
@@ -304,7 +302,7 @@ export const useQuizStore = defineStore(
         level_id: "",
         category_id: "",
         is_public: false,
-        status: "draft",
+        status: "published",
         duration: 0,
         pass_score: 0,
         thumbnail: null,

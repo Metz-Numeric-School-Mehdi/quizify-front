@@ -92,7 +92,11 @@
             <Button class="flex-1 justify-center py-3 text-base font-medium" type="submit"
               :disabled="store.state.isUpdating">
               <Icon v-if="store.state.isUpdating" name="Loader2" class="w-4 h-4 mr-2 animate-spin" />
-              {{ store.state.isUpdating ? 'Mise à jour...' : 'Sauvegarder les modifications' }}
+              <span v-if="store.state.isUpdating">Mise à jour...</span>
+              <span v-else>
+                <span class="md:hidden">Sauvegarder</span>
+                <span class="hidden md:inline">Sauvegarder les modifications</span>
+              </span>
             </Button>
           </div>
         </form>

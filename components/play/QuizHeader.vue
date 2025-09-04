@@ -1,15 +1,23 @@
+
 <template>
-  <div class="flex items-start justify-between gap-6 pb-6 border-b border-gray-100">
-    <div class="text-start flex-1">
-      <h2 class="text-[2rem] font-bold mb-3 text-pink-600 tracking-tight">
+  <div
+    class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6 pb-6 border-b border-gray-100"
+  >
+    <div class="text-start flex-1 w-full">
+      <h2 class="text-2xl sm:text-[2rem] font-bold mb-3 text-pink-600 tracking-tight">
         {{ quiz?.title }}
       </h2>
       <div class="text-gray-600">
         {{ quiz?.description }}
       </div>
     </div>
-    <div v-if="quiz?.duration && !quizFinished" class="flex-shrink-0">
-      <div class="relative w-20 h-20 bg-pink-50 rounded-full p-1 shadow-md">
+    <div
+      v-if="quiz?.duration && !quizFinished"
+      class="flex-shrink-0 mt-4 sm:mt-0 self-end sm:self-auto"
+    >
+      <div
+        class="relative w-16 h-16 sm:w-20 sm:h-20 bg-pink-50 rounded-full p-1 shadow-md"
+      >
         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 56 56">
           <circle cx="28" cy="28" r="24" fill="none" stroke="#f3c6d4" stroke-width="4" />
           <circle
@@ -26,7 +34,7 @@
           />
         </svg>
         <span
-          class="absolute inset-0 flex items-center justify-center text-xl font-bold text-pink-700 select-none"
+          class="absolute inset-0 flex items-center justify-center text-lg sm:text-xl font-bold text-pink-700 select-none"
         >
           {{ formattedTime }}
         </span>
