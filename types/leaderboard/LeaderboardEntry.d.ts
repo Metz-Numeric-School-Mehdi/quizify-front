@@ -1,5 +1,6 @@
 export interface LeaderboardEntry {
   id: number;
+  avatar: string;
   username: string;
   firstname: string;
   lastname: string;
