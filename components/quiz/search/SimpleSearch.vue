@@ -5,7 +5,7 @@
                 class="pr-10 rounded-full border-border/50 focus-visible:ring-primary-linear/40"
                 @input="debounceSearch" />
             <Button variant="ghost" size="icon" :disabled="searchQuery.length === 0"
-                class="absolute right-0 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+                class="absolute hover:bg-transparent right-0 top-1/2 transform -translate-y-1/2 text-muted-foreground"
                 @click="performSearch">
                 <Icon name="Search" :size="18" />
             </Button>
