@@ -20,11 +20,6 @@ export default defineNuxtConfig({
     preference: "light",
     fallback: "light",
   },
-  tailwindcss: {
-    config: {
-      darkMode: "class",
-    },
-  },
   shadcn: {
     /**
      * Prefix for all the imported component
