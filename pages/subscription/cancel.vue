@@ -35,12 +35,12 @@
       </div>
       
       <div class="space-y-3">
-        <button 
-          @click="goBack"
-          class="w-full bg-pink-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-pink-700 transition-colors"
+        <NuxtLink 
+          to="/subscription"
+          class="w-full bg-primary text-primary-foreground py-3 px-6 rounded-lg font-medium hover:bg-primary/90 transition-colors inline-block"
         >
-          Reprendre l'abonnement
-        </button>
+          Voir les plans d'abonnement
+        </NuxtLink>
         <NuxtLink 
           to="/" 
           class="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-200 transition-colors inline-block"
@@ -52,16 +52,8 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 definePageMeta({
   layout: false
-})
-
-const goBack = () => {
-  if (window.history.length > 1) {
-    window.history.back()
-  } else {
-    navigateTo('/profile')
-  }
-}
+});
 </script>
