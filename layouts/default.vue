@@ -1,9 +1,7 @@
 <template>
   <header
     class="sticky top-0 z-30 w-full bg-gradient-to-r from-pink-300 via-purple-300 to-blue-300 shadow-2lg flex items-center px-4 py-2 gap-4">
-    <img
-      src="/quizifyIcon.png"
-      alt="Mascotte Quiz" class="w-12 h-12 rounded-full shadow-lg border-4 border-white" />
+    <img src="/quizifyIcon.png" alt="Mascotte Quiz" class="w-12 h-12 rounded-full shadow-lg border-4 border-white" />
     <p>{{ useAuth.state.user?.subscription_plan ? (useAuth.state.user?.subscription_plan.name !== 'Gratuit' ?
       useAuth.state.user?.subscription_plan.name : '') : '' }}</p>
     <nav class="flex-1 flex items-center gap-2 sm:gap-4 relative">
@@ -28,7 +26,16 @@
         </li>
       </ul>
       <div class="hidden lg:flex ml-2 items-center gap-2">
-        <UserProfileDropdown />
+        <template v-if="useAuth.state.isAuthenticated">
+          <UserProfileDropdown />
+        </template>
+        <template v-else>
+          <DefaultButton :ctaButton="true" @click="router.push('/login')"
+            class="flex items-center gap-2 px-4 py-2 rounded-full">
+            <Icon name="LogIn" class="w-5 h-5 mr-1" />
+            <span>Se connecter</span>
+          </DefaultButton>
+        </template>
       </div>
       <transition name="fade">
         <div v-if="showMobileMenu" class="fixed inset-0 z-40 bg-black/40 flex lg:hidden"
@@ -51,9 +58,16 @@
                 </NuxtLink>
               </li>
             </ul>
-            <div class="flex flex-col gap-2 mt-6">
+            <template v-if="useAuth.state.isAuthenticated">
               <UserProfileDropdown />
-            </div>
+            </template>
+            <template v-else>
+              <DefaultButton :ctaButton="true" @click="router.push('/login')"
+                class="flex items-center gap-2 px-4 py-2 rounded-full">
+                <Icon name="LogIn" class="w-5 h-5 mr-1" />
+                <span>Se connecter</span>
+              </DefaultButton>
+            </template>
           </div>
         </div>
       </transition>

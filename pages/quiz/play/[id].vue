@@ -139,13 +139,6 @@ const startTimer = () => {
     intervalId.value = setInterval(() => {
       if (timer.value > 0) {
         timer.value--;
-        localStorage.setItem(
-          storageKey,
-          JSON.stringify({
-            activeQuestion: activeQuestion.value,
-            selectedAnswers: selectedAnswers.value,
-          }),
-        );
       }
       if (timer.value === 0 && !quizFinished.value) {
         clearInterval(intervalId.value!);
@@ -206,6 +199,7 @@ const previousQuestion = () => {
 const useAuth = authStore();
 import { useRuntimeConfig } from "#app";
 import type { QuizSubmitResult } from "~/types/quiz/QuizSubmitResult";
+import { onMounted } from "vue";
 
 const finishQuiz = async () => {
   let correct = 0;
@@ -288,7 +282,6 @@ const restartQuiz = () => {
   activeQuestion.value = 1;
   selectedAnswers.value = {};
   timer.value = (useQuiz.state.quiz?.duration || 0) * 60;
-  localStorage.removeItem(storageKey);
   startTimer();
 };
 
