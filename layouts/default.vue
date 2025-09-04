@@ -74,16 +74,6 @@
     </nav>
   </header>
   <div class="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-    <div class="absolute inset-0 -z-10 pointer-events-none">
-      <div class="absolute w-20 h-20 sm:w-32 sm:h-32 bg-pink-200 opacity-30 rounded-full top-10 left-10 animate-pulse">
-      </div>
-      <div
-        class="absolute w-16 h-16 sm:w-24 sm:h-24 bg-blue-200 opacity-20 rounded-full bottom-20 right-20 animate-ping">
-      </div>
-      <div
-        class="absolute w-10 h-10 sm:w-16 sm:h-16 bg-yellow-100 opacity-20 rounded-full top-1/2 left-1/2 animate-bounce">
-      </div>
-    </div>
     <main class="flex-1 px-home">
       <div class="mt-8">
         <slot />

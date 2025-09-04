@@ -1,20 +1,5 @@
 <template>
   <div class="flex flex-col gap-4 relative">
-    <div class="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
-      <div
-        class="absolute w-56 h-56 bg-gradient-to-r from-pink-200 to-purple-200 opacity-20 rounded-full -top-20 -left-20 animate-pulse">
-      </div>
-      <div
-        class="absolute w-64 h-64 bg-gradient-to-br from-blue-200 to-cyan-200 opacity-15 rounded-full -bottom-32 -right-32 animate-pulse">
-      </div>
-      <div
-        class="absolute w-40 h-40 bg-gradient-to-l from-yellow-200 to-orange-200 opacity-10 rounded-full top-1/3 right-10 animate-pulse">
-      </div>
-      <div
-        class="absolute w-48 h-48 bg-gradient-to-t from-purple-200 to-indigo-200 opacity-10 rounded-full bottom-20 left-1/4 animate-pulse">
-      </div>
-    </div>
-
     <div
       class="bg-white/70 dark:bg-background/90 backdrop-blur-sm py-4 px-4 sm:px-6 rounded-xl shadow-sm border border-border/20 mb-2 z-10">
       <div class="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
