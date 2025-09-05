@@ -1,0 +1,38 @@
+name: CI Development - Build Check 🚀
+
+on:
+  push:
+    branches: [dev, feat/*]
+  pull_request:
+    branches: [dev, feat/*, fix/*, hotfix/*, chore/*]
+
+jobs:
+  build-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code 📦
+        uses: actions/checkout@v4
+
+      - name: Setup Bun 🚀
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies 📋
+        run: bun install --frozen-lockfile
+
+      - name: Build application 🏗️
+        run: NODE_OPTIONS="--max-old-space-size=4096" bun run build
+        env:
+          API_URL: ${{ secrets.API_URL || 'https://api.fichespedagogiques.com/v1' }}
+
+      - name: Check build output ✅
+        run: |
+          if [ -d ".output" ]; then
+            echo "✅ Build successful - .output directory created"
+            echo "Build size: $(du -sh .output/)"
+          else
+            echo "❌ Build failed - no .output directory found"
+            exit 1
+          fi
