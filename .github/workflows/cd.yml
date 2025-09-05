@@ -1,0 +1,153 @@
+# name: CD Deployment 🚀
+
+# on:
+#   workflow_run:
+#     workflows: ["CI Development - Build Check 🚀"]
+#     types:
+#       - completed
+#     branches: [dev]
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     if: github.event.workflow_run.conclusion == 'success'
+    
+#     steps:
+#       - name: Checkout code 📦
+#         uses: actions/checkout@v4
+      
+#       - name: Set up Docker Buildx 🐳
+#         uses: docker/setup-buildx-action@v3
+      
+#       - name: Login to Docker Hub 🔐
+#         uses: docker/login-action@v3
+#         with:
+#           username: ${{ secrets.DOCKER_USERNAME }}
+#           password: ${{ secrets.DOCKER_PASSWORD }}
+      
+#       - name: Build and push Docker image 🏗️
+#         uses: docker/build-push-action@v5
+#         with:
+#           context: .
+#           push: true
+#           tags: |
+#             ${{ secrets.DOCKER_USERNAME }}/quizify-app:latest
+#             ${{ secrets.DOCKER_USERNAME }}/quizify-app:${{ github.sha }}
+#           cache-from: type=gha
+#           cache-to: type=gha,mode=max
+      
+#       - name: Deploy to server 🚀
+#         uses: appleboy/ssh-action@v1.0.3
+#         with:
+#           host: ${{ secrets.HOST }}
+#           username: ${{ secrets.USERNAME }}
+#           key: ${{ secrets.SSH_PRIVATE_KEY }}
+#           port: ${{ secrets.PORT || 22 }}
+#           script: |
+#             # Naviguer vers le dossier de l'application
+#             cd /var/www/quizify
+            
+#             # Mettre à jour le code source (pour les fichiers de config)
+#             git pull origin dev
+            
+#             # Mettre à jour l'image dans docker-compose.yml
+#             sed -i "s|image: quizify-app:v[0-9]*|image: ${{ secrets.DOCKER_USERNAME }}/quizify-app:latest|g" docker-compose.yml
+            
+#             # Arrêter les conteneurs existants
+#             docker-compose down
+            
+#             # Télécharger la nouvelle image
+#             docker pull ${{ secrets.DOCKER_USERNAME }}/quizify-app:latest
+            
+#             # Nettoyer les anciennes images
+#             docker image prune -f
+            
+#             # Démarrer les nouveaux conteneurs
+#             docker-compose up -d
+            
+#             # Attendre que les services démarrent
+#             sleep 30
+            
+#             # Vérifier que les conteneurs sont en cours d'exécution
+#             docker-compose ps
+      
+#       - name: Health check verification 🏥
+#         uses: appleboy/ssh-action@v1.0.3
+#         with:
+#           host: ${{ secrets.HOST }}
+#           username: ${{ secrets.USERNAME }}
+#           key: ${{ secrets.SSH_PRIVATE_KEY }}
+#           script: |
+#             # Attendre que l'application soit complètement démarrée
+#             echo "Waiting for application to be ready..."
+#             for i in {1..30}; do
+#               if curl -f http://localhost:3000/health 2>/dev/null; then
+#                 echo "✅ Application is healthy!"
+#                 break
+#               fi
+#               echo "Attempt $i/30: Application not ready yet, waiting..."
+#               sleep 10
+#             done
+            
+#             # Vérifier le statut des conteneurs
+#             if docker-compose ps | grep -q "Up"; then
+#               echo "✅ Containers are running successfully!"
+#             else
+#               echo "❌ Some containers are not running properly"
+#               docker-compose logs --tail=50
+#               exit 1
+#             fi
+      
+#       - name: Rollback on failure 🔄
+#         if: failure()
+#         uses: appleboy/ssh-action@v1.0.3
+#         with:
+#           host: ${{ secrets.HOST }}
+#           username: ${{ secrets.USERNAME }}
+#           key: ${{ secrets.SSH_PRIVATE_KEY }}
+#           script: |
+#             echo "🔄 Deployment failed, attempting rollback..."
+#             cd /var/www/quizify
+            
+#             # Revenir à l'image précédente (si elle existe)
+#             if docker images | grep -q "quizify-app:backup"; then
+#               sed -i "s|image: ${{ secrets.DOCKER_USERNAME }}/quizify-app:latest|image: quizify-app:backup|g" docker-compose.yml
+#               docker-compose down
+#               docker-compose up -d
+#               echo "✅ Rollback completed"
+#             else
+#               echo "❌ No backup image found for rollback"
+#             fi
+      
+#       - name: Create backup tag 💾
+#         if: success()
+#         uses: appleboy/ssh-action@v1.0.3
+#         with:
+#           host: ${{ secrets.HOST }}
+#           username: ${{ secrets.USERNAME }}
+#           key: ${{ secrets.SSH_PRIVATE_KEY }}
+#           script: |
+#             # Taguer l'image actuelle comme backup pour le prochain déploiement
+#             docker tag ${{ secrets.DOCKER_USERNAME }}/quizify-app:latest quizify-app:backup
+#             echo "✅ Backup tag created successfully"
+      
+#       - name: Cleanup old images 🧹
+#         uses: appleboy/ssh-action@v1.0.3
+#         with:
+#           host: ${{ secrets.HOST }}
+#           username: ${{ secrets.USERNAME }}
+#           key: ${{ secrets.SSH_PRIVATE_KEY }}
+#           script: |
+#             # Nettoyer les images non utilisées (garde les 2 plus récentes)
+#             docker image prune -f
+#             echo "🧹 Cleanup completed"
+      
+#       - name: Notify deployment status 📢
+#         if: always()
+#         run: |
+#           if [ "${{ job.status }}" = "success" ]; then
+#             echo "🎉 Docker deployment completed successfully!"
+#             echo "Image: ${{ secrets.DOCKER_USERNAME }}/quizify-app:${{ github.sha }}"
+#           else
+#             echo "❌ Docker deployment failed!"
+#           fi
