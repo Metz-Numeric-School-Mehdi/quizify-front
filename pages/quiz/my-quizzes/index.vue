@@ -161,7 +161,6 @@
 </template>
 
 <script setup lang="ts">
-import CreateQuizModal from "@/components/modals/quiz/CreateQuizModal.vue";
 import { onMounted, onUnmounted, nextTick, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useQuizStore } from "~/stores/quizStore";
@@ -189,7 +188,6 @@ import CreateQuizModalAdvanced from "~/components/modals/quiz/CreateQuizModalAdv
 const useQuiz = useQuizStore();
 const router = useRouter();
 
-// État pour la confirmation de suppression
 const showDeleteConfirmation = ref(false);
 const quizToDelete = ref<Quiz | null>(null);
 
@@ -226,7 +224,6 @@ async function confirmDelete() {
         showDeleteConfirmation.value = false;
         quizToDelete.value = null;
       } else {
-        // Gérer l'erreur si nécessaire
         console.error('Erreur lors de la suppression du quiz:', useQuiz.state.apiError);
       }
     } catch (error) {
