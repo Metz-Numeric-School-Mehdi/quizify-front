@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { localStorageIsAvailable } from "~/utils/client";
+import fetchAPI from "~/utils/request/fetch";
+
 import type SignIn from "~/types/auth/Auth";
 import type { SignUp } from "~/types/auth/Auth";
 import type User from "~/types/user/User";
-import { localStorageIsAvailable } from "~/utils/client";
-import fetchAPI from "~/utils/request/fetch";
 
 export const authStore = defineStore("auth", () => {
   const state = ref<{
@@ -88,17 +89,13 @@ export const authStore = defineStore("auth", () => {
       }
     };
 
-  const signIn = async (email: string, password: string) => {
-    const requestPayload = {
-      email,
-      password,
-    };
-    const response = await fetchAPI<{ token: string; user: User }>({
-      method: "POST",
-      endpoint: "auth/signin",
-      params: requestPayload,
-      token: undefined,
-    });
+    const signIn = async () => {
+    try {
+      const response = await fetchAPI<{ token: string; user: User }>({
+        url: "/api/auth/signin",
+        method: "POST",
+        body: state.value.signInPayload,
+      });
 
     if (response && "user" in response && response && "token" in response) {
       setUser(response.user, response.token);

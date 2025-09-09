@@ -1,7 +1,7 @@
 <template>
   <header
     class="sticky top-0 z-30 w-full bg-gradient-to-r from-pink-300 via-purple-300 to-blue-300 shadow-2lg flex items-center px-4 py-2 gap-4">
-    <img src="/quizifyIcon.png" alt="Mascotte Quiz" class="w-12 h-12 rounded-full shadow-lg border-4 border-white" />
+    <NuxtImg src="/quizifyIcon.png" alt="Mascotte Quiz" class="w-12 h-12 rounded-full shadow-lg border-4 border-white" width="48" height="48" format="webp" />
     <p>{{ useAuth.state.user?.subscription_plan ? (useAuth.state.user?.subscription_plan.name !== 'Gratuit' ?
       useAuth.state.user?.subscription_plan.name : '') : '' }}</p>
     <nav class="flex-1 flex items-center gap-2 sm:gap-4 relative">
@@ -41,7 +41,7 @@
         <div v-if="showMobileMenu" class="fixed inset-0 z-40 bg-black/40 flex lg:hidden"
           @click="showMobileMenu = false">
           <div class="bg-white w-64 h-full shadow-lg p-6 flex flex-col gap-6 animate-slide-in-left" @click.stop>
-            <button type="button" @click="showMobileMenu = false" class="self-end mb-2 p-2 rounded hover:bg-pink-100">
+            <button type="button" @click="showMobileMenu = false" class="self-end mb-2 p-2 rounded hover:bg-pink-100" aria-label="Fermer le menu">
               <Icon name="X" :stroke-width="2" class="w-6 h-6 text-purple-700" />
             </button>
             <ul class="flex flex-col gap-3">

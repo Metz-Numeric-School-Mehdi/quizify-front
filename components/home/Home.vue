@@ -53,7 +53,7 @@
         <span class="inline sm:hidden">Créer</span>
       </DefaultButton>
     </div>
-    <CreateQuizModalAdvanced @close="useQuiz.state.openModal = false" />
+    <LazyCreateQuizModalAdvanced @close="useQuiz.state.openModal = false" />
 
     <div v-if="loading" class="w-full min-h-[60vh] flex justify-center items-center">
       <div
@@ -106,9 +106,16 @@
 
           <div v-else
             class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 sm:gap-6">
-            <QuizCard v-for="quiz in items" :key="quiz.id" :img="quiz.thumbnail_url || ''" :quizId="quiz.id"
-              :title="quiz.title" :duration="quiz.duration" :description="quiz.description"
-              class="w-full max-w-full sm:max-w-xs h-full" />
+            <Suspense>
+              <template #default>
+                <QuizCard v-for="quiz in items" :key="quiz.id" :img="quiz.thumbnail_url || ''" :quizId="quiz.id"
+                  :title="quiz.title" :duration="quiz.duration" :description="quiz.description"
+                  class="w-full max-w-full sm:max-w-xs h-full" />
+              </template>
+              <template #fallback>
+                <QuizCardSkeleton v-for="n in 8" :key="n" />
+              </template>
+            </Suspense>
           </div>
         </section>
       </template>
@@ -157,7 +164,7 @@ import { computed, onMounted, ref } from "vue";
 import { useQuizStore } from "~/stores/quizStore";
 import { useQuizSearch } from "~/composables/useQuizzesSearch";
 import QuizCard from "../QuizCard.vue";
-import CreateQuizModalAdvanced from "../modals/quiz/CreateQuizModalAdvanced.vue";
+import QuizCardSkeleton from "../common/QuizCardSkeleton.vue";
 import DefaultButton from "../interaction/buttons/DefaultButton.vue";
 import SimpleSearch from "../quiz/search/SimpleSearch.vue";
 import SimpleFilters from "../quiz/search/SimpleFilters.vue";

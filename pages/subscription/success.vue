@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center p-4">
     <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
       <div class="mb-6">
-        <img src="/quizifyIcon.png" alt="Quizify" class="w-16 h-16 mx-auto mb-4">
+        <NuxtImg src="/quizifyIcon.png" alt="Quizify" class="w-16 h-16 mx-auto mb-4" width="64" height="64" format="webp" />
         <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <CheckIconAnimate />
         </div>

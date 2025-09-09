@@ -10,13 +10,13 @@
             </div>
             <div v-else @click="openAvatarSelector"
               class="w-24 h-24 rounded-full border-4 border-dashed border-gray-300 flex items-center justify-center bg-gray-50 cursor-pointer hover:border-gray-400 transition-colors">
-              <Icon name="User" class="w-8 h-8 text-gray-400" />
+              <Icon name="User" class="w-8 h-8 text-gray-500" />
             </div>
           </div>
           <div class="flex-1 text-center sm:text-left">
             <h1 class="text-2xl font-bold text-gray-900">{{ userDisplayName }}</h1>
             <p class="text-gray-600">@{{ auth.state.user?.username }}</p>
-            <p class="text-sm text-gray-500 mt-1">{{ auth.state.user?.email }}</p>
+            <p class="text-sm text-gray-600 mt-1">{{ auth.state.user?.email }}</p>
             <div v-if="subscriptionPlan" class="mt-2">
               <span
                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
