@@ -8,7 +8,7 @@
     <div class="relative h-full w-full flex flex-col bg-card/80 backdrop-blur-sm rounded-xl border border-border/30 shadow-lg overflow-hidden group-hover:shadow-xl z-10">
       <div class="relative w-full h-40 overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10"></div>
-        <NuxtImg 
+        <img 
           v-if="img" 
           class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" 
           :src="img" 
@@ -19,10 +19,10 @@
           height="160"
           placeholder="blur"
         />
-        <NuxtImg 
+        <img 
           v-else
           src="@/assets/img/card_wallp.jpeg" 
-          alt="Background image for quiz card" 
+          alt="Image d'arrière-plan de la carte du quiz" 
           class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
           format="webp"
           width="320"
