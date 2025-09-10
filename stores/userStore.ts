@@ -89,6 +89,7 @@ export const userStore = defineStore("user", () => {
           localStorage.setItem("user", JSON.stringify(data.user));
         }
 
+        getProfile();
         return true;
       }
 

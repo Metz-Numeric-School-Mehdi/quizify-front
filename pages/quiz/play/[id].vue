@@ -214,7 +214,7 @@ const finishQuiz = async () => {
       if (orderArray.length > 0) {
         responses.push({
           question_id: question.id,
-          user_answer: JSON.stringify(orderArray),
+          user_order: JSON.stringify(orderArray),
         });
       }
     } else {
