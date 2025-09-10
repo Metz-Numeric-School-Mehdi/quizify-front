@@ -40,48 +40,56 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: {
-        lang: 'fr'
+        lang: "fr",
       },
-      title: 'Quizify - Créez et jouez à des quiz interactifs',
+      title: "Quizify - Créez et jouez à des quiz interactifs",
       meta: [
-        { name: 'description', content: 'Plateforme de création et de jeu de quiz interactifs. Créez vos propres quiz, défiez vos amis et suivez vos performances.' },
-        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { charset: 'utf-8' },
-        { name: 'theme-color', content: '#ec4899' },
-        { name: 'format-detection', content: 'telephone=no' }
+        {
+          name: "description",
+          content:
+            "Plateforme de création et de jeu de quiz interactifs. Créez vos propres quiz, défiez vos amis et suivez vos performances.",
+        },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        { charset: "utf-8" },
+        { name: "theme-color", content: "#ec4899" },
+        { name: "format-detection", content: "telephone=no" },
       ],
       link: [
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        { rel: 'dns-prefetch', href: 'https://api.quizify.com' }
-      ]
-    }
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        {
+          rel: "preconnect",
+          href: "https://fonts.gstatic.com",
+          crossorigin: "",
+        },
+        { rel: "dns-prefetch", href: "https://api.quizify.com" },
+      ],
+    },
   },
   build: {
-    analyze: false
+    analyze: false,
   },
   nitro: {
     compressPublicAssets: true,
     minify: true,
     prerender: {
-      routes: ['/']
-    }
+      routes: ["/"],
+    },
   },
   vite: {
     build: {
       rollupOptions: {
         output: {
           manualChunks: {
-            'vendor': ['vue', 'vue-router'],
-            'pinia': ['pinia'],
-            'ui': ['lucide-vue-next']
-          }
-        }
-      }
-    }
+            vendor: ["vue", "vue-router"],
+            pinia: ["pinia"],
+            ui: ["lucide-vue-next"],
+          },
+        },
+      },
+    },
   },
   experimental: {
     payloadExtraction: false,
-    treeshakeClientOnly: true
-  }
+    treeshakeClientOnly: true,
+  },
 });
