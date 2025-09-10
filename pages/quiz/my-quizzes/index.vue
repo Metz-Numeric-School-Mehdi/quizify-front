@@ -201,6 +201,14 @@ onUnmounted(() => {
   useQuiz.state.isOwner = false;
 });
 
+useSeoMeta({
+  title: 'Mes Quiz - Quizify',
+  description: 'Gérez tous vos quiz créés sur Quizify. Modifiez, supprimez ou consultez les statistiques de vos quiz personnalisés.',
+  ogTitle: 'Mes Quiz - Quizify',
+  ogDescription: 'Gérez tous vos quiz créés sur Quizify.',
+  robots: 'noindex, nofollow'
+});
+
 function editQuiz(quizId: number) {
   router.push(`/quiz/edit/${quizId}`);
 }

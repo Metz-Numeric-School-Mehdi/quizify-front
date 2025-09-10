@@ -70,4 +70,12 @@ onMounted(async () => {
     await useSubscription.fetchCurrentSubscription();
   }
 });
+
+useSeoMeta({
+  title: 'Abonnement Confirmé - Quizify',
+  description: 'Votre abonnement Quizify a été confirmé avec succès. Profitez maintenant de toutes les fonctionnalités premium.',
+  ogTitle: 'Abonnement Confirmé - Quizify',
+  ogDescription: 'Votre abonnement Quizify Premium est maintenant actif.',
+  robots: 'noindex, nofollow'
+});
 </script>

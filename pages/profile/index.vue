@@ -235,6 +235,14 @@ onMounted(() => {
 onBeforeMount(() => {
   store.getProfile()
 })
+
+useSeoMeta({
+  title: 'Mon Profil - Quizify',
+  description: 'Gérez votre profil Quizify. Modifiez vos informations personnelles, changez votre avatar et consultez votre abonnement.',
+  ogTitle: 'Mon Profil - Quizify',
+  ogDescription: 'Gérez votre profil et vos paramètres sur Quizify.',
+  robots: 'noindex, nofollow'
+});
 </script>
 
 <style></style>

@@ -59,4 +59,12 @@
 definePageMeta({
   layout: false
 });
+
+useSeoMeta({
+  title: 'Abonnement Annulé - Quizify',
+  description: 'Votre abonnement Quizify a été annulé. Vous pouvez vous réabonner à tout moment pour retrouver vos fonctionnalités premium.',
+  ogTitle: 'Abonnement Annulé - Quizify',
+  ogDescription: 'Abonnement Quizify annulé.',
+  robots: 'noindex, nofollow'
+});
 </script>
