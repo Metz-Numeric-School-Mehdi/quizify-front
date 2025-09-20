@@ -80,7 +80,6 @@ export default defineNuxtConfig({
       rollupOptions: {
         output: {
           manualChunks: {
-            vendor: ["vue", "vue-router"],
             pinia: ["pinia"],
             ui: ["lucide-vue-next"],
           },
