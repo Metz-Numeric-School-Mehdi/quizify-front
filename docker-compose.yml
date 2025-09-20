@@ -31,5 +31,4 @@ services:
 
 networks:
   quizify-network:
-    driver: bridge
-    name: quizify-network
+    external: true
