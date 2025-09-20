@@ -15,9 +15,6 @@ export default defineNuxtConfig({
     defaults: {
       weights: ["400", "500", "600", "700"],
     },
-    manualChunks: {
-      ui: ["lucide-vue-next"],
-    },
   },
   shadcn: {
     /**
@@ -71,17 +68,6 @@ export default defineNuxtConfig({
     minify: true,
     prerender: {
       routes: ["/"],
-    },
-  },
-  vite: {
-    build: {
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            ui: ["lucide-vue-next"],
-          },
-        },
-      },
     },
   },
   experimental: {
