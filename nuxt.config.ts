@@ -79,11 +79,11 @@ export default defineNuxtConfig({
     build: {
       rollupOptions: {
         output: {
-          manualChunks: {
-            vendor: ["vue", "vue-router"],
-            pinia: ["pinia"],
-            ui: ["lucide-vue-next"],
-          },
+          // manualChunks: {
+          //   vendor: ["vue", "vue-router"],
+          //   pinia: ["pinia"],
+          //   ui: ["lucide-vue-next"],
+          // },
         },
       },
     },
