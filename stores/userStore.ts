@@ -32,16 +32,20 @@ export const userStore = defineStore("user", () => {
   });
 
   const getProfile = async () => {
-    const data = await $fetch<{user: User | null}>("/user", {
-      baseURL: `${useRuntimeConfig().public.apiBase}/api`,
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${auth.state.token}`,
-        Accept: "application/json",
-      },
-    });
+    try {
+      const data = await $fetch<{user: User | null}>("/api/user", {
+        baseURL: useRuntimeConfig().public.apiBase,
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${auth.state.token}`,
+          Accept: "application/json",
+        },
+      });
 
-    if (data.user) state.value.user = data.user;
+      if (data?.user) state.value.user = data.user;
+    } catch (error: any) {
+      console.error("Error fetching profile:", error);
+    }
   };
   
   const initializeProfile = () => {
@@ -63,39 +67,37 @@ export const userStore = defineStore("user", () => {
     state.value.responseErrors = "";
 
     try {
-      const { data, error } = await useFetch<{ user: User; message: string }>(
-        "/user/profile",
+      const data = await $fetch<{ user: User; message: string }>(
+        "/api/user/profile",
         {
           method: "PUT",
           body: profileData,
-          baseURL: `${useRuntimeConfig().public.apiBase}/api`,
+          baseURL: useRuntimeConfig().public.apiBase,
           headers: {
             Authorization: `Bearer ${auth.state.token}`,
           },
         }
       );
 
-      if (error.value) {
-        state.value.responseErrors =
-          error.value.data?.message ||
-          "Erreur lors de la mise à jour du profil";
-        return false;
-      }
-
-      if (data.value?.user) {
-        auth.state.user = data.value.user;
-
-        if (localStorageIsAvailable()) {
-          localStorage.setItem("user", JSON.stringify(data.value.user));
+      if (data?.user) {
+        state.value.user = data.user;
+        if (auth.state.user) {
+          auth.state.user = data.user;
         }
 
+        if (localStorageIsAvailable()) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
+
+        getProfile();
         return true;
       }
 
       return false;
-    } catch (err: any) {
+    } catch (error: any) {
       state.value.responseErrors =
-        err.message || "Erreur lors de la mise à jour du profil";
+        error?.data?.message ||
+        "Erreur lors de la mise à jour du profil";
       return false;
     } finally {
       state.value.isUpdating = false;

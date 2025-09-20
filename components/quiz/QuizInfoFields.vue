@@ -161,7 +161,7 @@ watch(
           if (field.vModel === "is_public") {
             values.is_public = newQuiz.is_public == 1 ? "true" : "false";
           } else if (field.vModel === "duration") {
-            values.duration = newQuiz.duration ? Math.round(newQuiz.duration / 60) : 0;
+            values.duration = newQuiz.duration || 0;
           } else {
             values[field.vModel] = newQuiz[field.vModel];
           }

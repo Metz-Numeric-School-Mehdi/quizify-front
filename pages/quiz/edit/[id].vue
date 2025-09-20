@@ -103,4 +103,12 @@ watch(hasOrderingQuestions, (hasOrdering) => {
 onMounted(async () => {
   await store.getOne(Number(route.params.id));
 });
+
+useSeoMeta({
+  title: () => `Éditer - ${store.state.quiz?.title || 'Quiz'} - Quizify`,
+  description: () => `Modifiez votre quiz "${store.state.quiz?.title}" sur Quizify. Ajoutez des questions, personnalisez les réponses et optimisez votre contenu.`,
+  ogTitle: () => `Éditer - ${store.state.quiz?.title || 'Quiz'} - Quizify`,
+  ogDescription: () => `Modifiez votre quiz "${store.state.quiz?.title}" sur Quizify.`,
+  robots: 'noindex, nofollow'
+});
 </script>

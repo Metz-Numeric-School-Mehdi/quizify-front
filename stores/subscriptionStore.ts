@@ -12,7 +12,6 @@ import type {
   SubscriptionSyncResponse,
   QuotaCheck,
 } from "~/types/subscription/Subscription";
-import fetchAPI from "~/utils/request/fetch";
 
 export const subscriptionStore = defineStore(
   "subscription",
@@ -32,20 +31,26 @@ export const subscriptionStore = defineStore(
         loading.value = true;
         error.value = null;
 
-        const response = await fetchAPI<SubscriptionPlan[]>({
+        const { data: response, error: fetchError } = await useFetch<SubscriptionPlan[]>("/api/subscription/plans", {
+          baseURL: useRuntimeConfig().public.apiBase,
           method: "GET",
-          endpoint: "subscription/plans",
-          token: undefined,
         });
 
-        if (Array.isArray(response)) {
-          plans.value = response;
+        if (fetchError.value) {
+          console.warn("Subscription plans endpoint not available yet, using mock data:", fetchError.value);
+          error.value = null;
+          plans.value = getMockPlans();
+          return;
+        }
+
+        if (Array.isArray(response.value)) {
+          plans.value = response.value;
         } else if (
-          response &&
-          typeof response === "object" &&
-          "data" in response
+          response.value &&
+          typeof response.value === "object" &&
+          "data" in response.value
         ) {
-          plans.value = (response as any).data;
+          plans.value = (response.value as any).data;
         } else {
           console.warn("No subscription plans available, using mock data");
           plans.value = getMockPlans();
@@ -70,17 +75,26 @@ export const subscriptionStore = defineStore(
         loading.value = true;
         error.value = null;
 
-        const response = await fetchAPI<UserSubscription>({
+        const { data: response, error: fetchError } = await useFetch<UserSubscription>("/api/subscription/current", {
+          baseURL: useRuntimeConfig().public.apiBase,
           method: "GET",
-          endpoint: "subscription/current",
-          token: auth.state.token,
+          headers: {
+            Authorization: `Bearer ${auth.state.token}`,
+          },
         });
 
-        if (response && typeof response === "object") {
-          if ("subscription" in response || "plan" in response) {
-            currentSubscription.value = response as UserSubscription;
-          } else if ("data" in response && (response as any).data) {
-            const data = (response as any).data;
+        if (fetchError.value) {
+          console.warn("Subscription current endpoint not available yet, using mock data:", fetchError.value);
+          error.value = null;
+          currentSubscription.value = getMockCurrentSubscription();
+          return;
+        }
+
+        if (response.value && typeof response.value === "object") {
+          if ("subscription" in response.value || "plan" in response.value) {
+            currentSubscription.value = response.value as UserSubscription;
+          } else if ("data" in response.value && (response.value as any).data) {
+            const data = (response.value as any).data;
             if (data.plan) {
               currentSubscription.value = {
                 plan: {
@@ -212,24 +226,31 @@ export const subscriptionStore = defineStore(
         const auth = authStore();
         const token = auth.state.token;
 
-        const response = await fetchAPI<{
+        const { data: response, error: fetchError } = await useFetch<{
           message: string;
           checkout_url: string;
           session_id: string;
           plan: any;
-        }>({
+        }>("/api/checkout", {
+          baseURL: useRuntimeConfig().public.apiBase,
           method: "GET",
-          endpoint: "checkout",
           query: {
             sub: planType,
           },
-          token: token,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
-        if (response && "checkout_url" in response && response.checkout_url) {
+        if (fetchError.value) {
+          error.value = "Erreur lors de la création de la session de paiement";
+          return null;
+        }
+
+        if (response.value && "checkout_url" in response.value && response.value.checkout_url) {
           const checkoutSession: CheckoutSession = {
-            checkout_url: response.checkout_url,
-            session_id: response.session_id,
+            checkout_url: response.value.checkout_url,
+            session_id: response.value.session_id,
             expires_at: new Date(
               Date.now() + 24 * 60 * 60 * 1000
             ).toISOString(),
@@ -238,7 +259,7 @@ export const subscriptionStore = defineStore(
           currentCheckoutSession.value = checkoutSession;
 
           if (typeof window !== "undefined") {
-            window.open(response.checkout_url, "_blank", "noopener,noreferrer");
+            window.open(response.value.checkout_url, "_blank", "noopener,noreferrer");
           }
 
           return checkoutSession;
@@ -262,11 +283,18 @@ export const subscriptionStore = defineStore(
         loading.value = true;
         error.value = null;
 
-        const response = await fetchAPI<any>({
+        const { error: fetchError } = await useFetch<any>("/api/subscription/cancel", {
+          baseURL: useRuntimeConfig().public.apiBase,
           method: "POST",
-          endpoint: "subscription/cancel",
-          token: auth.state.token,
+          headers: {
+            Authorization: `Bearer ${auth.state.token}`,
+          },
         });
+
+        if (fetchError.value) {
+          error.value = "Erreur lors de l'annulation de l'abonnement";
+          return false;
+        }
 
         await fetchCurrentSubscription();
         return true;
@@ -287,11 +315,15 @@ export const subscriptionStore = defineStore(
         loading.value = true;
         error.value = null;
 
-        const response = await fetchAPI<any>({
+        const { error: fetchError } = await useFetch<any>("/api/subscription/sync", {
+          baseURL: useRuntimeConfig().public.apiBase,
           method: "POST",
-          endpoint: "subscription/sync",
-          token: undefined,
         });
+
+        if (fetchError.value) {
+          error.value = "Erreur lors de la synchronisation de l'abonnement";
+          return false;
+        }
 
         await fetchCurrentSubscription();
         return true;

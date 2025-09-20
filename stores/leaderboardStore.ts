@@ -19,12 +19,17 @@ export const useLeaderboardStore = defineStore("leaderboard", () => {
     state.value.loading = true;
     state.value.error = null;
     try {
-      const data = await $fetch<LeaderboardResponse>("/api/leaderboard", {
+      const { data, error } = await useFetch<LeaderboardResponse>("/api/leaderboard", {
         baseURL: useRuntimeConfig().public.apiBase,
         method: "GET",
         query: { page, order }
       });
-      state.value.leaderboard = data;
+      
+      if (error.value) {
+        state.value.error = error.value?.data?.message || error.value?.message || "Erreur inconnue";
+      } else if (data.value) {
+        state.value.leaderboard = data.value;
+      }
     } catch (err: any) {
       state.value.error = err?.data?.message || err?.message || "Erreur inconnue";
     }
@@ -35,12 +40,17 @@ export const useLeaderboardStore = defineStore("leaderboard", () => {
     state.value.loading = true;
     state.value.error = null;
     try {
-      const data = await $fetch<LeaderboardResponse>(`/api/leaderboard/category/${categoryId}`, {
+      const { data, error } = await useFetch<LeaderboardResponse>(`/api/leaderboard/category/${categoryId}`, {
         baseURL: useRuntimeConfig().public.apiBase,
         method: "GET",
         query: { page, order }
       });
-      state.value.leaderboard = data;
+      
+      if (error.value) {
+        state.value.error = error.value?.data?.message || error.value?.message || "Erreur inconnue";
+      } else if (data.value) {
+        state.value.leaderboard = data.value;
+      }
     } catch (err: any) {
       state.value.error = err?.data?.message || err?.message || "Erreur inconnue";
     }
@@ -51,12 +61,17 @@ export const useLeaderboardStore = defineStore("leaderboard", () => {
     state.value.loading = true;
     state.value.error = null;
     try {
-      const data = await $fetch<LeaderboardResponse>(`/api/leaderboard/organization/${organizationId}`, {
+      const { data, error } = await useFetch<LeaderboardResponse>(`/api/leaderboard/organization/${organizationId}`, {
         baseURL: useRuntimeConfig().public.apiBase,
         method: "GET",
         query: { page, order }
       });
-      state.value.leaderboard = data;
+      
+      if (error.value) {
+        state.value.error = error.value?.data?.message || error.value?.message || "Erreur inconnue";
+      } else if (data.value) {
+        state.value.leaderboard = data.value;
+      }
     } catch (err: any) {
       state.value.error = err?.data?.message || err?.message || "Erreur inconnue";
     }
@@ -67,11 +82,15 @@ export const useLeaderboardStore = defineStore("leaderboard", () => {
     state.value.loading = true;
     state.value.error = null;
     try {
-      await $fetch("/api/leaderboard/update-rankings", {
+      const { error } = await useFetch("/api/leaderboard/update-rankings", {
         baseURL: useRuntimeConfig().public.apiBase,
         method: "POST",
         headers: { Authorization: `Bearer ${auth.state.token}` },
       });
+      
+      if (error.value) {
+        state.value.error = error.value?.data?.message || error.value?.message || "Erreur inconnue";
+      }
     } catch (err: any) {
       state.value.error = err?.data?.message || err?.message || "Erreur inconnue";
     }

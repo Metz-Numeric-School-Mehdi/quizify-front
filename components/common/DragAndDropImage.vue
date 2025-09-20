@@ -10,9 +10,9 @@
                 <img :src="filePreview" alt="Aperçu" class="max-h-32 mb-2 rounded" />
             </div>
             <div v-else class="flex flex-col items-center">
-                <span class="text-xs text-gray-500 mb-2">{{ fileName }}</span>
+                <span class="text-xs text-gray-600 mb-2">{{ fileName }}</span>
             </div>
-            <button v-if="!disabled" type="button" class="text-xs text-pink-500 underline" @click.stop="removeFile">
+            <button v-if="!disabled" type="button" class="text-xs text-pink-500 underline" @click.stop="removeFile" aria-label="Retirer l'image">
                 Retirer l'image
             </button>
         </template>

@@ -24,7 +24,7 @@
         <span class="inline sm:hidden">Créer</span>
       </DefaultButton>
     </div>
-    <div v-if="useQuiz.state.quizzes?.length === 0" class="text-center text-gray-500 mt-10">
+    <div v-if="useQuiz.state.quizzes?.length === 0" class="text-center text-gray-600 mt-10">
       <div>Tu n’as pas encore créé de quiz.<br />Clique sur "Créer un quiz" pour commencer !</div>
     </div>
     <div v-else class="overflow-x-auto hidden md:block">
@@ -54,7 +54,7 @@
               />
               <div
                 v-else
-                class="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400"
+                class="w-14 h-14 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500"
               >
                 <Icon name="Image" :size="24" />
               </div>
@@ -112,14 +112,14 @@
         <div v-for="quiz in useQuiz.state.quizzes" :key="quiz.id" class="bg-white rounded-xl shadow p-4 border border-gray-100 flex gap-3 items-center">
           <div>
             <img v-if="quiz.thumbnail_url" :src="quiz.thumbnail_url" alt="Miniature" class="w-16 h-16 object-cover rounded-lg border" />
-            <div v-else class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+            <div v-else class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
               <Icon name="Image" :size="24" />
             </div>
           </div>
           <div class="flex-1 min-w-0">
             <div class="font-semibold text-pink-700 text-base truncate">{{ quiz.title }}</div>
             <div class="text-gray-600 text-sm truncate">{{ quiz.description?.slice(0, 40) }}<span v-if="quiz.description && quiz.description.length > 40">…</span></div>
-            <div class="text-xs text-gray-500 mt-1">{{ quiz.duration }} min</div>
+            <div class="text-xs text-gray-600 mt-1">{{ quiz.duration }} min</div>
             <span class="inline-block px-2 py-1 rounded text-xs font-semibold mt-1"
               :class="{
                 'bg-green-100 text-green-700': quiz.status === 'published',
@@ -199,6 +199,14 @@ onMounted(async () => {
 
 onUnmounted(() => {
   useQuiz.state.isOwner = false;
+});
+
+useSeoMeta({
+  title: 'Mes Quiz - Quizify',
+  description: 'Gérez tous vos quiz créés sur Quizify. Modifiez, supprimez ou consultez les statistiques de vos quiz personnalisés.',
+  ogTitle: 'Mes Quiz - Quizify',
+  ogDescription: 'Gérez tous vos quiz créés sur Quizify.',
+  robots: 'noindex, nofollow'
 });
 
 function editQuiz(quizId: number) {

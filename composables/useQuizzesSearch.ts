@@ -26,24 +26,16 @@ export function useQuizSearch() {
     loading.value = true;
     error.value = null;
     try {
-      const data = await $fetch("/api/quizzes/search", {
+      const data = await $fetch<{ items: Quiz[], meta: QuizMeta }>("/api/quizzes/search", {
         method: "GET",
         params,
         baseURL: useRuntimeConfig().public.apiBase,
       });
-      items.value =
-        data && typeof data === "object" && data !== null && "items" in data
-          ? ((data as any).items as Quiz[])
-          : [];
-      meta.value =
-        data && typeof data === "object" && data !== null && "meta" in data
-          ? ((data as any).meta as QuizMeta)
-          : null;
-    } catch (err) {
-      error.value =
-        err && typeof err === "object" && "message" in err
-          ? (err as any).message
-          : "Erreur lors de la recherche";
+      
+      items.value = data?.items || [];
+      meta.value = data?.meta || null;
+    } catch (err: any) {
+      error.value = err?.data?.message || err?.message || "Erreur lors de la recherche";
       items.value = [];
       meta.value = null;
     } finally {

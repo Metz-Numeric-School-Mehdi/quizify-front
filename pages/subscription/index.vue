@@ -19,5 +19,14 @@
 import PricingPlans from '~/components/subscription/PricingPlans.vue';
 import SubscriptionStatus from '~/components/subscription/SubscriptionStatus.vue';
 
-const useSubscription = subscriptionStore();
+const useSubscription = subscriptionStore()
+
+useSeoMeta({
+  title: 'Abonnements - Quizify',
+  description: 'Découvrez nos plans d\'abonnement Quizify. Accédez à des fonctionnalités premium pour créer des quiz illimités et débloquer des options avancées.',
+  ogTitle: 'Abonnements - Quizify',
+  ogDescription: 'Découvrez nos plans d\'abonnement Quizify Premium.',
+  ogImage: '/quizifyIcon.png',
+  keywords: 'abonnement, premium, plans, tarifs, quiz illimités'
+});
 </script>

@@ -14,13 +14,21 @@
           :src="img" 
           alt="Quiz Image" 
           loading="lazy"
+          format="webp"
+          width="320"
+          height="160"
+          placeholder="blur"
         />
         <img 
-          v-else 
-          class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" 
+          v-else
           src="@/assets/img/card_wallp.jpeg" 
-          alt="Quiz Image" 
+          alt="Image d'arrière-plan de la carte du quiz" 
+          class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+          format="webp"
+          width="320"
+          height="160"
           loading="lazy"
+          placeholder="blur"
         />
         
         <div class="absolute top-3 right-3 z-20">

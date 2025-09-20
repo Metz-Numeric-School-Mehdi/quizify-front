@@ -37,6 +37,7 @@ export const useQuizStore = defineStore(
       quizForm: {
         title: "",
         description: "",
+        duration: null,
         level_id: null,
         category_id: null,
         is_public: "0",
@@ -100,8 +101,9 @@ export const useQuizStore = defineStore(
         state.value.quizForm = {
           title: state.value.quiz.title || "",
           description: state.value.quiz.description || "",
-          level_id: state.value.quiz.level_id || null,
-          category_id: state.value.quiz.category_id || null,
+          duration: state.value.quiz.duration || null,
+          level_id: state.value.quiz.level?.id || null,
+          category_id: state.value.quiz.category?.id || null,
           is_public: state.value.quiz.is_public ? "1" : "0",
           status: state.value.quiz.status || "published",
         };
@@ -112,15 +114,15 @@ export const useQuizStore = defineStore(
       state.value.loading = true;
       state.value.apiError = null;
       try {
-        const response = await fetch(
-          `${useRuntimeConfig().public.apiBase}/api/quizzes/${id}`
-        );
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw { response: { data: errorData } };
+        const { data, error } = await useFetch<Quiz>(`/api/quizzes/${id}`, {
+          baseURL: useRuntimeConfig().public.apiBase,
+        });
+        
+        if (error.value) {
+          throw { response: { data: error.value.data } };
         }
-        const quiz = await response.json();
-        state.value.quiz = quiz;
+        
+        state.value.quiz = data.value;
         setQuizFormFromQuiz();
       } catch (e: any) {
         state.value.apiError = e.response?.data as ApiError;
@@ -252,6 +254,7 @@ export const useQuizStore = defineStore(
       state.value.quizForm = {
         title: "",
         description: "",
+        duration: null,
         level_id: null,
         category_id: null,
         is_public: "0",

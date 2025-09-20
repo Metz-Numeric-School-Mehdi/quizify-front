@@ -4,12 +4,12 @@
     <div class="p-8 bg-white max-w-2xl w-full rounded-xl overflow-y-auto max-h-[90vh]">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-2xl font-semibold">Créer un nouveau quiz</h2>
-        <button type="button" @click="closeModal" class="p-2 rounded hover:bg-pink-100">
+        <button type="button" @click="closeModal" class="p-2 rounded hover:bg-pink-100" aria-label="Fermer la modale">
           <Icon name="X" :stroke-width="2" class="w-6 h-6 text-purple-700" />
         </button>
       </div>
 
-      <p class="text-gray-500 mb-6">Remplissez les informations de base de votre quiz. Vous pourrez ajouter les questions après la création.</p>
+      <p class="text-gray-600 mb-6">Remplissez les informations de base de votre quiz. Vous pourrez ajouter les questions après la création.</p>
 
       <form class="space-y-6" @submit="onSubmit">
         <div v-for="(field, index) in quizModalConfig.form" :key="field.vModel" class="space-y-1">

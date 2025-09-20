@@ -214,7 +214,7 @@ const finishQuiz = async () => {
       if (orderArray.length > 0) {
         responses.push({
           question_id: question.id,
-          user_answer: JSON.stringify(orderArray),
+          user_order: JSON.stringify(orderArray),
         });
       }
     } else {
@@ -336,5 +336,13 @@ router.beforeEach((to, from, next) => {
   pendingNavigation.value = to.fullPath;
 
   next(false);
+});
+
+useSeoMeta({
+  title: () => `Jouer - ${useQuiz.state.quiz?.title || 'Quiz'} - Quizify`,
+  description: () => `Jouez au quiz "${useQuiz.state.quiz?.title}" sur Quizify. Testez vos connaissances et obtenez votre score !`,
+  ogTitle: () => `Jouer - ${useQuiz.state.quiz?.title || 'Quiz'} - Quizify`,
+  ogDescription: () => `Jouez au quiz "${useQuiz.state.quiz?.title}" sur Quizify.`,
+  robots: 'noindex, nofollow'
 });
 </script>
