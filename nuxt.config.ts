@@ -15,11 +15,9 @@ export default defineNuxtConfig({
     defaults: {
       weights: ["400", "500", "600", "700"],
     },
-  },
-  colorMode: {
-    classSuffix: "",
-    preference: "light",
-    fallback: "light",
+    manualChunks: {
+      ui: ["lucide-vue-next"],
+    },
   },
   shadcn: {
     /**
@@ -80,7 +78,6 @@ export default defineNuxtConfig({
       rollupOptions: {
         output: {
           manualChunks: {
-            pinia: ["pinia"],
             ui: ["lucide-vue-next"],
           },
         },
