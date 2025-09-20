@@ -44,14 +44,14 @@
       </div>
     </div>
     <div class="flex justify-end mb-4 z-10">
-      <DefaultButton v-if="useAuth.state.isAuthenticated" :ctaButton="true" @click="useQuiz.state.openModal = true"
+      <!-- <DefaultButton v-if="useAuth.state.isAuthenticated" :ctaButton="true" @click="useQuiz.state.openModal = true"
         class="flex-shrink-0">
         <span class="text-lg sm:text-xl">
           <Icon name="Plus" :stroke-width="2.5" :size="20" />
         </span>
         <span class="hidden sm:inline">Créer un quiz</span>
         <span class="inline sm:hidden">Créer</span>
-      </DefaultButton>
+      </DefaultButton> -->
     </div>
     <LazyCreateQuizModalAdvanced @close="useQuiz.state.openModal = false" />
 
