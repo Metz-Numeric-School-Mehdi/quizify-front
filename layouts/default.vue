@@ -1,0 +1,153 @@
+<template>
+  <header
+    class="sticky top-0 z-30 w-full bg-gradient-to-r from-pink-300 via-purple-300 to-blue-300 shadow-2lg flex items-center px-4 py-2 gap-4">
+    <NuxtImg src="/quizifyIcon.png" alt="Mascotte Quiz" class="w-12 h-12 rounded-full shadow-lg border-4 border-white" width="48" height="48" format="webp" />
+    <p>{{ useAuth.state.user?.subscription_plan ? (useAuth.state.user?.subscription_plan.name !== 'Gratuit' ?
+      useAuth.state.user?.subscription_plan.name : '') : '' }}</p>
+    <nav class="flex-1 flex items-center gap-2 sm:gap-4 relative">
+      <button type="button" @click="showMobileMenu = !showMobileMenu"
+        class="lg:hidden absolute right-0 p-2 rounded hover:bg-pink-200 focus:outline-none">
+        <svg class="w-7 h-7 text-purple-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <ul class="hidden lg:flex flex-1 items-center gap-2 sm:gap-4">
+        <li v-for="(link, index) in sidebarLinks" :key="index">
+          <NuxtLink :to="link.path" :class="[
+            'px-4 py-2 rounded font-semibold rounded-full flex items-center gap-2 transition',
+            route.path === link.path
+              ? 'bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 text-white shadow scale-105'
+              : 'text-white hover:text-text-color hover:bg-purple-100 hover:scale-105 hover:shadow-md',
+          ]">
+            <Icon :class="[route.path === link.path ? 'text-white' : 'text-primary-linear']" :stroke-width="2"
+              :name="link.icon" />
+            <span>{{ link.name }}</span>
+          </NuxtLink>
+        </li>
+      </ul>
+      <div class="hidden lg:flex ml-2 items-center gap-2">
+        <template v-if="useAuth.state.isAuthenticated">
+          <UserProfileDropdown />
+        </template>
+        <template v-else>
+          <DefaultButton :ctaButton="true" @click="router.push('/login')"
+            class="flex items-center gap-2 px-4 py-2 rounded-full">
+            <Icon name="LogIn" class="w-5 h-5 mr-1" />
+            <span>Se connecter</span>
+          </DefaultButton>
+        </template>
+      </div>
+      <transition name="fade">
+        <div v-if="showMobileMenu" class="fixed inset-0 z-40 bg-black/40 flex lg:hidden"
+          @click="showMobileMenu = false">
+          <div class="bg-white w-64 h-full shadow-lg p-6 flex flex-col gap-6 animate-slide-in-left" @click.stop>
+            <button type="button" @click="showMobileMenu = false" class="self-end mb-2 p-2 rounded hover:bg-pink-100" aria-label="Fermer le menu">
+              <Icon name="X" :stroke-width="2" class="w-6 h-6 text-purple-700" />
+            </button>
+            <ul class="flex flex-col gap-3">
+              <li v-for="(link, index) in sidebarLinks" :key="index">
+                <NuxtLink @click.native="showMobileMenu = false" :to="link.path" :class="[
+                  'px-4 py-2 rounded font-semibold flex items-center gap-2 transition',
+                  route.path === link.path
+                    ? 'bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 text-white shadow scale-105'
+                    : 'text-text-color hover:bg-purple-100 hover:scale-105 hover:shadow-md',
+                ]">
+                  <Icon :class="[route.path === link.path ? 'text-white' : 'text-primary-linear']" :stroke-width="2"
+                    :name="link.icon" />
+                  <span>{{ link.name }}</span>
+                </NuxtLink>
+              </li>
+            </ul>
+            <template v-if="useAuth.state.isAuthenticated">
+              <UserProfileDropdown />
+            </template>
+            <template v-else>
+              <DefaultButton :ctaButton="true" @click="router.push('/login')"
+                class="flex items-center gap-2 px-4 py-2 rounded-full">
+                <Icon name="LogIn" class="w-5 h-5 mr-1" />
+                <span>Se connecter</span>
+              </DefaultButton>
+            </template>
+          </div>
+        </div>
+      </transition>
+    </nav>
+  </header>
+  <div class="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <main class="flex-1 px-home">
+      <div class="mt-8">
+        <slot />
+      </div>
+    </main>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted, computed } from "vue";
+import DefaultButton from "~/components/interaction/buttons/DefaultButton.vue";
+import UserProfileDropdown from "~/components/common/UserProfileDropdown.vue";
+import { getSidebarItems } from "~/constants/Navigation";
+import { useQuizStore } from "~/stores/quizStore";
+import { authStore } from "~/stores/authStore";
+
+const route = useRoute();
+const router = useRouter();
+
+const useAuth = authStore();
+const useQuiz = useQuizStore();
+const showMobileMenu = ref(false);
+
+const sidebarLinks = computed(() => {
+  const items = getSidebarItems();
+  if (!useAuth.state.isAuthenticated) {
+    return items.filter(item => item.name !== "Mes quizs");
+  }
+  return items;
+});
+
+onMounted(() => {
+  useQuiz.state.openModal = false;
+});
+</script>
+
+<style scoped>
+@keyframes float-slow {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 3.5s ease-in-out infinite;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+</style>
